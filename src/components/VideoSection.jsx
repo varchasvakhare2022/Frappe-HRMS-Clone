@@ -77,7 +77,7 @@ function VideoSection() {
       {/* Video Player - Centered with larger width */}
       <div className="max-w-[850px] mx-auto mb-10">
         <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black group">
-          {/* Video Element with Sample Video */}
+          {/* Video Element with Local Frappe HR Video */}
           <video
             ref={videoRef}
             className="w-full aspect-video"
@@ -85,16 +85,18 @@ function VideoSection() {
             controlsList="nodownload nofullscreen noremoteplayback"
             disablePictureInPicture
             playsInline
+            muted
+            poster="/frappehr-intro-poster.png"
           >
             <source
-              src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+              src="/frappe-hr-hero-video-final.mp4"
               type="video/mp4"
             />
             Your browser does not support the video tag.
           </video>
 
-          {/* Custom Video Controls */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-auto">
+          {/* Custom Video Controls - Always visible */}
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 opacity-100 pointer-events-auto">
             {/* Control Buttons Row */}
             <div className="flex items-center gap-4">
               {/* Play/Pause Button */}
@@ -117,17 +119,12 @@ function VideoSection() {
                   max="100"
                   value={progress}
                   onChange={handleProgressChange}
-                  className="video-progress-slider w-full h-1.5 bg-gray-700 rounded-full appearance-none cursor-pointer"
+                  className="video-progress-slider w-full h-1.5 bg-gray-500 rounded-full appearance-none cursor-pointer"
                   style={{
-                    background: `linear-gradient(to right, #ffffff ${progress}%, #4b5563 ${progress}%)`,
+                    background: `linear-gradient(to right, #000000 ${progress}%, #6b7280 ${progress}%)`,
                   }}
                 />
               </div>
-
-              {/* Time Display */}
-              <span className="text-white text-sm font-medium whitespace-nowrap flex-shrink-0">
-                {formatTime(currentTime)} / {formatTime(duration)}
-              </span>
 
               {/* Volume Control with Mute Button and Slider */}
               <div className="flex items-center gap-2 flex-shrink-0">
@@ -147,11 +144,11 @@ function VideoSection() {
                   max="100"
                   value={isMuted ? 0 : volume * 100}
                   onChange={handleVolumeChange}
-                  className="video-volume-slider w-20 h-1.5 bg-gray-700 rounded-full appearance-none cursor-pointer"
+                  className="video-volume-slider w-20 h-1.5 bg-gray-500 rounded-full appearance-none cursor-pointer"
                   style={{
-                    background: `linear-gradient(to right, #ffffff ${
+                    background: `linear-gradient(to right, #000000 ${
                       isMuted ? 0 : volume * 100
-                    }%, #4b5563 ${isMuted ? 0 : volume * 100}%)`,
+                    }%, #6b7280 ${isMuted ? 0 : volume * 100}%)`,
                   }}
                 />
               </div>
@@ -162,7 +159,9 @@ function VideoSection() {
                   onClick={() => setShowSettings(!showSettings)}
                   className="text-white hover:text-white/80 transition-colors"
                 >
-                  <Settings className="w-5 h-5" strokeWidth={2} />
+                  <svg className="w-5 h-5" viewBox="0 0 20 20" fill="white">
+                    <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd"/>
+                  </svg>
                 </button>
                 {showSettings && (
                   <div className="absolute bottom-full right-0 mb-2 bg-white rounded-lg shadow-lg p-3 min-w-[150px] border border-gray-200">
@@ -183,7 +182,9 @@ function VideoSection() {
                 onClick={toggleFullscreen}
                 className="text-white hover:text-white/80 transition-colors flex-shrink-0"
               >
-                <Maximize className="w-5 h-5" strokeWidth={2} />
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="white">
+                  <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                </svg>
               </button>
             </div>
           </div>
