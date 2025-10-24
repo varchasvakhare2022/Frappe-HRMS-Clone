@@ -8,11 +8,67 @@ function SignupPage() {
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
 
-  // Allowed users for login
+  // Allowed users for login - comprehensive test data
   const allowedUsers = [
     {
       email: 'vk.varchasva@gmail.com',
       name: 'Varchasva Khare',
+      role: 'Admin',
+    },
+    {
+      email: 'admin@test.com',
+      name: 'Admin User',
+      role: 'Administrator',
+    },
+    {
+      email: 'hr@company.com',
+      name: 'Sarah O\'Brien',
+      role: 'HR Manager',
+    },
+    {
+      email: 'employee@test.com',
+      name: 'John Doe',
+      role: 'Employee',
+    },
+    {
+      email: 'manager@test.com',
+      name: 'Emma Thompson-Williams',
+      role: 'Department Manager',
+    },
+    {
+      email: 'test@example.com',
+      name: 'Test User',
+      role: 'Employee',
+    },
+    {
+      email: 'jose.garcia@company.com',
+      name: 'José García',
+      role: 'Operations Manager',
+    },
+    {
+      email: 'li.wei@startup.com',
+      name: 'Li Wei',
+      role: 'Founder',
+    },
+    {
+      email: 'a.b@micro.com',
+      name: 'A B',
+      role: 'CEO',
+    },
+    {
+      email: 'dr.mohammed@health.com',
+      name: 'Dr. Mohammed Al-Rashid',
+      role: 'CHRO',
+    },
+    {
+      email: 'priya.sharma-kapoor@enterprise.com',
+      name: 'Priya Sharma-Kapoor',
+      role: 'VP People Operations',
+    },
+    {
+      email: 'raj.kumar@devops.com',
+      name: 'Raj Kumar',
+      role: 'CTO',
     },
   ]
 

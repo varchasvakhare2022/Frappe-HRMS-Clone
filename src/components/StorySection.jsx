@@ -36,7 +36,7 @@ function StorySection() {
         </div>
 
         {/* Author Attribution */}
-        <div className="flex items-center gap-4 mt-12">
+        <div className="flex items-center gap-3 sm:gap-4 mt-12">
           {/* Author Profile Picture */}
           <div className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0 bg-gray-200">
             <img
@@ -46,7 +46,7 @@ function StorySection() {
               onError={(e) => {
                 e.target.style.display = 'none'
                 e.target.parentElement.innerHTML = `
-                  <div class="w-full h-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-2xl font-semibold">
+                  <div class="w-full h-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white text-xl font-semibold">
                     RM
                   </div>
                 `
@@ -55,11 +55,11 @@ function StorySection() {
           </div>
 
           {/* Author Info */}
-          <div>
-            <p className="text-xl text-gray-900 mb-0.5" style={{ fontFamily: 'Dancing Script, cursive' }}>
+          <div className="min-w-0 flex-1">
+            <p className="text-xl text-gray-900 mb-0.5 break-words" style={{ fontFamily: 'Dancing Script, cursive' }}>
               Rucha Mahabal
             </p>
-            <p className="text-xs text-gray-600">
+            <p className="text-xs text-gray-600 break-words">
               Product Engineer
             </p>
           </div>

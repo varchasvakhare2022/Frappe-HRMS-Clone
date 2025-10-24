@@ -9,6 +9,7 @@ function VideoPlayer({ src, className = "" }) {
   const [volume, setVolume] = useState(1)
   const [isMuted, setIsMuted] = useState(false)
   const [showVolumeSlider, setShowVolumeSlider] = useState(false)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     const video = videoRef.current
@@ -16,13 +17,16 @@ function VideoPlayer({ src, className = "" }) {
 
     const updateTime = () => setCurrentTime(video.currentTime)
     const updateDuration = () => setDuration(video.duration)
+    const handleError = () => setError(true)
 
     video.addEventListener('timeupdate', updateTime)
     video.addEventListener('loadedmetadata', updateDuration)
+    video.addEventListener('error', handleError)
 
     return () => {
       video.removeEventListener('timeupdate', updateTime)
       video.removeEventListener('loadedmetadata', updateDuration)
+      video.removeEventListener('error', handleError)
     }
   }, [])
 
@@ -84,6 +88,19 @@ function VideoPlayer({ src, className = "" }) {
   }
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0
+
+  if (error) {
+    return (
+      <div className={`relative bg-gray-100 rounded-lg overflow-hidden ${className}`}>
+        <div className="w-full aspect-video flex items-center justify-center">
+          <div className="text-center p-6">
+            <div className="text-gray-400 text-lg mb-2">⚠️</div>
+            <p className="text-gray-600 text-sm">Unable to load video</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className={`relative group bg-black rounded-lg overflow-hidden ${className}`}>

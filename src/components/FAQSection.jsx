@@ -55,6 +55,36 @@ function FAQSection() {
       answer:
         'Frappe HR is backed by a strong community of over 20,000 developers and 180+ partners worldwide. You can access documentation, community forums, video tutorials, and professional support from Frappe or certified partners for implementation, customization, and training.',
     },
+    {
+      question: 'Can Frappe HR handle multi-currency payroll for global teams?',
+      answer:
+        'Absolutely! Frappe HR supports multi-currency payroll processing, making it ideal for companies with international teams. You can create salary structures in different currencies, handle exchange rates automatically, and maintain accurate financial records across all regions.',
+    },
+    {
+      question: 'How does Frappe HR handle compliance with labor laws?',
+      answer:
+        'Frappe HR provides configurable tax slabs, statutory compliance reports, and customizable workflows to help you comply with regional labor laws. You can configure income tax calculations, provident fund contributions, and other statutory requirements specific to your location.',
+    },
+    {
+      question: 'Is there a mobile app available for Frappe HR?',
+      answer:
+        'Yes, Frappe HR has a dedicated mobile app for both iOS and Android. The app allows employees to perform daily tasks like attendance marking, leave applications, expense claims, and viewing salary slips. Managers can also approve requests and access important HR information on the go.',
+    },
+    {
+      question: 'How does the performance management system work?',
+      answer:
+        'The performance management module allows you to set goals and KRAs, conduct appraisals, gather 360-degree feedback, and track employee performance over time. You can create custom appraisal templates, configure scoring formulas, and generate comprehensive performance reports.',
+    },
+    {
+      question: 'Can I migrate data from my existing HR system?',
+      answer:
+        'Yes, Frappe HR provides data import tools that allow you to migrate employee data, leave balances, salary structures, and other information from your existing HR system. The import process is well-documented, and our community can help with complex migrations.',
+    },
+    {
+      question: 'What happens if I need a feature that doesn\'t exist?',
+      answer:
+        'Since Frappe HR is open-source, you have multiple options: you can customize the system yourself, hire a developer from the community, work with a certified partner, or submit a feature request to the community. The modular architecture makes it easy to add new features without affecting core functionality.',
+    },
   ]
 
   const toggleFAQ = (index) => {

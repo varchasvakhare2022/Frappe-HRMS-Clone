@@ -71,11 +71,35 @@ function DashboardPage() {
     'Payment Entry',
     'Journal Entry',
     'Accounts Payable',
+    'Employee Onboarding',
+    'Leave Application',
+    'Expense Claim',
+    'Attendance Request',
+    'Salary Slip',
+    'Performance Appraisal',
+    'Job Opening',
+    'Shift Assignment',
   ]
 
   const reports = {
-    Invoicing: ['Purchase Invoice', 'Supplier'],
-    Payments: ['Payment Entry', 'Journal Entry', 'Payment Reconciliation'],
+    Invoicing: ['Purchase Invoice', 'Supplier', 'Purchase Order', 'Supplier Quotation'],
+    Payments: ['Payment Entry', 'Journal Entry', 'Payment Reconciliation', 'Bank Reconciliation Statement'],
+    'HR & Payroll': [
+      'Monthly Attendance Sheet',
+      'Salary Register',
+      'Employee Leave Balance',
+      'Employee Information',
+      'Loan Security Status',
+      'Income Tax Computation',
+      'Recruitment Analytics',
+    ],
+    'Leave Management': [
+      'Employee Leave Balance',
+      'Leave Ledger',
+      'Leave Application',
+      'Leave Allocation',
+      'Leave Encashment',
+    ],
     Reports: [
       'Accounts Payable',
       'Accounts Payable Summary',
@@ -83,6 +107,16 @@ function DashboardPage() {
       'Item-wise Purchase Register',
       'Received Items To Be Billed',
       'Supplier Ledger Summary',
+      'General Ledger',
+      'Trial Balance',
+      'Profit and Loss Statement',
+    ],
+    Analytics: [
+      'Employee Analytics',
+      'Recruitment Funnel',
+      'Expense Analytics',
+      'Attendance Trends',
+      'Performance Summary',
     ],
   }
 
@@ -226,10 +260,10 @@ function DashboardPage() {
                 {shortcuts.map((shortcut, index) => (
                   <button
                     key={index}
-                    className="flex items-center gap-2 text-gray-700 hover:text-gray-900 text-sm"
+                    className="flex items-center gap-2 text-gray-700 hover:text-gray-900 text-sm transition-colors"
                   >
-                    <span>{shortcut}</span>
-                    <ChevronRight className="w-4 h-4 text-gray-400" />
+                    <span className="break-words">{shortcut}</span>
+                    <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
                   </button>
                 ))}
               </div>
@@ -238,15 +272,15 @@ function DashboardPage() {
             {/* Reports & Masters Section */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Reports & Masters</h3>
-              <div className="grid md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 md:gap-8">
                 {Object.entries(reports).map(([category, items]) => (
-                  <div key={category}>
-                    <h4 className="font-semibold text-gray-900 mb-3 text-sm">{category}</h4>
+                  <div key={category} className="min-w-0">
+                    <h4 className="font-semibold text-gray-900 mb-3 text-sm break-words">{category}</h4>
                     <div className="space-y-2">
                       {items.map((item, index) => (
                         <button
                           key={index}
-                          className="block text-gray-600 hover:text-gray-900 text-sm"
+                          className="block text-gray-600 hover:text-gray-900 text-sm text-left transition-colors break-words w-full"
                         >
                           {item}
                         </button>
