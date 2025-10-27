@@ -100,7 +100,7 @@ function VideoPlayer({ src, className = "" }) {
       {/* Video Element */}
       <video
         ref={videoRef}
-        className="w-full aspect-video"
+        className="w-full aspect-video object-cover"
         onClick={togglePlay}
         controlsList="nodownload nofullscreen noremoteplayback"
         disablePictureInPicture
