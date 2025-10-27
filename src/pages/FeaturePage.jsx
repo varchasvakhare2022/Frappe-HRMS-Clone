@@ -174,7 +174,7 @@ function FeaturePage({ feature }) {
         {
           title: 'Use bulk attendance tools for more control',
           content: "If you prefer marking attendance manually, use Frappe HR's bulk tools. The employee attendance tool helps you mark attendance for all employees with drill-down filters while keeping the marked attendance data handy. You can also upload attendance from your spreadsheets using Upload Attendance or Data Import tools.",
-          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          image: '/attendance-sheet.webp',
         },
         {
           title: 'Analyse with attendance reports',
