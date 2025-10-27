@@ -45,7 +45,7 @@ function FeaturePage({ feature }) {
         {
           title: 'Capture & analyze feedback for decision-making',
           content: "Efficiently capture feedback from multiple interviewers across multiple rounds. Frappe HR generates an overview of the average ratings, demonstrated skills, and a detailed feedback timeline, enabling you to make informed decisions.",
-          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          video: "/interview-4k.mp4",
         },
         {
           title: 'Send job offers',
