@@ -1,6 +1,20 @@
 import VideoPlayer from '../components/VideoPlayer'
 
 function FeaturePage({ feature }) {
+  // Convert title to URL-friendly ID
+  const titleToId = (title) => {
+    return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+  }
+
+  // Handle smooth scroll to section
+  const scrollToSection = (e, sectionId) => {
+    e.preventDefault()
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
   const featureContent = {
     recruitment: {
       title: 'Recruitment',
@@ -581,18 +595,28 @@ function FeaturePage({ feature }) {
                 fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
               }}
             >
-              {content.steps.map((step, index) => (
-                <li key={index} className="text-sm text-black">
-                  <span className="font-medium text-gray-600">{index + 1}.</span> {step}
-                </li>
-              ))}
+              {content.steps.map((step, index) => {
+                const sectionId = titleToId(step)
+                return (
+                  <li key={index} className="text-sm text-black">
+                    <span className="font-medium text-gray-600">{index + 1}.</span>{' '}
+                    <a 
+                      href={`#${sectionId}`}
+                      onClick={(e) => scrollToSection(e, sectionId)}
+                      className="hover:text-blue-600 hover:underline cursor-pointer transition-colors"
+                    >
+                      {step}
+                    </a>
+                  </li>
+                )
+              })}
             </ol>
           )}
         </div>
 
         {/* Sections */}
         {content.sections && content.sections.map((section, index) => (
-          <div key={index} className="mb-8">
+          <div key={index} id={titleToId(section.title)} className="mb-8 scroll-mt-4">
             <h2 
               className="text-xl mb-2 max-w-lg mx-auto"
               style={{
