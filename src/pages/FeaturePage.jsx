@@ -640,20 +640,20 @@ function FeaturePage({ feature }) {
               {/* Previous Feature */}
               {content.previousFeature && (
                 <div className="text-left">
-                  <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">PREVIOUS FEATURE</p>
+                  <p className="text-[13px] font-medium text-gray-500 uppercase tracking-wider mb-2">PREVIOUS FEATURE</p>
                   <a 
                     href={content.previousFeatureUrl}
-                    className="inline-flex items-center gap-2 hover:opacity-70 transition-opacity"
+                    className="inline-flex items-center gap-1 hover:opacity-70 transition-opacity"
                     style={{ 
                       fontFamily: 'Newsreader, Georgia, "Times New Roman", serif',
                       color: '#171717',
-                      fontSize: '16px',
-                      fontWeight: '420',
+                      fontSize: '22px',
+                      fontWeight: '700',
                       letterSpacing: '0.28px',
                       lineHeight: '115%'
                     }}
                   >
-                    <span>&lt;</span>
+                    <span style={{ color: '#000000', fontSize: '22px', fontWeight: '700' }}>&lt;</span>
                     {content.previousFeature}
                   </a>
                 </div>
@@ -662,21 +662,21 @@ function FeaturePage({ feature }) {
               {/* Next Feature */}
               {content.nextFeature && (
                 <div className="text-right ml-auto">
-                  <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">NEXT FEATURE</p>
+                  <p className="text-[13px] font-medium text-gray-500 uppercase tracking-wider mb-2">NEXT FEATURE</p>
                   <a 
                     href={content.nextFeatureUrl}
-                    className="inline-flex items-center gap-2 hover:opacity-70 transition-opacity"
+                    className="inline-flex items-center gap-1 hover:opacity-70 transition-opacity"
                     style={{ 
                       fontFamily: 'Newsreader, Georgia, "Times New Roman", serif',
                       color: '#171717',
-                      fontSize: '16px',
-                      fontWeight: '420',
+                      fontSize: '22px',
+                      fontWeight: '700',
                       letterSpacing: '0.28px',
                       lineHeight: '115%'
                     }}
                   >
                     {content.nextFeature}
-                    <span>&gt;</span>
+                    <span style={{ color: '#000000', fontSize: '22px', fontWeight: '700' }}>&gt;</span>
                   </a>
                 </div>
               )}
