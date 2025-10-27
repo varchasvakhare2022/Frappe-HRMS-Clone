@@ -462,12 +462,12 @@ function FeaturePage({ feature }) {
         {
           title: 'Income tax computation report',
           content: "Visualize how your tax computation is taking effect with exemptions, annual taxable income, applicable tax, tax deducted to date, and future deductions.",
-          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          video: "/income-tax-computation.mp4",
         },
         {
           title: 'Review payroll cycle with the salary register report',
           content: "Before finalizing your payroll, ensure accuracy with Frappe HR's salary register report. This report provides a meticulous overview of all the salary slips. It's packed with key details for every employee payslip - payment days, earnings, deduction, and statutory component amounts, loan repayments, gross pay, and total deductions accounting for the actual net pay. Identify any errors or discrepancies before submission, ensuring a smooth and accurate process. You can also refer back to this report for historical salary data.",
-          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          video: "/salary-register.mp4",
         },
         {
           title: 'Compliance & accounting reports',
