@@ -41,9 +41,7 @@ function LeaveManagementPage() {
     return null
   }
 
-  const isAdmin = user.role?.toLowerCase().includes('admin') || 
-                  user.role?.toLowerCase().includes('manager') ||
-                  user.role?.toLowerCase().includes('hr')
+  const isAdmin = user.role?.toLowerCase().includes('admin')
 
   const getInitials = (name) => {
     return name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2)

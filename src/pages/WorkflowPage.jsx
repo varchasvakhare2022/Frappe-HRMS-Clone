@@ -56,10 +56,8 @@ function WorkflowPage() {
     return null
   }
 
-  // Check if user can approve (Admin or Manager roles)
-  const canApprove = user.role?.toLowerCase().includes('admin') || 
-                     user.role?.toLowerCase().includes('manager') ||
-                     user.role?.toLowerCase().includes('hr')
+  // Check if user can approve (Admin role only)
+  const canApprove = user.role?.toLowerCase().includes('admin')
 
   // Dummy Data for Workflows
   const workflowData = {
@@ -580,7 +578,7 @@ function WorkflowPage() {
               {!canApprove && (
                 <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <p className="text-sm text-blue-800">
-                    <strong>Note:</strong> You have view-only access. Only Admins, Managers, and HR can approve or reject workflows.
+                    <strong>Note:</strong> You have view-only access. Only Admins can approve or reject workflows.
                   </p>
                 </div>
               )}

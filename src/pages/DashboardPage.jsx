@@ -46,10 +46,8 @@ function DashboardPage() {
     return null
   }
 
-  // Check if user is admin/manager/HR
-  const isAdmin = user.role?.toLowerCase().includes('admin') || 
-                  user.role?.toLowerCase().includes('manager') ||
-                  user.role?.toLowerCase().includes('hr')
+  // Check if user is admin
+  const isAdmin = user.role?.toLowerCase().includes('admin')
 
   // Get user initials
   const getInitials = (name) => {
