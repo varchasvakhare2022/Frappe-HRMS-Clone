@@ -37,7 +37,7 @@ function TopBar({ isSidebarHovered }) {
     <div 
       className="fixed top-0 right-0 bg-white z-40 border-b border-gray-100"
       style={{
-        left: isSidebarHovered ? '224px' : '48px',
+        left: isSidebarHovered ? '256px' : '48px',
         transition: 'left 250ms cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >

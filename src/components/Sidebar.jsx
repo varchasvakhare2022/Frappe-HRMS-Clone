@@ -55,7 +55,7 @@ function Sidebar({ isHovered, setIsHovered }) {
   return (
     <aside
       className={`fixed left-0 top-0 h-screen bg-gray-100 z-50 overflow-hidden ${
-        isHovered ? 'w-56' : 'w-12'
+        isHovered ? 'w-64' : 'w-12'
       }`}
       style={{
         transition: 'width 250ms cubic-bezier(0.4, 0, 0.2, 1)',

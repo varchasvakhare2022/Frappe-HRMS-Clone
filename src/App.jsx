@@ -37,7 +37,7 @@ function AppContent() {
       <div 
         className="pt-10"
         style={{
-          marginLeft: isSidebarHovered ? '224px' : '48px',
+          marginLeft: isSidebarHovered ? '256px' : '48px',
           transition: 'margin-left 250ms cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >
