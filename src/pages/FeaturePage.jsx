@@ -154,12 +154,12 @@ function FeaturePage({ feature }) {
         {
           title: 'Check-in and check-out with geolocation capturing',
           content: "Make check-ins and check-outs a breeze with the Frappe HR mobile app's easy interface. You can also enable geolocation tracking for a detailed work location history.",
-          image: '/employee-checkin.webp',
+          video: '/geolocation-checkin.mp4',
         },
         {
           title: 'Integrate biometric devices',
           content: "Improve accuracy and eliminate manual errors by seamlessly integrating biometric devices from multiple locations for syncing logs.",
-          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          image: '/employee-checkin.webp',
         },
         {
           title: 'Auto-attendance in sync with your payroll',
