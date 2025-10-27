@@ -65,12 +65,12 @@ function DashboardPage() {
       teamMembers: { value: 24, active: 22, onLeave: 2 }
     },
     quickActions: [
-      { icon: FileText, label: 'Apply for Leave', color: 'bg-blue-500' },
-      { icon: Clock, label: 'Mark Attendance', color: 'bg-green-500' },
-      { icon: DollarSign, label: 'Submit Expense', color: 'bg-purple-500' },
-      { icon: Calendar, label: 'Book Time Off', color: 'bg-orange-500' },
-      { icon: FileText, label: 'View Payslip', color: 'bg-teal-500' },
-      { icon: Award, label: 'Submit Goals', color: 'bg-pink-500' }
+      { icon: FileText, label: 'Apply for Leave', color: 'bg-blue-500', link: null },
+      { icon: Clock, label: 'Mark Attendance', color: 'bg-green-500', link: null },
+      { icon: DollarSign, label: 'Submit Expense', color: 'bg-purple-500', link: null },
+      { icon: Calendar, label: 'View Workflows', color: 'bg-indigo-500', link: '/workflow' },
+      { icon: FileText, label: 'View Payslip', color: 'bg-teal-500', link: null },
+      { icon: Award, label: 'Submit Goals', color: 'bg-pink-500', link: null }
     ],
     recentActivities: [
       { type: 'approved', icon: CheckCircle, text: 'Leave request approved for Dec 15-17', time: '2 hours ago', color: 'text-green-600' },
@@ -363,6 +363,7 @@ function DashboardPage() {
                 {dashboardData.quickActions.map((action, index) => (
                   <button
                     key={index}
+                    onClick={() => action.link && navigate(action.link)}
                     className="bg-white rounded-lg shadow p-4 border border-gray-200 hover:shadow-md transition-all hover:scale-105 flex flex-col items-center gap-2 text-center group"
                   >
                     <div className={`${action.color} p-3 rounded-lg text-white group-hover:scale-110 transition-transform`}>
@@ -559,24 +560,24 @@ function DashboardPage() {
               </div>
               <div className="p-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-                  {Object.entries(reports).map(([category, items]) => (
+                {Object.entries(reports).map(([category, items]) => (
                     <div key={category} className="min-w-0">
                       <h4 className="font-semibold text-gray-900 mb-3 text-sm break-words flex items-center gap-2">
                         <Folder className="w-4 h-4 text-gray-500" />
                         {category}
                       </h4>
-                      <div className="space-y-2">
-                        {items.map((item, index) => (
-                          <button
-                            key={index}
+                    <div className="space-y-2">
+                      {items.map((item, index) => (
+                        <button
+                          key={index}
                             className="block text-gray-600 hover:text-blue-600 text-sm text-left transition-colors break-words w-full hover:pl-2 transition-all"
-                          >
-                            {item}
-                          </button>
-                        ))}
-                      </div>
+                        >
+                          {item}
+                        </button>
+                      ))}
                     </div>
-                  ))}
+                  </div>
+                ))}
                 </div>
               </div>
             </div>
