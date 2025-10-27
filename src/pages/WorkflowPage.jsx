@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { 
   CheckCircle, XCircle, Clock, AlertCircle, User, 
   FileText, DollarSign, Calendar, TrendingUp, Bell,
@@ -10,6 +10,7 @@ import {
 
 function WorkflowPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [activeTab, setActiveTab] = useState('pending')
   const [selectedWorkflow, setSelectedWorkflow] = useState(null)
   const [user, setUser] = useState(null)
@@ -24,6 +25,15 @@ function WorkflowPage() {
       setUser(JSON.parse(loggedInUser))
     }
   }, [navigate])
+
+  // Set active tab based on URL parameter
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const tab = params.get('tab')
+    if (tab && ['pending', 'approved', 'rejected', 'templates'].includes(tab)) {
+      setActiveTab(tab)
+    }
+  }, [location.search])
 
   // Close dropdown when clicking outside
   useEffect(() => {

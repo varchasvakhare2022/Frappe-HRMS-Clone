@@ -72,8 +72,8 @@ function DashboardPage() {
   ]
 
   const adminActions = [
-    { icon: Calendar, label: 'Manage Workflows', color: 'bg-indigo-500', link: '/workflow' },
-    { icon: UserCheck, label: 'Approve Requests', color: 'bg-green-500', link: '/workflow' },
+    { icon: Calendar, label: 'Manage Workflows', color: 'bg-indigo-500', link: '/workflow?tab=templates' },
+    { icon: UserCheck, label: 'Approve Requests', color: 'bg-green-500', link: '/workflow?tab=pending' },
     { icon: Users, label: 'Team Management', color: 'bg-blue-500', link: null },
     { icon: BarChart3, label: 'Analytics', color: 'bg-purple-500', link: null },
     { icon: Settings, label: 'System Settings', color: 'bg-gray-500', link: null },
