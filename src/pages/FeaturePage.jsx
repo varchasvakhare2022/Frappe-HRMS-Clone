@@ -1,4 +1,3 @@
-import { ArrowRight } from 'lucide-react'
 import VideoPlayer from '../components/VideoPlayer'
 
 function FeaturePage({ feature }) {
@@ -641,12 +640,13 @@ function FeaturePage({ feature }) {
               {/* Previous Feature */}
               {content.previousFeature && (
                 <div className="text-left">
-                  <p className="text-sm text-gray-500 mb-2">previous feature</p>
+                  <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">PREVIOUS FEATURE</p>
                   <a 
                     href={content.previousFeatureUrl}
-                    className="inline-flex items-center gap-2 text-xl font-semibold text-gray-900 hover:text-gray-700 transition-colors"
+                    className="inline-flex items-center gap-2 text-xl font-semibold text-black hover:text-gray-700 transition-colors"
+                    style={{ fontFamily: 'Newsreader, Georgia, "Times New Roman", serif' }}
                   >
-                    <ArrowRight className="w-5 h-5 rotate-180" />
+                    <span className="text-xl">&lt;</span>
                     {content.previousFeature}
                   </a>
                 </div>
@@ -655,13 +655,14 @@ function FeaturePage({ feature }) {
               {/* Next Feature */}
               {content.nextFeature && (
                 <div className="text-right ml-auto">
-                  <p className="text-sm text-gray-500 mb-2">next feature</p>
+                  <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">NEXT FEATURE</p>
                   <a 
                     href={content.nextFeatureUrl}
-                    className="inline-flex items-center gap-2 text-xl font-semibold text-gray-900 hover:text-gray-700 transition-colors"
+                    className="inline-flex items-center gap-2 text-xl font-semibold text-black hover:text-gray-700 transition-colors"
+                    style={{ fontFamily: 'Newsreader, Georgia, "Times New Roman", serif' }}
                   >
                     {content.nextFeature}
-                    <ArrowRight className="w-5 h-5" />
+                    <span className="text-xl">&gt;</span>
                   </a>
                 </div>
               )}
