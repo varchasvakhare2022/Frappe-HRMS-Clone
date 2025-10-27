@@ -148,7 +148,7 @@ function Sidebar({ isHovered, setIsHovered }) {
 
           {/* Features Section Header */}
           <div 
-            className="mb-2 ml-12 flex items-center"
+            className="mb-2 px-3 flex items-center"
             style={{
               opacity: isHovered ? 1 : 0,
               transition: 'opacity 200ms ease-out',
