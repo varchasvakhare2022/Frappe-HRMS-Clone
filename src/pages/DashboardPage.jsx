@@ -46,6 +46,11 @@ function DashboardPage() {
     return null
   }
 
+  // Check if user is admin/manager/HR
+  const isAdmin = user.role?.toLowerCase().includes('admin') || 
+                  user.role?.toLowerCase().includes('manager') ||
+                  user.role?.toLowerCase().includes('hr')
+
   // Get user initials
   const getInitials = (name) => {
     return name
@@ -56,6 +61,25 @@ function DashboardPage() {
       .slice(0, 2)
   }
 
+  // Role-based Quick Actions
+  const employeeActions = [
+    { icon: FileText, label: 'Apply for Leave', color: 'bg-blue-500', link: null },
+    { icon: Clock, label: 'Mark Attendance', color: 'bg-green-500', link: null },
+    { icon: DollarSign, label: 'Submit Expense', color: 'bg-purple-500', link: null },
+    { icon: FileText, label: 'View Payslip', color: 'bg-teal-500', link: null },
+    { icon: Calendar, label: 'Book Time Off', color: 'bg-orange-500', link: null },
+    { icon: Award, label: 'My Performance', color: 'bg-pink-500', link: null }
+  ]
+
+  const adminActions = [
+    { icon: Calendar, label: 'Manage Workflows', color: 'bg-indigo-500', link: '/workflow' },
+    { icon: UserCheck, label: 'Approve Requests', color: 'bg-green-500', link: '/workflow' },
+    { icon: Users, label: 'Team Management', color: 'bg-blue-500', link: null },
+    { icon: BarChart3, label: 'Analytics', color: 'bg-purple-500', link: null },
+    { icon: Settings, label: 'System Settings', color: 'bg-gray-500', link: null },
+    { icon: FileText, label: 'Reports', color: 'bg-teal-500', link: null }
+  ]
+
   // Dummy Data for Dashboard
   const dashboardData = {
     stats: {
@@ -64,14 +88,7 @@ function DashboardPage() {
       pendingApprovals: { value: 5, items: ['3 Leave Requests', '2 Expense Claims'] },
       teamMembers: { value: 24, active: 22, onLeave: 2 }
     },
-    quickActions: [
-      { icon: FileText, label: 'Apply for Leave', color: 'bg-blue-500', link: null },
-      { icon: Clock, label: 'Mark Attendance', color: 'bg-green-500', link: null },
-      { icon: DollarSign, label: 'Submit Expense', color: 'bg-purple-500', link: null },
-      { icon: Calendar, label: 'View Workflows', color: 'bg-indigo-500', link: '/workflow' },
-      { icon: FileText, label: 'View Payslip', color: 'bg-teal-500', link: null },
-      { icon: Award, label: 'Submit Goals', color: 'bg-pink-500', link: null }
-    ],
+    quickActions: isAdmin ? adminActions : employeeActions,
     recentActivities: [
       { type: 'approved', icon: CheckCircle, text: 'Leave request approved for Dec 15-17', time: '2 hours ago', color: 'text-green-600' },
       { type: 'info', icon: Info, text: 'New payslip generated for November 2024', time: '1 day ago', color: 'text-blue-600' },
@@ -303,57 +320,113 @@ function DashboardPage() {
               <p className="text-gray-600 mt-1">Here's what's happening with your work today</p>
             </div>
 
-            {/* Stats Grid */}
+            {/* Stats Grid - Role-based */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              {/* Attendance Card */}
-              <div className="bg-white rounded-lg shadow p-5 border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <UserCheck className="w-5 h-5 text-green-600" />
+              {isAdmin ? (
+                <>
+                  {/* Admin View: Pending Approvals */}
+                  <div className="bg-white rounded-lg shadow p-5 border border-gray-200 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="p-2 bg-orange-100 rounded-lg">
+                        <Clock className="w-5 h-5 text-orange-600" />
+                      </div>
+                      <span className="text-xs font-semibold text-orange-600">Action Needed</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900">{dashboardData.stats.pendingApprovals.value}</h3>
+                    <p className="text-sm text-gray-600 mt-1">Pending Approvals</p>
                   </div>
-                  <span className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded">
-                    {dashboardData.stats.attendance.change}
-                  </span>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900">{dashboardData.stats.attendance.value}</h3>
-                <p className="text-sm text-gray-600 mt-1">Attendance Rate</p>
-              </div>
 
-              {/* Leave Balance Card */}
-              <div className="bg-white rounded-lg shadow p-5 border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <Calendar className="w-5 h-5 text-blue-600" />
+                  {/* Admin View: Team Members */}
+                  <div className="bg-white rounded-lg shadow p-5 border border-gray-200 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="p-2 bg-purple-100 rounded-lg">
+                        <Users className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <span className="text-xs text-gray-500">{dashboardData.stats.teamMembers.onLeave} on leave</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900">{dashboardData.stats.teamMembers.value}</h3>
+                    <p className="text-sm text-gray-600 mt-1">Team Members</p>
                   </div>
-                  <span className="text-xs text-gray-500">{dashboardData.stats.leaveBalance.available}/{dashboardData.stats.leaveBalance.total}</span>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900">{dashboardData.stats.leaveBalance.value}</h3>
-                <p className="text-sm text-gray-600 mt-1">Leave Balance</p>
-              </div>
 
-              {/* Pending Approvals Card */}
-              <div className="bg-white rounded-lg shadow p-5 border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="p-2 bg-orange-100 rounded-lg">
-                    <Clock className="w-5 h-5 text-orange-600" />
+                  {/* Admin View: Team Attendance */}
+                  <div className="bg-white rounded-lg shadow p-5 border border-gray-200 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="p-2 bg-green-100 rounded-lg">
+                        <UserCheck className="w-5 h-5 text-green-600" />
+                      </div>
+                      <span className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded">
+                        {dashboardData.stats.attendance.change}
+                      </span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900">{dashboardData.stats.attendance.value}</h3>
+                    <p className="text-sm text-gray-600 mt-1">Team Attendance</p>
                   </div>
-                  <span className="text-xs font-semibold text-orange-600">Action Needed</span>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900">{dashboardData.stats.pendingApprovals.value}</h3>
-                <p className="text-sm text-gray-600 mt-1">Pending Approvals</p>
-              </div>
 
-              {/* Team Members Card */}
-              <div className="bg-white rounded-lg shadow p-5 border border-gray-200 hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <Users className="w-5 h-5 text-purple-600" />
+                  {/* Admin View: Active Workflows */}
+                  <div className="bg-white rounded-lg shadow p-5 border border-gray-200 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <Activity className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <span className="text-xs text-gray-500">This Month</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900">18</h3>
+                    <p className="text-sm text-gray-600 mt-1">Active Workflows</p>
                   </div>
-                  <span className="text-xs text-gray-500">{dashboardData.stats.teamMembers.onLeave} on leave</span>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900">{dashboardData.stats.teamMembers.value}</h3>
-                <p className="text-sm text-gray-600 mt-1">Team Members</p>
-              </div>
+                </>
+              ) : (
+                <>
+                  {/* Employee View: My Attendance */}
+                  <div className="bg-white rounded-lg shadow p-5 border border-gray-200 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="p-2 bg-green-100 rounded-lg">
+                        <UserCheck className="w-5 h-5 text-green-600" />
+                      </div>
+                      <span className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded">
+                        {dashboardData.stats.attendance.change}
+                      </span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900">{dashboardData.stats.attendance.value}</h3>
+                    <p className="text-sm text-gray-600 mt-1">My Attendance</p>
+                  </div>
+
+                  {/* Employee View: Leave Balance */}
+                  <div className="bg-white rounded-lg shadow p-5 border border-gray-200 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <Calendar className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <span className="text-xs text-gray-500">{dashboardData.stats.leaveBalance.available}/{dashboardData.stats.leaveBalance.total}</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900">{dashboardData.stats.leaveBalance.value}</h3>
+                    <p className="text-sm text-gray-600 mt-1">Leave Balance</p>
+                  </div>
+
+                  {/* Employee View: Pending Requests */}
+                  <div className="bg-white rounded-lg shadow p-5 border border-gray-200 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="p-2 bg-orange-100 rounded-lg">
+                        <Clock className="w-5 h-5 text-orange-600" />
+                      </div>
+                      <span className="text-xs font-semibold text-orange-600">In Review</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900">2</h3>
+                    <p className="text-sm text-gray-600 mt-1">Pending Requests</p>
+                  </div>
+
+                  {/* Employee View: This Month's Payslip */}
+                  <div className="bg-white rounded-lg shadow p-5 border border-gray-200 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="p-2 bg-teal-100 rounded-lg">
+                        <DollarSign className="w-5 h-5 text-teal-600" />
+                      </div>
+                      <span className="text-xs text-green-600">Ready</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900">Nov 2024</h3>
+                    <p className="text-sm text-gray-600 mt-1">Latest Payslip</p>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Quick Actions */}
