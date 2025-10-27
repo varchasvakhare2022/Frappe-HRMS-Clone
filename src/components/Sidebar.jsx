@@ -42,6 +42,7 @@ const featureItems = [
 function Sidebar({ isHovered, setIsHovered }) {
   const location = useLocation()
   const [copiedId, setCopiedId] = useState(null)
+  const [showToast, setShowToast] = useState(false)
 
   const handleShare = (e, url, id) => {
     e.preventDefault()
@@ -49,10 +50,26 @@ function Sidebar({ isHovered, setIsHovered }) {
     const fullUrl = `${window.location.origin}${url}`
     navigator.clipboard.writeText(fullUrl)
     setCopiedId(id)
-    setTimeout(() => setCopiedId(null), 2000)
+    setShowToast(true)
+    setTimeout(() => {
+      setCopiedId(null)
+      setShowToast(false)
+    }, 3000)
   }
 
   return (
+    <>
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[100] animate-slide-up">
+          <div className="bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2">
+            <Check className="w-4 h-4 text-green-400" />
+            <span className="text-sm font-medium">Link copied to clipboard!</span>
+          </div>
+        </div>
+      )}
+
+      {/* Sidebar */}
     <aside
       className={`fixed left-0 top-0 h-screen bg-gray-100 z-50 overflow-hidden ${
         isHovered ? 'w-64' : 'w-12'
@@ -195,6 +212,7 @@ function Sidebar({ isHovered, setIsHovered }) {
         </nav>
       </div>
     </aside>
+    </>
   )
 }
 
