@@ -532,7 +532,6 @@ function FeaturePage({ feature }) {
         {
           title: 'Installation & Demo',
           content: "Like what you see? 👀 Sign up and install the app today! You can find the installation steps here. Read this blog or watch this demo for more insights.",
-          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
         },
       ],
       previousFeature: 'Payroll Tax & Reports',
