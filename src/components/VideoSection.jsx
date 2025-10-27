@@ -86,10 +86,10 @@ function VideoSection() {
             disablePictureInPicture
             playsInline
             muted
-            poster="/frappehr-intro-poster.png"
+            poster="/employee-profile.webp"
           >
             <source
-              src="/frappe-hr-hero-video-final.mp4"
+              src="/employee-repository.mp4"
               type="video/mp4"
             />
             Your browser does not support the video tag.
