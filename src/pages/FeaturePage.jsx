@@ -50,7 +50,7 @@ function FeaturePage({ feature }) {
         {
           title: 'Send job offers',
           content: "You have found the perfect candidates! All that's left is to help you complete the final hiring steps by sending out offers to viable applicants. Frappe HR's customizable offer templates and electronic signatures speed up this process, ensuring a smooth transition from candidate to employee.",
-          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          video: "/send-job-offers.mp4",
         },
         {
           title: 'Recruitment Analytics',
