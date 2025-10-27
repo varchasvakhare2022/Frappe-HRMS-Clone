@@ -210,7 +210,7 @@ function FeaturePage({ feature }) {
         {
           title: 'Bulk allocations from the leave control panel',
           content: "We understand that a single policy cannot be applied to teams with a diverse set of roles and responsibilities. With the leave control panel, filter & drill down to specific employee groups, then assign policies in bulk for consistent and fair leave management.",
-          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          video: "/leave-control-panel.mp4",
         },
         {
           title: 'Apply and approve leaves',
@@ -245,7 +245,7 @@ function FeaturePage({ feature }) {
         {
           title: 'Pull regional holidays with a click',
           content: "You don't need to manually add every local holiday to the list. Just select your country and subdivision and Frappe HR will pull that region's local holidays into the list.",
-          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          video: "/holiday-list-video.mp4",
         },
         {
           title: 'Track balances with leave reports',
