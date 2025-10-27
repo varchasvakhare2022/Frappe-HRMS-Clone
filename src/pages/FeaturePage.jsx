@@ -616,7 +616,7 @@ function FeaturePage({ feature }) {
 
         {/* Sections */}
         {content.sections && content.sections.map((section, index) => (
-          <div key={index} id={titleToId(section.title)} className="mb-8 scroll-mt-4">
+          <div key={index} id={titleToId(section.title)} className="mb-8 scroll-mt-24">
             <h2 
               className="text-xl mb-2 max-w-lg mx-auto"
               style={{
