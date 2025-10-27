@@ -12,10 +12,11 @@ import FeaturePage from './pages/FeaturePage'
 import SignupPage from './pages/SignupPage'
 import DashboardPage from './pages/DashboardPage'
 import WorkflowPage from './pages/WorkflowPage'
+import LeaveManagementPage from './pages/LeaveManagementPage'
 
 function AppContent() {
   const location = useLocation()
-  const hideLayout = location.pathname === '/signup' || location.pathname === '/dashboard' || location.pathname === '/workflow'
+  const hideLayout = location.pathname === '/signup' || location.pathname === '/dashboard' || location.pathname === '/workflow' || location.pathname === '/leave-management'
   const [isSidebarHovered, setIsSidebarHovered] = useState(false)
 
   if (location.pathname === '/signup') {
@@ -28,6 +29,10 @@ function AppContent() {
 
   if (location.pathname === '/workflow') {
     return <WorkflowPage />
+  }
+
+  if (location.pathname === '/leave-management') {
+    return <LeaveManagementPage />
   }
 
   return (
@@ -78,6 +83,7 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/workflow" element={<WorkflowPage />} />
+        <Route path="/leave-management" element={<LeaveManagementPage />} />
         <Route path="/*" element={<AppContent />} />
       </Routes>
     </Router>

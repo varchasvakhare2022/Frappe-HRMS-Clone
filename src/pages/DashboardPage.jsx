@@ -63,21 +63,21 @@ function DashboardPage() {
 
   // Role-based Quick Actions
   const employeeActions = [
-    { icon: FileText, label: 'Apply for Leave', color: 'bg-blue-500', link: null },
+    { icon: FileText, label: 'Apply for Leave', color: 'bg-blue-500', link: '/leave-management' },
     { icon: Clock, label: 'Mark Attendance', color: 'bg-green-500', link: null },
     { icon: DollarSign, label: 'Submit Expense', color: 'bg-purple-500', link: null },
     { icon: FileText, label: 'View Payslip', color: 'bg-teal-500', link: null },
-    { icon: Calendar, label: 'Book Time Off', color: 'bg-orange-500', link: null },
+    { icon: Calendar, label: 'My Leave Balance', color: 'bg-orange-500', link: '/leave-management' },
     { icon: Award, label: 'My Performance', color: 'bg-pink-500', link: null }
   ]
 
   const adminActions = [
     { icon: Calendar, label: 'Manage Workflows', color: 'bg-indigo-500', link: '/workflow?tab=templates' },
     { icon: UserCheck, label: 'Approve Requests', color: 'bg-green-500', link: '/workflow?tab=pending' },
-    { icon: Users, label: 'Team Management', color: 'bg-blue-500', link: null },
+    { icon: FileText, label: 'Leave Management', color: 'bg-blue-500', link: '/leave-management' },
     { icon: BarChart3, label: 'Analytics', color: 'bg-purple-500', link: null },
     { icon: Settings, label: 'System Settings', color: 'bg-gray-500', link: null },
-    { icon: FileText, label: 'Reports', color: 'bg-teal-500', link: null }
+    { icon: Users, label: 'Team Reports', color: 'bg-teal-500', link: null }
   ]
 
   // Dummy Data for Dashboard
