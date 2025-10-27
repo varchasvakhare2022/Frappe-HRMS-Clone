@@ -1,14 +1,55 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { 
   CheckCircle, XCircle, Clock, AlertCircle, User, 
   FileText, DollarSign, Calendar, TrendingUp, Bell,
   ChevronRight, Filter, Search, Plus, Eye, Edit,
-  Trash2, Download, Send, MoreVertical, ArrowRight
+  Trash2, Download, Send, MoreVertical, ArrowRight,
+  Home, LogOut, Settings, HelpCircle
 } from 'lucide-react'
 
 function WorkflowPage() {
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('pending')
   const [selectedWorkflow, setSelectedWorkflow] = useState(null)
+  const [user, setUser] = useState(null)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+
+  useEffect(() => {
+    // Check if user is logged in
+    const loggedInUser = localStorage.getItem('user')
+    if (!loggedInUser) {
+      navigate('/signup')
+    } else {
+      setUser(JSON.parse(loggedInUser))
+    }
+  }, [navigate])
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownOpen && !event.target.closest('.user-dropdown')) {
+        setDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [dropdownOpen])
+
+  const handleLogout = () => {
+    localStorage.removeItem('user')
+    navigate('/')
+  }
+
+  if (!user) {
+    return null
+  }
+
+  // Check if user can approve (Admin or Manager roles)
+  const canApprove = user.role?.toLowerCase().includes('admin') || 
+                     user.role?.toLowerCase().includes('manager') ||
+                     user.role?.toLowerCase().includes('hr')
 
   // Dummy Data for Workflows
   const workflowData = {
@@ -216,75 +257,164 @@ function WorkflowPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Workflow Automation</h1>
-              <p className="text-gray-600 mt-1">Hub for Workforce-Centric Automated Processes</p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Top Navigation Bar */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            {/* Left: Logo & Title */}
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={() => navigate('/dashboard')}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <Home className="w-5 h-5" />
+                <span className="text-sm font-medium">Dashboard</span>
+              </button>
+              <ChevronRight className="w-4 h-4 text-gray-400" />
+              <span className="text-sm font-semibold text-gray-900">Workflow Automation</span>
             </div>
-            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-              <Plus className="w-4 h-4" />
-              New Workflow
-            </button>
+
+            {/* Right: User Menu */}
+            <div className="flex items-center gap-4">
+              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+                <Bell className="w-5 h-5" />
+              </button>
+              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+                <Settings className="w-5 h-5" />
+              </button>
+              
+              <div className="relative user-dropdown">
+                <button 
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-xs">
+                    {getInitials(user.name)}
+                  </div>
+                  <div className="text-left hidden sm:block">
+                    <p className="text-sm font-semibold text-gray-900">{user.name}</p>
+                    <p className="text-xs text-gray-500">{user.role}</p>
+                  </div>
+                </button>
+                
+                {dropdownOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-xl z-50 py-2">
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <p className="text-sm font-semibold text-gray-900">{user.name}</p>
+                      <p className="text-xs text-gray-500">{user.email}</p>
+                      <p className="text-xs text-blue-600 mt-1">{user.role}</p>
+                    </div>
+                    <button 
+                      onClick={() => navigate('/dashboard')}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                    >
+                      <Home className="w-4 h-4" />
+                      Dashboard
+                    </button>
+                    <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                      <Settings className="w-4 h-4" />
+                      Settings
+                    </button>
+                    <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                      <HelpCircle className="w-4 h-4" />
+                      Help
+                    </button>
+                    <div className="border-t border-gray-100 my-1"></div>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Log out
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Page Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Workflow Automation</h1>
+              <p className="text-gray-600">Hub for Workforce-Centric Automated Processes</p>
+            </div>
+            {canApprove && (
+              <button className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm hover:shadow">
+                <Plus className="w-4 h-4" />
+                <span className="font-medium">New Workflow</span>
+              </button>
+            )}
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow p-5 border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Pending</p>
-                <p className="text-2xl font-bold text-orange-600">{workflowData.pendingApprovals.length}</p>
-              </div>
-              <div className="p-3 bg-orange-100 rounded-lg">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+          {/* Pending Card */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 bg-orange-50 rounded-xl">
                 <Clock className="w-6 h-6 text-orange-600" />
               </div>
             </div>
+            <h3 className="text-3xl font-bold text-gray-900 mb-1">{workflowData.pendingApprovals.length}</h3>
+            <p className="text-sm font-medium text-gray-600">Pending Approvals</p>
+            <div className="mt-3 pt-3 border-t border-gray-100">
+              <p className="text-xs text-orange-600 font-medium">Requires Action</p>
+            </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-5 border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Approved</p>
-                <p className="text-2xl font-bold text-green-600">{workflowData.approvedWorkflows.length}</p>
-              </div>
-              <div className="p-3 bg-green-100 rounded-lg">
+          {/* Approved Card */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 bg-green-50 rounded-xl">
                 <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
             </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-5 border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Rejected</p>
-                <p className="text-2xl font-bold text-red-600">{workflowData.rejectedWorkflows.length}</p>
-              </div>
-              <div className="p-3 bg-red-100 rounded-lg">
-                <XCircle className="w-6 h-6 text-red-600" />
-              </div>
+            <h3 className="text-3xl font-bold text-gray-900 mb-1">{workflowData.approvedWorkflows.length}</h3>
+            <p className="text-sm font-medium text-gray-600">Approved</p>
+            <div className="mt-3 pt-3 border-t border-gray-100">
+              <p className="text-xs text-green-600 font-medium">Completed</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-5 border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Templates</p>
-                <p className="text-2xl font-bold text-blue-600">{workflowData.workflowTemplates.length}</p>
+          {/* Rejected Card */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 bg-red-50 rounded-xl">
+                <XCircle className="w-6 h-6 text-red-600" />
               </div>
-              <div className="p-3 bg-blue-100 rounded-lg">
+            </div>
+            <h3 className="text-3xl font-bold text-gray-900 mb-1">{workflowData.rejectedWorkflows.length}</h3>
+            <p className="text-sm font-medium text-gray-600">Rejected</p>
+            <div className="mt-3 pt-3 border-t border-gray-100">
+              <p className="text-xs text-red-600 font-medium">Declined</p>
+            </div>
+          </div>
+
+          {/* Templates Card */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 bg-blue-50 rounded-xl">
                 <FileText className="w-6 h-6 text-blue-600" />
               </div>
+            </div>
+            <h3 className="text-3xl font-bold text-gray-900 mb-1">{workflowData.workflowTemplates.length}</h3>
+            <p className="text-sm font-medium text-gray-600">Templates</p>
+            <div className="mt-3 pt-3 border-t border-gray-100">
+              <p className="text-xs text-blue-600 font-medium">Available</p>
             </div>
           </div>
         </div>
 
         {/* Visual Workflow Diagram */}
-        <div className="bg-white rounded-lg shadow border border-gray-200 p-8 mb-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 mb-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Leave Request Workflow</h2>
           
           {/* Workflow Visualization */}
@@ -367,7 +497,7 @@ function WorkflowPage() {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white rounded-t-lg shadow border border-gray-200 border-b-0">
+        <div className="bg-white rounded-t-xl shadow-sm border border-gray-100 border-b-0">
           <div className="flex border-b border-gray-200">
             <button
               onClick={() => setActiveTab('pending')}
@@ -413,20 +543,20 @@ function WorkflowPage() {
         </div>
 
         {/* Tab Content */}
-        <div className="bg-white rounded-b-lg shadow border border-gray-200">
+        <div className="bg-white rounded-b-xl shadow-sm border border-gray-100">
           {/* Search and Filters */}
           {activeTab !== 'templates' && (
-            <div className="p-4 border-b border-gray-200">
+            <div className="p-6 border-b border-gray-200">
               <div className="flex gap-3">
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
                     type="text"
                     placeholder="Search workflows..."
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50">
+                <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                   <Filter className="w-4 h-4" />
                   Filter
                 </button>
@@ -437,11 +567,18 @@ function WorkflowPage() {
           {/* Pending Approvals */}
           {activeTab === 'pending' && (
             <div className="p-6">
-              <div className="space-y-3">
+              {!canApprove && (
+                <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <strong>Note:</strong> You have view-only access. Only Admins, Managers, and HR can approve or reject workflows.
+                  </p>
+                </div>
+              )}
+              <div className="space-y-4">
                 {workflowData.pendingApprovals.map((workflow) => (
                   <div
                     key={workflow.id}
-                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                    className="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-all cursor-pointer bg-white"
                   >
                     <div className="flex items-start gap-4">
                       {/* Avatar */}
@@ -456,14 +593,14 @@ function WorkflowPage() {
                             <h3 className="font-semibold text-gray-900">{workflow.employee}</h3>
                             <p className="text-sm text-gray-600">{workflow.type} • {workflow.id}</p>
                           </div>
-                          <span className={`text-xs px-3 py-1 rounded-full border ${getPriorityColor(workflow.priority)} capitalize`}>
+                          <span className={`text-xs px-3 py-1 rounded-full border ${getPriorityColor(workflow.priority)} capitalize font-medium`}>
                             {workflow.priority}
                           </span>
                         </div>
 
                         <p className="text-sm text-gray-700 mb-3">{workflow.details}</p>
 
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-4">
                             <span className="text-xs text-gray-500">Requested: {workflow.requestDate}</span>
                             <div className="flex items-center gap-2">
@@ -491,20 +628,29 @@ function WorkflowPage() {
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
-                          <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm">
-                            <CheckCircle className="w-4 h-4" />
-                            Approve
-                          </button>
-                          <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm">
-                            <XCircle className="w-4 h-4" />
-                            Reject
-                          </button>
-                          <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm text-gray-700">
-                            <Eye className="w-4 h-4" />
-                            View Details
-                          </button>
-                        </div>
+                        {canApprove ? (
+                          <div className="flex gap-2 pt-3 border-t border-gray-100">
+                            <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium transition-colors">
+                              <CheckCircle className="w-4 h-4" />
+                              Approve
+                            </button>
+                            <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-medium transition-colors">
+                              <XCircle className="w-4 h-4" />
+                              Reject
+                            </button>
+                            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm text-gray-700 transition-colors">
+                              <Eye className="w-4 h-4" />
+                              View Details
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex gap-2 pt-3 border-t border-gray-100">
+                            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm text-gray-700 transition-colors">
+                              <Eye className="w-4 h-4" />
+                              View Details
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -516,11 +662,11 @@ function WorkflowPage() {
           {/* Approved Workflows */}
           {activeTab === 'approved' && (
             <div className="p-6">
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {workflowData.approvedWorkflows.map((workflow) => (
                   <div
                     key={workflow.id}
-                    className="border border-green-200 bg-green-50 rounded-lg p-4"
+                    className="border border-green-200 bg-green-50 rounded-xl p-5 hover:shadow-md transition-shadow"
                   >
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-teal-600 flex items-center justify-center text-white font-semibold flex-shrink-0">
@@ -554,11 +700,11 @@ function WorkflowPage() {
           {/* Rejected Workflows */}
           {activeTab === 'rejected' && (
             <div className="p-6">
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {workflowData.rejectedWorkflows.map((workflow) => (
                   <div
                     key={workflow.id}
-                    className="border border-red-200 bg-red-50 rounded-lg p-4"
+                    className="border border-red-200 bg-red-50 rounded-xl p-5 hover:shadow-md transition-shadow"
                   >
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-400 to-pink-600 flex items-center justify-center text-white font-semibold flex-shrink-0">
@@ -595,38 +741,42 @@ function WorkflowPage() {
           {/* Workflow Templates */}
           {activeTab === 'templates' && (
             <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {workflowData.workflowTemplates.map((template) => (
                   <div
                     key={template.id}
-                    className="border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow cursor-pointer"
+                    className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all cursor-pointer bg-white"
                   >
                     <div className="flex items-start gap-4">
-                      <div className={`${template.color} p-3 rounded-lg flex-shrink-0`}>
+                      <div className={`${template.color} p-3 rounded-xl flex-shrink-0`}>
                         <template.icon className="w-6 h-6 text-white" />
                       </div>
 
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-gray-900 mb-1">{template.name}</h3>
-                        <p className="text-sm text-gray-600 mb-3">{template.description}</p>
+                        <p className="text-sm text-gray-600 mb-4">{template.description}</p>
 
-                        <div className="bg-gray-50 rounded p-3 mb-3">
-                          <p className="text-xs text-gray-500 mb-1">Workflow Steps:</p>
+                        <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                          <p className="text-xs text-gray-500 mb-1 font-medium">Workflow Steps:</p>
                           <p className="text-sm text-gray-700">{template.steps[0]}</p>
                         </div>
 
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-gray-500">Used {template.usageCount} times</span>
                           <div className="flex gap-2">
-                            <button className="p-1 hover:bg-gray-100 rounded">
+                            <button className="p-1.5 hover:bg-gray-100 rounded transition-colors">
                               <Eye className="w-4 h-4 text-gray-600" />
                             </button>
-                            <button className="p-1 hover:bg-gray-100 rounded">
-                              <Edit className="w-4 h-4 text-gray-600" />
-                            </button>
-                            <button className="p-1 hover:bg-gray-100 rounded">
-                              <MoreVertical className="w-4 h-4 text-gray-600" />
-                            </button>
+                            {canApprove && (
+                              <>
+                                <button className="p-1.5 hover:bg-gray-100 rounded transition-colors">
+                                  <Edit className="w-4 h-4 text-gray-600" />
+                                </button>
+                                <button className="p-1.5 hover:bg-gray-100 rounded transition-colors">
+                                  <MoreVertical className="w-4 h-4 text-gray-600" />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -641,6 +791,9 @@ function WorkflowPage() {
     </div>
   )
 }
+
+export default WorkflowPage
+
 
 export default WorkflowPage
 
