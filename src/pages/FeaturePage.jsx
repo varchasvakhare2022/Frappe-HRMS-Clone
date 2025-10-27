@@ -78,7 +78,7 @@ function FeaturePage({ feature }) {
         {
           title: 'Maintain a comprehensive employee repository',
           content: "As your business grows, organize your company based on branches, departments, designations, and more with a highly scalable employee database. Quickly access any document linked to an employee right from the employee dashboard.",
-          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          video: "/employee-repository.mp4",
         },
         {
           title: 'Visualize your org structure',
