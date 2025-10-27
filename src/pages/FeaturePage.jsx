@@ -375,8 +375,7 @@ function FeaturePage({ feature }) {
         'Preview salary slips to avoid misconfigurations',
         'Run standard payroll',
         'Accommodate additional salaries & off-cycle payments',
-        'Customize salary slip print formats',
-        'Book expenses against cost centers',
+        'Book expenses against payroll cost centers',
         'Handle multi-currency payroll',
         'Manage employee loans',
         'Timesheet-based payroll for the services sector',
@@ -408,11 +407,7 @@ function FeaturePage({ feature }) {
           image: '/off-cycle.webp',
         },
         {
-          title: 'Customize salary slip print formats',
-          content: "Design your perfect salary slip formats with the Frappe Print Designer. Tailor the layout to include all necessary details, from base salary and net pay to deductions and tax projections, ensuring transparency and complete understanding of the compensation.",
-        },
-        {
-          title: 'Book expenses against cost centers',
+          title: 'Book expenses against payroll cost centers',
           content: "Payroll is a crucial part of your organizational expenses, and you may benefit from tracking these expenses on a granular level. Frappe HR allows you to book salary expenses against multiple cost centers based on employee or department. As your employees grow in their careers, they might contribute actively to more than 1 business unit. In that case, the salary expenses associated with that employee can be distributed against multiple cost centers by configuring this breakup in salary structure assignments.",
           image: '/cost-center.webp',
         },
