@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import { useState } from 'react'
 import {
   Info,
   Tag,
@@ -14,6 +15,8 @@ import {
   Wallet,
   Percent,
   Smartphone,
+  Share2,
+  Check,
 } from 'lucide-react'
 
 const mainMenuItems = [
@@ -38,6 +41,16 @@ const featureItems = [
 
 function Sidebar({ isHovered, setIsHovered }) {
   const location = useLocation()
+  const [copiedId, setCopiedId] = useState(null)
+
+  const handleShare = (e, url, id) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const fullUrl = `${window.location.origin}${url}`
+    navigator.clipboard.writeText(fullUrl)
+    setCopiedId(id)
+    setTimeout(() => setCopiedId(null), 2000)
+  }
 
   return (
     <aside
@@ -135,12 +148,13 @@ function Sidebar({ isHovered, setIsHovered }) {
             {featureItems.map((item) => {
               const Icon = item.icon
               const isActive = location.pathname === item.url
+              const isCopied = copiedId === item.id
 
               return (
                 <Link
                   key={item.id}
                   to={item.url}
-                  className={`w-full py-2 rounded-lg cursor-pointer flex items-center ${
+                  className={`w-full py-2 rounded-lg cursor-pointer flex items-center group relative ${
                     isActive
                       ? 'bg-gray-200 text-gray-900'
                       : 'text-gray-600 hover:bg-gray-200 hover:text-gray-900'
@@ -153,7 +167,7 @@ function Sidebar({ isHovered, setIsHovered }) {
                     <Icon className="w-[17px] h-[17px]" strokeWidth={1.8} />
                   </div>
                   <span 
-                    className="whitespace-nowrap text-sm font-normal overflow-hidden"
+                    className="whitespace-nowrap text-sm font-normal overflow-hidden flex-1"
                     style={{
                       opacity: isHovered ? 1 : 0,
                       transition: 'opacity 200ms ease-out',
@@ -162,6 +176,19 @@ function Sidebar({ isHovered, setIsHovered }) {
                   >
                     {item.label}
                   </span>
+                  {isHovered && (
+                    <button
+                      onClick={(e) => handleShare(e, item.url, item.id)}
+                      className="opacity-0 group-hover:opacity-100 mr-2 p-1 hover:bg-gray-300 rounded transition-all"
+                      title="Copy link"
+                    >
+                      {isCopied ? (
+                        <Check className="w-3.5 h-3.5 text-green-600" strokeWidth={2} />
+                      ) : (
+                        <Share2 className="w-3.5 h-3.5" strokeWidth={2} />
+                      )}
+                    </button>
+                  )}
                 </Link>
               )
             })}
