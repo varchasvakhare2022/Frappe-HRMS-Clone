@@ -376,7 +376,7 @@ function FeaturePage({ feature }) {
         'Run standard payroll',
         'Accommodate additional salaries & off-cycle payments',
         'Customize salary slip print formats',
-        'Book expenses against payroll cost centers',
+        'Book expenses against cost centers',
         'Handle multi-currency payroll',
         'Manage employee loans',
         'Timesheet-based payroll for the services sector',
@@ -390,7 +390,7 @@ function FeaturePage({ feature }) {
         {
           title: 'Assign salary structures in bulk',
           content: "Drill down to specific employee groups with advanced filters, update base & variable amounts for multiple rows, and assign salary structures in bulk with the Salary Structure Assignment Tool.",
-          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          video: "/bulk-salary-assignment.mp4",
         },
         {
           title: 'Preview salary slips to avoid misconfigurations',
@@ -400,7 +400,7 @@ function FeaturePage({ feature }) {
         {
           title: 'Run standard payroll',
           content: "Run monthly, fortnightly, or weekly payroll cycles for the entire company, or a specific branch or department, in minutes. With the payroll filters, pay every kind of employee in a single payroll system - be it your part-time employees or interns. Book expenses, post employee-wise accruals and bank entries, and ensure your general ledger stays perfectly synchronized with your payroll data. Optionally send out password-protected salary slips within just a few clicks.",
-          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          video: "/payroll-entry.mp4",
         },
         {
           title: 'Accommodate additional salaries & off-cycle payments',
@@ -410,7 +410,6 @@ function FeaturePage({ feature }) {
         {
           title: 'Customize salary slip print formats',
           content: "Design your perfect salary slip formats with the Frappe Print Designer. Tailor the layout to include all necessary details, from base salary and net pay to deductions and tax projections, ensuring transparency and complete understanding of the compensation.",
-          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
         },
         {
           title: 'Book expenses against cost centers',
