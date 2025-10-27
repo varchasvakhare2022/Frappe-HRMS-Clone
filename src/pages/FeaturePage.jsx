@@ -440,7 +440,6 @@ function FeaturePage({ feature }) {
         'Submit tax declarations & exemption proofs',
         'View income tax breakup on salary slips',
         'Income tax computation report',
-        'Manage flexible benefits',
         'Review your payroll cycle with the salary register report',
         'Compliance & accounting reports',
       ],
@@ -463,11 +462,6 @@ function FeaturePage({ feature }) {
         {
           title: 'Income tax computation report',
           content: "Visualize how your tax computation is taking effect with exemptions, annual taxable income, applicable tax, tax deducted to date, and future deductions.",
-          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        },
-        {
-          title: 'Manage flexible benefits',
-          content: "Manage pro rata or lump-sum payments against benefit claims for employees who are entitled to flexible benefits based on their salary structures.",
           video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
         },
         {
