@@ -497,7 +497,7 @@ function FeaturePage({ feature }) {
         {
           title: 'Check-in and check-out with geolocation capturing',
           content: "Make check-ins and check-outs a breeze with the Frappe HR mobile app's easy interface. You can also enable geolocation tracking for a detailed work location history.\n\nDashboard\n\nThe bottom tab menu helps you quickly navigate between individual dashboards.\n\nCheckin Panel: Keep track of your last checkin/checkout timestamp and checkin from the panel with just a few clicks. We will soon introduce geo-tagging and geo-fencing for employee checkins.\n\nQuick Links: Shortcuts to create/access commonly-used documents.\n\nRequest Panel: The goal of this app is not just to ease your employee ops but also improve efficiency for your HR Managers. Track all the requests that need your attention on the go based on the employee's approver/workflows.",
-          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          video: "/mobile-checkin.mp4",
         },
         {
           title: 'Request Panel',
