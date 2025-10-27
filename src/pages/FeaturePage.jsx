@@ -30,7 +30,7 @@ function FeaturePage({ feature }) {
         {
           title: 'List job openings',
           content: "Publish new jobs with free-flowing descriptions for applicants to browse and apply. You can also opt for more transparency by publishing salary ranges and the number of applications received. Create a custom Job Application form to ensure you have all the required information captured for shortlisting candidates.",
-          video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          video: "/job-listing-4k.mp4",
         },
         {
           title: 'Manage job applicants',
