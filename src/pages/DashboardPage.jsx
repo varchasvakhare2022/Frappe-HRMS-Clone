@@ -74,7 +74,7 @@ function DashboardPage() {
   const adminActions = [
     { icon: FileText, label: 'Leave Management', color: 'bg-blue-500', link: '/leave-management' },
     { icon: Clock, label: 'Team Attendance', color: 'bg-green-600', link: '/attendance' },
-    { icon: Users, label: 'Employee Directory', color: 'bg-purple-500', link: null },
+    { icon: Briefcase, label: 'Recruitment', color: 'bg-purple-500', link: '/recruitment' },
     { icon: DollarSign, label: 'Payroll', color: 'bg-teal-500', link: null },
     { icon: BarChart3, label: 'Reports & Analytics', color: 'bg-orange-500', link: null },
     { icon: Settings, label: 'System Settings', color: 'bg-gray-500', link: null }
