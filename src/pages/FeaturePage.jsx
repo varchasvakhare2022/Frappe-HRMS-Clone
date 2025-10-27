@@ -643,10 +643,17 @@ function FeaturePage({ feature }) {
                   <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">PREVIOUS FEATURE</p>
                   <a 
                     href={content.previousFeatureUrl}
-                    className="inline-flex items-center gap-2 text-xl font-semibold text-black hover:text-gray-700 transition-colors"
-                    style={{ fontFamily: 'Newsreader, Georgia, "Times New Roman", serif' }}
+                    className="inline-flex items-center gap-2 hover:opacity-70 transition-opacity"
+                    style={{ 
+                      fontFamily: 'Newsreader, Georgia, "Times New Roman", serif',
+                      color: '#171717',
+                      fontSize: '16px',
+                      fontWeight: '420',
+                      letterSpacing: '0.28px',
+                      lineHeight: '115%'
+                    }}
                   >
-                    <span className="text-xl">&lt;</span>
+                    <span>&lt;</span>
                     {content.previousFeature}
                   </a>
                 </div>
@@ -658,11 +665,18 @@ function FeaturePage({ feature }) {
                   <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">NEXT FEATURE</p>
                   <a 
                     href={content.nextFeatureUrl}
-                    className="inline-flex items-center gap-2 text-xl font-semibold text-black hover:text-gray-700 transition-colors"
-                    style={{ fontFamily: 'Newsreader, Georgia, "Times New Roman", serif' }}
+                    className="inline-flex items-center gap-2 hover:opacity-70 transition-opacity"
+                    style={{ 
+                      fontFamily: 'Newsreader, Georgia, "Times New Roman", serif',
+                      color: '#171717',
+                      fontSize: '16px',
+                      fontWeight: '420',
+                      letterSpacing: '0.28px',
+                      lineHeight: '115%'
+                    }}
                   >
                     {content.nextFeature}
-                    <span className="text-xl">&gt;</span>
+                    <span>&gt;</span>
                   </a>
                 </div>
               )}
