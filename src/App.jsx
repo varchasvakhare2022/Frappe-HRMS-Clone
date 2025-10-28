@@ -17,10 +17,11 @@ import AttendancePage from './pages/AttendancePage'
 import RecruitmentPage from './pages/RecruitmentPage'
 import EmployeeLifecyclePage from './pages/EmployeeLifecyclePage'
 import ExpenseManagementPage from './pages/ExpenseManagementPage'
+import PerformanceManagementPage from './pages/PerformanceManagementPage'
 
 function AppContent() {
   const location = useLocation()
-  const hideLayout = location.pathname === '/signup' || location.pathname === '/dashboard' || location.pathname === '/workflow' || location.pathname === '/leave-management' || location.pathname === '/attendance' || location.pathname === '/recruitment' || location.pathname === '/employee-lifecycle' || location.pathname === '/expense-management'
+  const hideLayout = location.pathname === '/signup' || location.pathname === '/dashboard' || location.pathname === '/workflow' || location.pathname === '/leave-management' || location.pathname === '/attendance' || location.pathname === '/recruitment' || location.pathname === '/employee-lifecycle' || location.pathname === '/expense-management' || location.pathname === '/performance-management'
   const [isSidebarHovered, setIsSidebarHovered] = useState(false)
 
   if (location.pathname === '/signup') {
@@ -53,6 +54,10 @@ function AppContent() {
 
   if (location.pathname === '/expense-management') {
     return <ExpenseManagementPage />
+  }
+
+  if (location.pathname === '/performance-management') {
+    return <PerformanceManagementPage />
   }
 
   return (
@@ -108,6 +113,7 @@ function App() {
         <Route path="/recruitment" element={<RecruitmentPage />} />
         <Route path="/employee-lifecycle" element={<EmployeeLifecyclePage />} />
         <Route path="/expense-management" element={<ExpenseManagementPage />} />
+        <Route path="/performance-management" element={<PerformanceManagementPage />} />
         <Route path="/*" element={<AppContent />} />
       </Routes>
     </Router>
