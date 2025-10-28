@@ -66,6 +66,14 @@ function DailyUpdatesPage() {
   }
 
   const handleSODSubmit = () => {
+    // Prevent employees from posting SOD for non-current dates
+    const today = new Date().toISOString().split('T')[0]
+    if (!isAdmin && selectedDate !== today) {
+      alert('You can only post SOD for today')
+      setShowSODForm(false)
+      return
+    }
+
     const validTasks = sodTasks.filter(task => task.trim() !== '')
     if (validTasks.length === 0) {
       alert('Please add at least one task')
@@ -77,6 +85,13 @@ function DailyUpdatesPage() {
   }
 
   const handleLunchExit = () => {
+    // Prevent employees from posting lunch exit for non-current dates
+    const today = new Date().toISOString().split('T')[0]
+    if (!isAdmin && selectedDate !== today) {
+      alert('You can only post lunch updates for today')
+      return
+    }
+
     const updates = JSON.parse(localStorage.getItem('dailyUpdates') || '{}')
     const todayKey = `${user.email}_${selectedDate}`
     
@@ -98,6 +113,13 @@ function DailyUpdatesPage() {
   }
 
   const handleLunchReturn = () => {
+    // Prevent employees from posting lunch return for non-current dates
+    const today = new Date().toISOString().split('T')[0]
+    if (!isAdmin && selectedDate !== today) {
+      alert('You can only post lunch updates for today')
+      return
+    }
+
     const updates = JSON.parse(localStorage.getItem('dailyUpdates') || '{}')
     const todayKey = `${user.email}_${selectedDate}`
     
@@ -119,6 +141,14 @@ function DailyUpdatesPage() {
   }
 
   const handleEODSubmit = () => {
+    // Prevent employees from posting EOD for non-current dates
+    const today = new Date().toISOString().split('T')[0]
+    if (!isAdmin && selectedDate !== today) {
+      alert('You can only post EOD for today')
+      setShowEODForm(false)
+      return
+    }
+
     if (eodTasks.length === 0) {
       alert('Please update task status')
       return
@@ -220,6 +250,10 @@ function DailyUpdatesPage() {
   const hasLunchReturn = todayUpdates?.lunchReturn
   const hasEOD = todayUpdates?.eod
   const workingHours = calculateWorkingHours(todayUpdates)
+  
+  // Check if viewing current date
+  const isViewingToday = selectedDate === new Date().toISOString().split('T')[0]
+  const canPostUpdates = isAdmin || isViewingToday
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -245,8 +279,10 @@ function DailyUpdatesPage() {
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
+              min={isAdmin ? undefined : new Date().toISOString().split('T')[0]}
               max={new Date().toISOString().split('T')[0]}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              disabled={!isAdmin && selectedDate !== new Date().toISOString().split('T')[0]}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
             />
             <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
               <button
@@ -275,14 +311,30 @@ function DailyUpdatesPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6">
+        {/* Info Banner for Past Dates */}
+        {!isAdmin && !isViewingToday && (
+          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-start space-x-3">
+              <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-blue-900">Viewing Past Date</p>
+                <p className="text-sm text-blue-700 mt-1">
+                  You are viewing a past date. You can only post updates for today.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Quick Actions & Stats */}
           <div className="lg:col-span-1 space-y-6">
             {/* Quick Actions */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
-              <div className="space-y-3">
-                {!hasSOD && (
+            {canPostUpdates && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
+                <div className="space-y-3">
+                  {!hasSOD && (
                   <button
                     onClick={() => setShowSODForm(true)}
                     className="w-full flex items-center justify-between px-4 py-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
@@ -335,6 +387,7 @@ function DailyUpdatesPage() {
                 )}
               </div>
             </div>
+            )}
 
             {/* Today's Status */}
             <div className="bg-white rounded-xl shadow-sm p-6">
