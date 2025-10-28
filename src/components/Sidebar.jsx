@@ -11,12 +11,14 @@ import {
   Award,
   BarChart3,
   Smartphone,
+  MessageSquare,
   Share2,
   Check,
 } from 'lucide-react'
 
 const mainMenuItems = [
   { id: 'dashboard', icon: Home, label: 'Dashboard', url: '/dashboard' },
+  { id: 'daily-updates', icon: MessageSquare, label: 'Daily Updates (SOD/EOD)', url: '/daily-updates' },
   { id: 'leave-management', icon: FileText, label: 'Leave Management', url: '/leave-management' },
   { id: 'attendance', icon: Clock, label: 'Team Attendance', url: '/attendance' },
   { id: 'recruitment', icon: Briefcase, label: 'Recruitment', url: '/recruitment' },

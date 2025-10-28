@@ -61,6 +61,7 @@ function DashboardPage() {
 
   // Role-based Quick Actions
   const employeeActions = [
+    { icon: MessageSquare, label: 'Daily Updates (SOD/EOD)', color: 'bg-teal-500', link: '/daily-updates' },
     { icon: Calendar, label: 'Leave Management', color: 'bg-blue-500', link: '/leave-management' },
     { icon: Clock, label: 'Attendance', color: 'bg-green-500', link: '/attendance' },
     { icon: DollarSign, label: 'Expense Management', color: 'bg-purple-500', link: '/expense-management' },
@@ -70,6 +71,7 @@ function DashboardPage() {
   ]
 
   const adminActions = [
+    { icon: MessageSquare, label: 'Team Daily Updates', color: 'bg-teal-500', link: '/daily-updates' },
     { icon: FileText, label: 'Leave Management', color: 'bg-blue-500', link: '/leave-management' },
     { icon: Clock, label: 'Team Attendance', color: 'bg-green-600', link: '/attendance' },
     { icon: Briefcase, label: 'Recruitment', color: 'bg-purple-500', link: '/recruitment' },
