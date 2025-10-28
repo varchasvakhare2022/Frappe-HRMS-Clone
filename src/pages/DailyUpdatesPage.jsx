@@ -76,8 +76,46 @@ function DailyUpdatesPage() {
     setShowSODForm(false)
   }
 
-  const handleLunchUpdate = (status) => {
-    saveDailyUpdate('lunch', { status, time: new Date().toLocaleTimeString() })
+  const handleLunchExit = () => {
+    const updates = JSON.parse(localStorage.getItem('dailyUpdates') || '{}')
+    const todayKey = `${user.email}_${selectedDate}`
+    
+    if (!updates[todayKey]) {
+      updates[todayKey] = {
+        email: user.email,
+        name: user.name,
+        date: selectedDate
+      }
+    }
+
+    updates[todayKey].lunchExit = {
+      time: new Date().toLocaleTimeString(),
+      timestamp: new Date().toISOString()
+    }
+
+    localStorage.setItem('dailyUpdates', JSON.stringify(updates))
+    loadDailyUpdates()
+  }
+
+  const handleLunchReturn = () => {
+    const updates = JSON.parse(localStorage.getItem('dailyUpdates') || '{}')
+    const todayKey = `${user.email}_${selectedDate}`
+    
+    if (!updates[todayKey]) {
+      updates[todayKey] = {
+        email: user.email,
+        name: user.name,
+        date: selectedDate
+      }
+    }
+
+    updates[todayKey].lunchReturn = {
+      time: new Date().toLocaleTimeString(),
+      timestamp: new Date().toISOString()
+    }
+
+    localStorage.setItem('dailyUpdates', JSON.stringify(updates))
+    loadDailyUpdates()
   }
 
   const handleEODSubmit = () => {
@@ -152,12 +190,36 @@ function DailyUpdatesPage() {
     return teamUpdates
   }
 
+  // Calculate working hours
+  const calculateWorkingHours = (updates) => {
+    if (!updates?.sod || !updates?.eod) return null
+
+    const sodTime = new Date(updates.sod.timestamp)
+    const eodTime = new Date(updates.eod.timestamp)
+    
+    let totalMinutes = (eodTime - sodTime) / (1000 * 60)
+    
+    // Subtract lunch break duration if both exit and return are logged
+    if (updates.lunchExit && updates.lunchReturn) {
+      const lunchExit = new Date(updates.lunchExit.timestamp)
+      const lunchReturn = new Date(updates.lunchReturn.timestamp)
+      const lunchMinutes = (lunchReturn - lunchExit) / (1000 * 60)
+      totalMinutes -= lunchMinutes
+    }
+    
+    const hours = Math.floor(totalMinutes / 60)
+    const minutes = Math.round(totalMinutes % 60)
+    
+    return { hours, minutes, totalMinutes }
+  }
+
   const todayUpdates = getTodayTimeline()
   const teamUpdates = isAdmin ? getTeamUpdates() : []
   const hasSOD = todayUpdates?.sod
-  const hasLunchExit = todayUpdates?.lunch?.status === 'exit'
-  const hasLunchReturn = todayUpdates?.lunch?.status === 'return'
+  const hasLunchExit = todayUpdates?.lunchExit
+  const hasLunchReturn = todayUpdates?.lunchReturn
   const hasEOD = todayUpdates?.eod
+  const workingHours = calculateWorkingHours(todayUpdates)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -235,7 +297,7 @@ function DailyUpdatesPage() {
 
                 {hasSOD && !hasLunchExit && (
                   <button
-                    onClick={() => handleLunchUpdate('exit')}
+                    onClick={handleLunchExit}
                     className="w-full flex items-center justify-between px-4 py-3 bg-orange-50 text-orange-700 rounded-lg hover:bg-orange-100 transition-colors"
                   >
                     <div className="flex items-center space-x-3">
@@ -248,7 +310,7 @@ function DailyUpdatesPage() {
 
                 {hasLunchExit && !hasLunchReturn && (
                   <button
-                    onClick={() => handleLunchUpdate('return')}
+                    onClick={handleLunchReturn}
                     className="w-full flex items-center justify-between px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors"
                   >
                     <div className="flex items-center space-x-3">
@@ -287,7 +349,15 @@ function DailyUpdatesPage() {
                   )}
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Lunch Break</span>
+                  <span className="text-sm text-gray-600">Lunch Exit</span>
+                  {hasLunchExit ? (
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                  ) : (
+                    <Circle className="w-5 h-5 text-gray-300" />
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Lunch Return</span>
                   {hasLunchReturn ? (
                     <CheckCircle className="w-5 h-5 text-green-600" />
                   ) : hasLunchExit ? (
@@ -306,6 +376,29 @@ function DailyUpdatesPage() {
                 </div>
               </div>
             </div>
+
+            {/* Working Hours */}
+            {workingHours && (
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-sm p-6 text-white">
+                <div className="flex items-center space-x-3 mb-4">
+                  <Clock className="w-6 h-6" />
+                  <h3 className="text-lg font-semibold">Working Hours</h3>
+                </div>
+                <div className="text-center">
+                  <div className="text-4xl font-bold mb-1">
+                    {workingHours.hours}h {workingHours.minutes}m
+                  </div>
+                  <p className="text-blue-100 text-sm">Actual working time today</p>
+                  {hasLunchExit && hasLunchReturn && (
+                    <div className="mt-4 pt-4 border-t border-blue-400">
+                      <p className="text-sm text-blue-100">
+                        Lunch: {todayUpdates.lunchExit.time} - {todayUpdates.lunchReturn.time}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Admin Section */}
             {isAdmin && (
@@ -374,7 +467,7 @@ function DailyUpdatesPage() {
                       )}
 
                       {/* Lunch Exit */}
-                      {todayUpdates.lunch?.status === 'exit' && (
+                      {todayUpdates.lunchExit && (
                         <div className="border-l-4 border-orange-500 pl-4">
                           <div className="flex items-start justify-between">
                             <div className="flex items-center space-x-2">
@@ -382,14 +475,14 @@ function DailyUpdatesPage() {
                               <h4 className="font-semibold text-gray-900">Going for Lunch</h4>
                             </div>
                             <span className="text-sm text-gray-500">
-                              {todayUpdates.lunch.time}
+                              {todayUpdates.lunchExit.time}
                             </span>
                           </div>
                         </div>
                       )}
 
                       {/* Lunch Return */}
-                      {todayUpdates.lunch?.status === 'return' && (
+                      {todayUpdates.lunchReturn && (
                         <div className="border-l-4 border-green-500 pl-4">
                           <div className="flex items-start justify-between">
                             <div className="flex items-center space-x-2">
@@ -397,7 +490,7 @@ function DailyUpdatesPage() {
                               <h4 className="font-semibold text-gray-900">Back from Lunch</h4>
                             </div>
                             <span className="text-sm text-gray-500">
-                              {todayUpdates.lunch.time}
+                              {todayUpdates.lunchReturn.time}
                             </span>
                           </div>
                         </div>
@@ -508,8 +601,8 @@ function DailyUpdatesPage() {
 
                         {update.eod && (
                           <div className="mt-3 pt-3 border-t border-gray-200">
-                            <p className="text-xs font-semibold text-gray-700 mb-1">EOD Status:</p>
-                            <div className="flex items-center space-x-4 text-xs">
+                            <p className="text-xs font-semibold text-gray-700 mb-2">EOD Status:</p>
+                            <div className="flex items-center space-x-4 text-xs mb-2">
                               <span className="text-green-600">
                                 ✓ {update.eod.tasks.filter(t => t.status === 'completed').length} Completed
                               </span>
@@ -520,6 +613,31 @@ function DailyUpdatesPage() {
                                 ✗ {update.eod.tasks.filter(t => t.status === 'incomplete').length} Incomplete
                               </span>
                             </div>
+                            
+                            {/* Working Hours Display */}
+                            {(() => {
+                              const hours = calculateWorkingHours(update)
+                              if (hours) {
+                                return (
+                                  <div className="mt-2 pt-2 border-t border-gray-200">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xs font-semibold text-gray-700">Working Hours:</span>
+                                      <span className="text-xs font-bold text-blue-600">
+                                        {hours.hours}h {hours.minutes}m
+                                      </span>
+                                    </div>
+                                    {update.lunchExit && update.lunchReturn && (
+                                      <div className="mt-1">
+                                        <span className="text-xs text-gray-600">
+                                          Lunch: {update.lunchExit.time} - {update.lunchReturn.time}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                )
+                              }
+                              return null
+                            })()}
                           </div>
                         )}
                       </div>
