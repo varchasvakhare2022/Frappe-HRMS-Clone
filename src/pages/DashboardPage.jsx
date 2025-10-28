@@ -6,7 +6,7 @@ import {
   Settings, Link as LinkIcon, Hammer, Info, Zap, Calendar,
   Clock, FileText, TrendingUp, UserCheck, Coffee, Gift,
   AlertCircle, CheckCircle, XCircle, Plus, ArrowRight,
-  BarChart3, PieChart, Activity, Target, Award, MessageSquare, Receipt
+  BarChart3, PieChart, Activity, Target, Award, MessageSquare, Receipt, Smartphone
 } from 'lucide-react'
 
 function DashboardPage() {
@@ -66,7 +66,7 @@ function DashboardPage() {
     { icon: DollarSign, label: 'Expense Management', color: 'bg-purple-500', link: '/expense-management' },
     { icon: Award, label: 'My Performance', color: 'bg-pink-500', link: '/performance-management' },
     { icon: FileText, label: 'Payroll & Payslips', color: 'bg-teal-500', link: '/payroll' },
-    { icon: Receipt, label: 'Tax & Reports', color: 'bg-indigo-500', link: '/payroll-tax-reports' }
+    { icon: Smartphone, label: 'Mobile App', color: 'bg-cyan-500', link: '/mobile-app' }
   ]
 
   const adminActions = [
@@ -77,7 +77,8 @@ function DashboardPage() {
     { icon: Receipt, label: 'Expense Management', color: 'bg-indigo-500', link: '/expense-management' },
     { icon: DollarSign, label: 'Payroll Management', color: 'bg-teal-500', link: '/payroll' },
     { icon: Award, label: 'Performance Management', color: 'bg-pink-500', link: '/performance-management' },
-    { icon: BarChart3, label: 'Tax & Reports', color: 'bg-indigo-600', link: '/payroll-tax-reports' }
+    { icon: BarChart3, label: 'Tax & Reports', color: 'bg-indigo-600', link: '/payroll-tax-reports' },
+    { icon: Smartphone, label: 'Mobile App', color: 'bg-cyan-500', link: '/mobile-app' }
   ]
 
   // Dummy Data for Dashboard

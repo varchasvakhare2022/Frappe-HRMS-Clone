@@ -20,10 +20,11 @@ import ExpenseManagementPage from './pages/ExpenseManagementPage'
 import PerformanceManagementPage from './pages/PerformanceManagementPage'
 import PayrollPage from './pages/PayrollPage'
 import PayrollTaxReportsPage from './pages/PayrollTaxReportsPage'
+import MobileAppPage from './pages/MobileAppPage'
 
 function AppContent() {
   const location = useLocation()
-  const hideLayout = location.pathname === '/signup' || location.pathname === '/dashboard' || location.pathname === '/workflow' || location.pathname === '/leave-management' || location.pathname === '/attendance' || location.pathname === '/recruitment' || location.pathname === '/employee-lifecycle' || location.pathname === '/expense-management' || location.pathname === '/performance-management' || location.pathname === '/payroll' || location.pathname === '/payroll-tax-reports'
+  const hideLayout = location.pathname === '/signup' || location.pathname === '/dashboard' || location.pathname === '/workflow' || location.pathname === '/leave-management' || location.pathname === '/attendance' || location.pathname === '/recruitment' || location.pathname === '/employee-lifecycle' || location.pathname === '/expense-management' || location.pathname === '/performance-management' || location.pathname === '/payroll' || location.pathname === '/payroll-tax-reports' || location.pathname === '/mobile-app'
   const [isSidebarHovered, setIsSidebarHovered] = useState(false)
 
   if (location.pathname === '/signup') {
@@ -68,6 +69,10 @@ function AppContent() {
 
   if (location.pathname === '/payroll-tax-reports') {
     return <PayrollTaxReportsPage />
+  }
+
+  if (location.pathname === '/mobile-app') {
+    return <MobileAppPage />
   }
 
   return (
@@ -126,6 +131,7 @@ function App() {
         <Route path="/performance-management" element={<PerformanceManagementPage />} />
         <Route path="/payroll" element={<PayrollPage />} />
         <Route path="/payroll-tax-reports" element={<PayrollTaxReportsPage />} />
+        <Route path="/mobile-app" element={<MobileAppPage />} />
         <Route path="/*" element={<AppContent />} />
       </Routes>
     </Router>
