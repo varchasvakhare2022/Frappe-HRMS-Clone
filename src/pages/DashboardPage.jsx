@@ -6,7 +6,7 @@ import {
   Settings, Link as LinkIcon, Hammer, Info, Zap, Calendar,
   Clock, FileText, TrendingUp, UserCheck, Coffee, Gift,
   AlertCircle, CheckCircle, XCircle, Plus, ArrowRight,
-  BarChart3, PieChart, Activity, Target, Award, MessageSquare
+  BarChart3, PieChart, Activity, Target, Award, MessageSquare, Receipt
 } from 'lucide-react'
 
 function DashboardPage() {
@@ -74,8 +74,10 @@ function DashboardPage() {
     { icon: Clock, label: 'Team Attendance', color: 'bg-green-600', link: '/attendance' },
     { icon: Briefcase, label: 'Recruitment', color: 'bg-purple-500', link: '/recruitment' },
     { icon: Users, label: 'Employee Lifecycle', color: 'bg-orange-500', link: '/employee-lifecycle' },
+    { icon: Receipt, label: 'Expense Management', color: 'bg-indigo-500', link: '/expense-management' },
     { icon: DollarSign, label: 'Payroll Management', color: 'bg-teal-500', link: '/payroll' },
-    { icon: Award, label: 'Performance Management', color: 'bg-pink-500', link: '/performance-management' }
+    { icon: Award, label: 'Performance Management', color: 'bg-pink-500', link: '/performance-management' },
+    { icon: BarChart3, label: 'Reports & Analytics', color: 'bg-gray-500', link: null }
   ]
 
   // Dummy Data for Dashboard
