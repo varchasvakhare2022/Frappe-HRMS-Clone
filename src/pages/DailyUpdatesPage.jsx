@@ -329,7 +329,7 @@ function DailyUpdatesPage() {
                   </button>
                 )}
 
-                {hasSOD && !hasLunchExit && (
+                {hasSOD && !hasLunchExit && !hasEOD && (
                   <button
                     onClick={handleLunchExit}
                     className="w-full flex items-center justify-between px-4 py-3 bg-orange-50 text-orange-700 rounded-lg hover:bg-orange-100 transition-colors"
@@ -342,7 +342,7 @@ function DailyUpdatesPage() {
                   </button>
                 )}
 
-                {hasLunchExit && !hasLunchReturn && (
+                {hasLunchExit && !hasLunchReturn && !hasEOD && (
                   <button
                     onClick={handleLunchReturn}
                     className="w-full flex items-center justify-between px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors"
