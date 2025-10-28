@@ -63,7 +63,7 @@ function DashboardPage() {
   const employeeActions = [
     { icon: Calendar, label: 'Leave Management', color: 'bg-blue-500', link: '/leave-management' },
     { icon: Clock, label: 'Attendance', color: 'bg-green-500', link: '/attendance' },
-    { icon: DollarSign, label: 'Submit Expense', color: 'bg-purple-500', link: null },
+    { icon: DollarSign, label: 'Expense Management', color: 'bg-purple-500', link: '/expense-management' },
     { icon: FileText, label: 'View Payslip', color: 'bg-teal-500', link: null },
     { icon: Users, label: 'Team Directory', color: 'bg-orange-500', link: null },
     { icon: Award, label: 'My Performance', color: 'bg-pink-500', link: null }
@@ -74,7 +74,7 @@ function DashboardPage() {
     { icon: Clock, label: 'Team Attendance', color: 'bg-green-600', link: '/attendance' },
     { icon: Briefcase, label: 'Recruitment', color: 'bg-purple-500', link: '/recruitment' },
     { icon: Users, label: 'Employee Lifecycle', color: 'bg-orange-500', link: '/employee-lifecycle' },
-    { icon: DollarSign, label: 'Payroll', color: 'bg-teal-500', link: null },
+    { icon: DollarSign, label: 'Expense Management', color: 'bg-teal-500', link: '/expense-management' },
     { icon: BarChart3, label: 'Reports & Analytics', color: 'bg-pink-500', link: null }
   ]
 
