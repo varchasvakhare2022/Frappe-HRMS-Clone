@@ -14,7 +14,6 @@ function DailyUpdatesPage() {
   const [showEODForm, setShowEODForm] = useState(false)
   const [sodTasks, setSodTasks] = useState([''])
   const [eodTasks, setEodTasks] = useState([])
-  const [viewMode, setViewMode] = useState('today') // 'today' or 'calendar'
   const [selectedEmployee, setSelectedEmployee] = useState('all')
 
   useEffect(() => {
@@ -284,28 +283,6 @@ function DailyUpdatesPage() {
               disabled={!isAdmin && selectedDate !== new Date().toISOString().split('T')[0]}
               className="px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
             />
-            <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
-              <button
-                onClick={() => setViewMode('today')}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                  viewMode === 'today'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Today
-              </button>
-              <button
-                onClick={() => setViewMode('calendar')}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                  viewMode === 'calendar'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Calendar
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -481,11 +458,11 @@ function DailyUpdatesPage() {
             {/* Timeline */}
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h3 className="text-lg font-semibold mb-6">
-                {isAdmin && viewMode === 'calendar' ? 'Team Updates' : 'My Timeline'}
+                {isAdmin ? 'Team Updates' : 'My Timeline'}
               </h3>
 
               {/* Employee View */}
-              {!isAdmin || viewMode === 'today' ? (
+              {!isAdmin ? (
                 <div className="space-y-6">
                   {todayUpdates ? (
                     <>
