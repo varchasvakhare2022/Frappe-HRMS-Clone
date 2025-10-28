@@ -262,12 +262,17 @@ function DailyUpdatesPage() {
           <div className="flex items-center space-x-4">
             <button
               onClick={() => navigate('/dashboard')}
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               <Home className="w-5 h-5" />
             </button>
             <div className="text-sm text-gray-500">
-              <span>Dashboard</span>
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="hover:text-gray-900 transition-colors"
+              >
+                Dashboard
+              </button>
               <span className="mx-2">/</span>
               <span className="text-gray-900 font-medium">Daily Updates (SOD/EOD)</span>
             </div>
