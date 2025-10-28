@@ -18,10 +18,11 @@ import RecruitmentPage from './pages/RecruitmentPage'
 import EmployeeLifecyclePage from './pages/EmployeeLifecyclePage'
 import ExpenseManagementPage from './pages/ExpenseManagementPage'
 import PerformanceManagementPage from './pages/PerformanceManagementPage'
+import PayrollPage from './pages/PayrollPage'
 
 function AppContent() {
   const location = useLocation()
-  const hideLayout = location.pathname === '/signup' || location.pathname === '/dashboard' || location.pathname === '/workflow' || location.pathname === '/leave-management' || location.pathname === '/attendance' || location.pathname === '/recruitment' || location.pathname === '/employee-lifecycle' || location.pathname === '/expense-management' || location.pathname === '/performance-management'
+  const hideLayout = location.pathname === '/signup' || location.pathname === '/dashboard' || location.pathname === '/workflow' || location.pathname === '/leave-management' || location.pathname === '/attendance' || location.pathname === '/recruitment' || location.pathname === '/employee-lifecycle' || location.pathname === '/expense-management' || location.pathname === '/performance-management' || location.pathname === '/payroll'
   const [isSidebarHovered, setIsSidebarHovered] = useState(false)
 
   if (location.pathname === '/signup') {
@@ -58,6 +59,10 @@ function AppContent() {
 
   if (location.pathname === '/performance-management') {
     return <PerformanceManagementPage />
+  }
+
+  if (location.pathname === '/payroll') {
+    return <PayrollPage />
   }
 
   return (
@@ -114,6 +119,7 @@ function App() {
         <Route path="/employee-lifecycle" element={<EmployeeLifecyclePage />} />
         <Route path="/expense-management" element={<ExpenseManagementPage />} />
         <Route path="/performance-management" element={<PerformanceManagementPage />} />
+        <Route path="/payroll" element={<PayrollPage />} />
         <Route path="/*" element={<AppContent />} />
       </Routes>
     </Router>
