@@ -1,42 +1,31 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import {
-  Info,
-  Tag,
-  BookOpen,
-  Newspaper,
-  Mail,
-  UserPlus,
-  RefreshCw,
+  Home,
+  FileText,
   Clock,
-  Umbrella,
-  CreditCard,
-  Star,
-  Wallet,
-  Percent,
+  Briefcase,
+  Users,
+  Receipt,
+  DollarSign,
+  Award,
+  BarChart3,
   Smartphone,
   Share2,
   Check,
 } from 'lucide-react'
 
 const mainMenuItems = [
-  { id: 'about', icon: Info, label: 'About', url: '/' },
-  { id: 'pricing', icon: Tag, label: 'Pricing', url: '/pricing' },
-  { id: 'documentation', icon: BookOpen, label: 'Documentation', url: '/documentation' },
-  { id: 'blog', icon: Newspaper, label: 'Blog', url: '/blog' },
-  { id: 'contact', icon: Mail, label: 'Contact', url: '/contact' },
-]
-
-const featureItems = [
-  { id: 'recruitment', icon: UserPlus, label: 'Recruitment', url: '/features/recruitment' },
-  { id: 'employee-lifecycle', icon: RefreshCw, label: 'Employee Lifecycle', url: '/features/employee-lifecycle' },
-  { id: 'shifts-attendance', icon: Clock, label: 'Shifts & Attendance', url: '/features/shifts-attendance' },
-  { id: 'leave-management', icon: Umbrella, label: 'Leave Management', url: '/features/leave-management' },
-  { id: 'expense-management', icon: CreditCard, label: 'Expense Management', url: '/features/expense-management' },
-  { id: 'performance-management', icon: Star, label: 'Performance Management', url: '/features/performance-management' },
-  { id: 'payroll', icon: Wallet, label: 'Payroll', url: '/features/payroll' },
-  { id: 'payroll-tax', icon: Percent, label: 'Payroll Tax & Reports', url: '/features/payroll-tax' },
-  { id: 'mobile-app', icon: Smartphone, label: 'Mobile App', url: '/features/mobile-app' },
+  { id: 'dashboard', icon: Home, label: 'Dashboard', url: '/dashboard' },
+  { id: 'leave-management', icon: FileText, label: 'Leave Management', url: '/leave-management' },
+  { id: 'attendance', icon: Clock, label: 'Team Attendance', url: '/attendance' },
+  { id: 'recruitment', icon: Briefcase, label: 'Recruitment', url: '/recruitment' },
+  { id: 'employee-lifecycle', icon: Users, label: 'Employee Lifecycle', url: '/employee-lifecycle' },
+  { id: 'expense-management', icon: Receipt, label: 'Expense Management', url: '/expense-management' },
+  { id: 'payroll', icon: DollarSign, label: 'Payroll Management', url: '/payroll' },
+  { id: 'performance-management', icon: Award, label: 'Performance Management', url: '/performance-management' },
+  { id: 'payroll-tax-reports', icon: BarChart3, label: 'Tax & Reports', url: '/payroll-tax-reports' },
+  { id: 'mobile-app', icon: Smartphone, label: 'Mobile App', url: '/mobile-app' },
 ]
 
 function Sidebar({ isHovered, setIsHovered }) {
@@ -105,63 +94,10 @@ function Sidebar({ isHovered, setIsHovered }) {
           </span>
         </Link>
 
-        {/* Main Menu Items - First 5 */}
+        {/* HRMS Modules */}
         <nav className="pb-2">
           <div className="space-y-0.5">
             {mainMenuItems.map((item) => {
-              const Icon = item.icon
-              const isActive = location.pathname === item.url
-
-              return (
-                <Link
-                  key={item.id}
-                  to={item.url}
-                  className={`w-full py-2 rounded-lg cursor-pointer flex items-center ${
-                    isActive
-                      ? 'bg-gray-200 text-gray-900'
-                      : 'text-gray-600 hover:bg-gray-200 hover:text-gray-900'
-                  }`}
-                  style={{
-                    transition: 'background-color 150ms ease-out, color 150ms ease-out',
-                  }}
-                >
-                  <div className="w-12 flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-[17px] h-[17px]" strokeWidth={1.8} />
-                  </div>
-                  <span 
-                    className="whitespace-nowrap text-sm font-normal overflow-hidden"
-                    style={{
-                      opacity: isHovered ? 1 : 0,
-                      transition: 'opacity 200ms ease-out',
-                      width: isHovered ? 'auto' : '0',
-                    }}
-                  >
-                    {item.label}
-                  </span>
-                </Link>
-              )
-            })}
-          </div>
-
-          {/* Gap between sections */}
-          <div className="h-6"></div>
-
-          {/* Features Section Header */}
-          <div 
-            className="mb-2 px-3 flex items-center"
-            style={{
-              opacity: isHovered ? 1 : 0,
-              transition: 'opacity 200ms ease-out',
-            }}
-          >
-            <h3 className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider overflow-hidden">
-              Features
-            </h3>
-          </div>
-
-          {/* Feature Items - Next 9 */}
-          <div className="space-y-0.5">
-            {featureItems.map((item) => {
               const Icon = item.icon
               const isActive = location.pathname === item.url
               const isCopied = copiedId === item.id
