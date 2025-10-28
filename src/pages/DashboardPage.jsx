@@ -66,7 +66,7 @@ function DashboardPage() {
     { icon: DollarSign, label: 'Expense Management', color: 'bg-purple-500', link: '/expense-management' },
     { icon: Award, label: 'My Performance', color: 'bg-pink-500', link: '/performance-management' },
     { icon: FileText, label: 'Payroll & Payslips', color: 'bg-teal-500', link: '/payroll' },
-    { icon: Users, label: 'Team Directory', color: 'bg-orange-500', link: null }
+    { icon: Receipt, label: 'Tax & Reports', color: 'bg-indigo-500', link: '/payroll-tax-reports' }
   ]
 
   const adminActions = [
@@ -77,7 +77,7 @@ function DashboardPage() {
     { icon: Receipt, label: 'Expense Management', color: 'bg-indigo-500', link: '/expense-management' },
     { icon: DollarSign, label: 'Payroll Management', color: 'bg-teal-500', link: '/payroll' },
     { icon: Award, label: 'Performance Management', color: 'bg-pink-500', link: '/performance-management' },
-    { icon: BarChart3, label: 'Reports & Analytics', color: 'bg-gray-500', link: null }
+    { icon: BarChart3, label: 'Tax & Reports', color: 'bg-indigo-600', link: '/payroll-tax-reports' }
   ]
 
   // Dummy Data for Dashboard
