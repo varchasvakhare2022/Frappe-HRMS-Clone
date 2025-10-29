@@ -1,304 +1,369 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { 
-  Home, ChevronRight, Calendar, Clock, FileText, TrendingUp,
-  User, Users, Settings, Bell, HelpCircle, LogOut, Search,
-  Plus, Filter, Download, Eye, Edit, Trash2, Check, X,
-  ArrowRight, MapPin, MoreVertical, AlertCircle, UserCheck,
-  Briefcase, Target, Send, MessageSquare, Star, Award,
-  BarChart3, DollarSign, Building, Mail, UserPlus, GitBranch,
-  FileCheck, AlertTriangle, CheckCircle
+  Home, UserPlus, GitBranch, FileCheck, AlertTriangle, 
+  UserCheck, X, CheckCircle, XCircle, Edit, Eye, ArrowRight,
+  Plus, Star, Mail, MapPin, User
 } from 'lucide-react'
+import employeeUsersData from '../data/employeeUsers.json'
+import managerUsersData from '../data/managerUsers.json'
 
 function EmployeeLifecyclePage() {
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
-  const [dropdownOpen, setDropdownOpen] = useState(false)
   const [selectedSection, setSelectedSection] = useState('directory')
+  
+  // Data states
+  const [employees, setEmployees] = useState([])
+  const [onboardingList, setOnboardingList] = useState([])
+  const [promotionsTransfers, setPromotionsTransfers] = useState([])
+  const [grievances, setGrievances] = useState([])
+  const [exitInterviews, setExitInterviews] = useState([])
+  const [settlements, setSettlements] = useState([])
+  
+  // Modal states
+  const [showOnboardingForm, setShowOnboardingForm] = useState(false)
+  const [showPromotionForm, setShowPromotionForm] = useState(false)
+  const [showGrievanceForm, setShowGrievanceForm] = useState(false)
+  const [showExitForm, setShowExitForm] = useState(false)
+  
+  // Form states
+  const [onboardingForm, setOnboardingForm] = useState({
+    employeeName: '',
+    designation: '',
+    department: '',
+    joinDate: '',
+    totalTasks: 10
+  })
+  
+  const [promotionForm, setPromotionForm] = useState({
+    employeeName: '',
+    type: 'Promotion',
+    from: '',
+    to: '',
+    department: '',
+    effectiveDate: '',
+    salaryChange: ''
+  })
+  
+  const [grievanceForm, setGrievanceForm] = useState({
+    category: 'Workplace Issue',
+    priority: 'Medium',
+    description: '',
+    anonymous: false
+  })
+  
+  const [exitForm, setExitForm] = useState({
+    employeeName: '',
+    designation: '',
+    lastDay: '',
+    reason: '',
+    interviewDate: ''
+  })
+  
+  const [errors, setErrors] = useState({})
+  const [successMessage, setSuccessMessage] = useState('')
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem('user')
     if (!loggedInUser) {
-      navigate('/signup')
+      navigate('/')
     } else {
       setUser(JSON.parse(loggedInUser))
     }
   }, [navigate])
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownOpen && !event.target.closest('.user-dropdown')) {
-        setDropdownOpen(false)
-      }
+    if (user) {
+      loadData()
     }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [dropdownOpen])
+  }, [user])
 
-  const handleLogout = () => {
-    localStorage.removeItem('user')
-    navigate('/')
+  const loadData = () => {
+    // Load all employees from JSON and localStorage
+    const customEmployees = JSON.parse(localStorage.getItem('customEmployees') || '[]')
+    const customManagers = JSON.parse(localStorage.getItem('customManagers') || '[]')
+    
+    const allEmployees = [
+      ...employeeUsersData.map(emp => ({ ...emp, source: 'default', status: 'Active' })),
+      ...managerUsersData.map(mgr => ({ ...mgr, source: 'default', status: 'Active' })),
+      ...customEmployees.map(emp => ({ ...emp, source: 'custom', status: 'Active' })),
+      ...customManagers.map(mgr => ({ ...mgr, source: 'custom', status: 'Active' }))
+    ]
+    
+    setEmployees(allEmployees)
+    
+    // Load lifecycle data from localStorage
+    setOnboardingList(JSON.parse(localStorage.getItem('onboardingList') || '[]'))
+    setPromotionsTransfers(JSON.parse(localStorage.getItem('promotionsTransfers') || '[]'))
+    setGrievances(JSON.parse(localStorage.getItem('grievances') || '[]'))
+    setExitInterviews(JSON.parse(localStorage.getItem('exitInterviews') || '[]'))
+    setSettlements(JSON.parse(localStorage.getItem('settlements') || '[]'))
   }
 
-  if (!user) {
-    return null
+  const handleOnboardingSubmit = (e) => {
+    e.preventDefault()
+    
+    const newErrors = {}
+    if (!onboardingForm.employeeName.trim()) newErrors.employeeName = 'Employee name is required'
+    if (!onboardingForm.designation.trim()) newErrors.designation = 'Designation is required'
+    if (!onboardingForm.department.trim()) newErrors.department = 'Department is required'
+    if (!onboardingForm.joinDate) newErrors.joinDate = 'Join date is required'
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+    
+    const newOnboarding = {
+      id: `ONB-${Date.now()}`,
+      employeeName: onboardingForm.employeeName,
+      designation: onboardingForm.designation,
+      department: onboardingForm.department,
+      joinDate: onboardingForm.joinDate,
+      status: 'Pending',
+      progress: 0,
+      completedTasks: 0,
+      totalTasks: parseInt(onboardingForm.totalTasks),
+      createdAt: new Date().toISOString()
+    }
+    
+    const updatedList = [...onboardingList, newOnboarding]
+    localStorage.setItem('onboardingList', JSON.stringify(updatedList))
+    setOnboardingList(updatedList)
+    
+    setSuccessMessage('Onboarding process created successfully!')
+    setTimeout(() => setSuccessMessage(''), 3000)
+    resetOnboardingForm()
   }
 
-  const isAdmin = user.role?.toLowerCase().includes('admin')
+  const handlePromotionSubmit = (e) => {
+    e.preventDefault()
+    
+    const newErrors = {}
+    if (!promotionForm.employeeName.trim()) newErrors.employeeName = 'Employee name is required'
+    if (!promotionForm.from.trim()) newErrors.from = 'Current position is required'
+    if (!promotionForm.to.trim()) newErrors.to = 'New position is required'
+    if (!promotionForm.effectiveDate) newErrors.effectiveDate = 'Effective date is required'
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+    
+    const newPromotion = {
+      id: `PT-${Date.now()}`,
+      ...promotionForm,
+      status: 'Pending',
+      createdBy: user.name,
+      createdAt: new Date().toISOString()
+    }
+    
+    const updatedList = [...promotionsTransfers, newPromotion]
+    localStorage.setItem('promotionsTransfers', JSON.stringify(updatedList))
+    setPromotionsTransfers(updatedList)
+    
+    setSuccessMessage(`${promotionForm.type} request created successfully!`)
+    setTimeout(() => setSuccessMessage(''), 3000)
+    resetPromotionForm()
+  }
+
+  const handleGrievanceSubmit = (e) => {
+    e.preventDefault()
+    
+    const newErrors = {}
+    if (!grievanceForm.description.trim()) newErrors.description = 'Description is required'
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+    
+    const newGrievance = {
+      id: `GRV-${Date.now()}`,
+      employeeName: grievanceForm.anonymous ? 'Anonymous' : user.name,
+      category: grievanceForm.category,
+      priority: grievanceForm.priority,
+      description: grievanceForm.description,
+      status: 'Acknowledged',
+      submittedDate: new Date().toISOString().split('T')[0],
+      assignedTo: 'HR Department'
+    }
+    
+    const updatedList = [...grievances, newGrievance]
+    localStorage.setItem('grievances', JSON.stringify(updatedList))
+    setGrievances(updatedList)
+    
+    setSuccessMessage('Grievance submitted successfully!')
+    setTimeout(() => setSuccessMessage(''), 3000)
+    resetGrievanceForm()
+  }
+
+  const handleExitSubmit = (e) => {
+    e.preventDefault()
+    
+    const newErrors = {}
+    if (!exitForm.employeeName.trim()) newErrors.employeeName = 'Employee name is required'
+    if (!exitForm.designation.trim()) newErrors.designation = 'Designation is required'
+    if (!exitForm.lastDay) newErrors.lastDay = 'Last working day is required'
+    if (!exitForm.interviewDate) newErrors.interviewDate = 'Interview date is required'
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+    
+    const newExit = {
+      id: `EXIT-${Date.now()}`,
+      ...exitForm,
+      status: 'Scheduled',
+      rating: null,
+      scheduledBy: user.name,
+      createdAt: new Date().toISOString()
+    }
+    
+    const updatedList = [...exitInterviews, newExit]
+    localStorage.setItem('exitInterviews', JSON.stringify(updatedList))
+    setExitInterviews(updatedList)
+    
+    setSuccessMessage('Exit interview scheduled successfully!')
+    setTimeout(() => setSuccessMessage(''), 3000)
+    resetExitForm()
+  }
+
+  const updateOnboardingProgress = (id, completedTasks) => {
+    const updatedList = onboardingList.map(item => {
+      if (item.id === id) {
+        const progress = Math.round((completedTasks / item.totalTasks) * 100)
+        const status = progress === 100 ? 'Completed' : progress > 0 ? 'In Progress' : 'Pending'
+        return { ...item, completedTasks, progress, status }
+      }
+      return item
+    })
+    localStorage.setItem('onboardingList', JSON.stringify(updatedList))
+    setOnboardingList(updatedList)
+  }
+
+  const updatePromotionStatus = (id, newStatus) => {
+    const updatedList = promotionsTransfers.map(item =>
+      item.id === id ? { ...item, status: newStatus } : item
+    )
+    localStorage.setItem('promotionsTransfers', JSON.stringify(updatedList))
+    setPromotionsTransfers(updatedList)
+  }
+
+  const updateGrievanceStatus = (id, newStatus) => {
+    const updatedList = grievances.map(item =>
+      item.id === id ? { ...item, status: newStatus } : item
+    )
+    localStorage.setItem('grievances', JSON.stringify(updatedList))
+    setGrievances(updatedList)
+  }
+
+  const updateExitStatus = (id, newStatus, rating = null) => {
+    const updatedList = exitInterviews.map(item =>
+      item.id === id ? { ...item, status: newStatus, rating } : item
+    )
+    localStorage.setItem('exitInterviews', JSON.stringify(updatedList))
+    setExitInterviews(updatedList)
+  }
+
+  const resetOnboardingForm = () => {
+    setOnboardingForm({
+      employeeName: '',
+      designation: '',
+      department: '',
+      joinDate: '',
+      totalTasks: 10
+    })
+    setShowOnboardingForm(false)
+    setErrors({})
+  }
+
+  const resetPromotionForm = () => {
+    setPromotionForm({
+      employeeName: '',
+      type: 'Promotion',
+      from: '',
+      to: '',
+      department: '',
+      effectiveDate: '',
+      salaryChange: ''
+    })
+    setShowPromotionForm(false)
+    setErrors({})
+  }
+
+  const resetGrievanceForm = () => {
+    setGrievanceForm({
+      category: 'Workplace Issue',
+      priority: 'Medium',
+      description: '',
+      anonymous: false
+    })
+    setShowGrievanceForm(false)
+    setErrors({})
+  }
+
+  const resetExitForm = () => {
+    setExitForm({
+      employeeName: '',
+      designation: '',
+      lastDay: '',
+      reason: '',
+      interviewDate: ''
+    })
+    setShowExitForm(false)
+    setErrors({})
+  }
 
   const getInitials = (name) => {
+    if (!name) return '?'
     return name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2)
   }
 
-  // Dummy Data
-  const employees = [
-    {
-      id: 'EMP-001',
-      name: 'Sarah Johnson',
-      email: 'sarah.j@company.com',
-      department: 'Engineering',
-      designation: 'Senior Developer',
-      manager: 'John Manager',
-      joinDate: '2022-01-15',
-      status: 'Active',
-      location: 'New York'
-    },
-    {
-      id: 'EMP-002',
-      name: 'Raj Kumar',
-      email: 'raj.k@company.com',
-      department: 'Sales',
-      designation: 'Sales Executive',
-      manager: 'Emma Lead',
-      joinDate: '2023-03-20',
-      status: 'Active',
-      location: 'Remote'
-    },
-    {
-      id: 'EMP-003',
-      name: 'Emma Thompson',
-      email: 'emma.t@company.com',
-      department: 'Marketing',
-      designation: 'Marketing Manager',
-      manager: 'CEO',
-      joinDate: '2021-06-10',
-      status: 'Active',
-      location: 'San Francisco'
-    },
-    {
-      id: 'EMP-004',
-      name: 'Li Wei',
-      email: 'li.w@company.com',
-      department: 'Engineering',
-      designation: 'Junior Developer',
-      manager: 'Sarah Johnson',
-      joinDate: '2024-01-08',
-      status: 'Probation',
-      location: 'Remote'
-    },
-    {
-      id: 'EMP-005',
-      name: 'José García',
-      email: 'jose.g@company.com',
-      department: 'Human Resources',
-      designation: 'HR Specialist',
-      manager: 'Jane HR',
-      joinDate: '2023-09-12',
-      status: 'Active',
-      location: 'Chicago'
-    }
-  ]
-
-  const onboarding = [
-    {
-      id: 'ONB-001',
-      employee: 'Alex Chen',
-      designation: 'Software Engineer',
-      department: 'Engineering',
-      joinDate: '2024-11-15',
-      status: 'In Progress',
-      progress: 60,
-      tasks: { completed: 6, total: 10 }
-    },
-    {
-      id: 'ONB-002',
-      employee: 'Maria Rodriguez',
-      designation: 'Product Manager',
-      department: 'Product',
-      joinDate: '2024-11-20',
-      status: 'Pending',
-      progress: 0,
-      tasks: { completed: 0, total: 12 }
-    },
-    {
-      id: 'ONB-003',
-      employee: 'David Kim',
-      designation: 'Data Analyst',
-      department: 'Analytics',
-      joinDate: '2024-10-28',
-      status: 'Completed',
-      progress: 100,
-      tasks: { completed: 8, total: 8 }
-    }
-  ]
-
-  const promotionsTransfers = [
-    {
-      id: 'PT-001',
-      employee: 'Sarah Johnson',
-      type: 'Promotion',
-      from: 'Developer',
-      to: 'Senior Developer',
-      department: 'Engineering',
-      effectiveDate: '2024-11-01',
-      status: 'Approved',
-      salary: '+15%'
-    },
-    {
-      id: 'PT-002',
-      employee: 'Raj Kumar',
-      type: 'Transfer',
-      from: 'Marketing',
-      to: 'Sales',
-      department: 'Sales',
-      effectiveDate: '2024-12-01',
-      status: 'Pending',
-      salary: 'No change'
-    },
-    {
-      id: 'PT-003',
-      employee: 'Emma Thompson',
-      type: 'Promotion',
-      from: 'Marketing Executive',
-      to: 'Marketing Manager',
-      department: 'Marketing',
-      effectiveDate: '2024-10-15',
-      status: 'Completed',
-      salary: '+20%'
-    }
-  ]
-
-  const grievances = [
-    {
-      id: 'GRV-001',
-      employee: 'Anonymous',
-      category: 'Workplace Harassment',
-      priority: 'High',
-      submittedDate: '2024-10-25',
-      status: 'Under Investigation',
-      assignedTo: 'HR Department'
-    },
-    {
-      id: 'GRV-002',
-      employee: 'John Doe',
-      category: 'Salary Dispute',
-      priority: 'Medium',
-      submittedDate: '2024-10-22',
-      status: 'Resolved',
-      assignedTo: 'Jane HR'
-    },
-    {
-      id: 'GRV-003',
-      employee: 'Sarah Johnson',
-      category: 'Work Environment',
-      priority: 'Low',
-      submittedDate: '2024-10-20',
-      status: 'Acknowledged',
-      assignedTo: 'John Manager'
-    }
-  ]
-
-  const exitInterviews = [
-    {
-      id: 'EXIT-001',
-      employee: 'Michael Brown',
-      designation: 'Senior Developer',
-      lastDay: '2024-11-30',
-      reason: 'Better Opportunity',
-      interviewDate: '2024-11-15',
-      status: 'Scheduled',
-      rating: null
-    },
-    {
-      id: 'EXIT-002',
-      employee: 'Lisa Anderson',
-      designation: 'Marketing Manager',
-      lastDay: '2024-10-31',
-      reason: 'Relocation',
-      interviewDate: '2024-10-25',
-      status: 'Completed',
-      rating: 4.5
-    },
-    {
-      id: 'EXIT-003',
-      employee: 'Tom Wilson',
-      designation: 'Sales Executive',
-      lastDay: '2024-12-15',
-      reason: 'Career Change',
-      interviewDate: '2024-12-01',
-      status: 'Pending',
-      rating: null
-    }
-  ]
-
-  const fullFinalSettlement = [
-    {
-      id: 'FFS-001',
-      employee: 'Michael Brown',
-      lastDay: '2024-11-30',
-      salary: '$8,500',
-      leaveEncashment: '$2,100',
-      bonus: '$3,000',
-      deductions: '$500',
-      netPayable: '$13,100',
-      status: 'Pending'
-    },
-    {
-      id: 'FFS-002',
-      employee: 'Lisa Anderson',
-      lastDay: '2024-10-31',
-      salary: '$7,200',
-      leaveEncashment: '$1,800',
-      bonus: '$2,500',
-      deductions: '$300',
-      netPayable: '$11,200',
-      status: 'Paid'
-    }
-  ]
-
-  const shortcuts = [
-    { icon: UserPlus, label: 'Add Employee', count: null },
-    { icon: GitBranch, label: 'Org Chart', count: null },
-    { icon: FileCheck, label: 'Onboarding', count: onboarding.filter(o => o.status !== 'Completed').length },
-    { icon: AlertTriangle, label: 'Grievances', count: grievances.filter(g => g.status !== 'Resolved').length }
-  ]
-
-  const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
-      case 'active': return 'bg-green-100 text-green-700 border-green-200'
-      case 'probation': return 'bg-yellow-100 text-yellow-700 border-yellow-200'
-      case 'inactive': return 'bg-gray-100 text-gray-700 border-gray-200'
-      case 'approved': return 'bg-green-100 text-green-700 border-green-200'
-      case 'pending': return 'bg-yellow-100 text-yellow-700 border-yellow-200'
-      case 'rejected': return 'bg-red-100 text-red-700 border-red-200'
-      case 'completed': return 'bg-green-100 text-green-700 border-green-200'
-      case 'in progress': return 'bg-blue-100 text-blue-700 border-blue-200'
-      case 'under investigation': return 'bg-orange-100 text-orange-700 border-orange-200'
-      case 'resolved': return 'bg-green-100 text-green-700 border-green-200'
-      case 'acknowledged': return 'bg-blue-100 text-blue-700 border-blue-200'
-      case 'scheduled': return 'bg-blue-100 text-blue-700 border-blue-200'
-      case 'paid': return 'bg-green-100 text-green-700 border-green-200'
-      default: return 'bg-gray-100 text-gray-700 border-gray-200'
-    }
+  const formatDate = (dateString) => {
+    if (!dateString) return '-'
+    const options = { year: 'numeric', month: 'short', day: 'numeric' }
+    return new Date(dateString).toLocaleDateString('en-US', options)
   }
 
-  const getPriorityColor = (priority) => {
-    switch (priority?.toLowerCase()) {
-      case 'high': return 'bg-red-100 text-red-700 border-red-200'
-      case 'medium': return 'bg-yellow-100 text-yellow-700 border-yellow-200'
-      case 'low': return 'bg-green-100 text-green-700 border-green-200'
-      default: return 'bg-gray-100 text-gray-700 border-gray-200'
+  const getStatusBadge = (status) => {
+    const styles = {
+      Active: 'bg-green-100 text-green-700',
+      Probation: 'bg-yellow-100 text-yellow-700',
+      Inactive: 'bg-gray-100 text-gray-700',
+      Pending: 'bg-yellow-100 text-yellow-700',
+      'In Progress': 'bg-blue-100 text-blue-700',
+      Completed: 'bg-green-100 text-green-700',
+      Approved: 'bg-green-100 text-green-700',
+      Rejected: 'bg-red-100 text-red-700',
+      Acknowledged: 'bg-blue-100 text-blue-700',
+      'Under Investigation': 'bg-orange-100 text-orange-700',
+      Resolved: 'bg-green-100 text-green-700',
+      Scheduled: 'bg-blue-100 text-blue-700',
+      Paid: 'bg-green-100 text-green-700'
     }
+    
+    return (
+      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${styles[status] || 'bg-gray-100 text-gray-700'}`}>
+        {status}
+      </span>
+    )
+  }
+
+  const getPriorityBadge = (priority) => {
+    const styles = {
+      High: 'bg-red-100 text-red-700',
+      Medium: 'bg-yellow-100 text-yellow-700',
+      Low: 'bg-green-100 text-green-700'
+    }
+    
+    return (
+      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${styles[priority] || 'bg-gray-100 text-gray-700'}`}>
+        {priority} Priority
+      </span>
+    )
   }
 
   const renderRating = (rating) => {
@@ -316,612 +381,890 @@ function EmployeeLifecyclePage() {
     )
   }
 
-  const renderContent = () => {
-    switch (selectedSection) {
-      case 'directory':
-        return (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">Employee Directory</h2>
-                <p className="text-sm text-gray-600 mt-1">Comprehensive employee repository</p>
-              </div>
-              <div className="flex gap-2">
-                <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">
-                  <Filter className="w-4 h-4" />
-                  Filter
-                </button>
-                {isAdmin && (
-                  <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
-                    <Plus className="w-4 h-4" />
-                    Add Employee
-                  </button>
-                )}
-              </div>
+  if (!user) return null
+
+  const isAdmin = user.role?.toLowerCase().includes('admin')
+  const isManager = user.role?.toLowerCase().includes('manager')
+  const canManage = isAdmin || isManager
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Top Navigation */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <button 
+                onClick={() => navigate('/dashboard')}
+                className="hover:text-blue-600 transition-colors flex items-center gap-1"
+              >
+                <Home className="w-4 h-4" />
+                <span>Dashboard</span>
+              </button>
+              <span>/</span>
+              <span className="text-gray-900 font-medium">Employee Lifecycle</span>
             </div>
+            
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="text-gray-600 hover:text-gray-900 text-sm font-medium"
+            >
+              Back to Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+              <UserCheck className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Employee Lifecycle</h1>
+              <p className="text-gray-600">From onboarding to exits - manage the complete employee journey</p>
+            </div>
+          </div>
+
+          {/* Shortcuts */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <button
+              onClick={() => setSelectedSection('directory')}
+              className={`bg-white p-6 rounded-xl border-2 transition-all flex flex-col items-center gap-3 ${
+                selectedSection === 'directory' ? 'border-orange-600' : 'border-gray-200 hover:border-orange-300'
+              }`}
+            >
+              <UserPlus className="w-8 h-8 text-orange-600" />
+              <div className="text-center">
+                <div className="font-medium text-gray-900">Employee Directory</div>
+                <div className="text-sm text-gray-500">{employees.length} employees</div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setSelectedSection('onboarding')}
+              className={`bg-white p-6 rounded-xl border-2 transition-all flex flex-col items-center gap-3 ${
+                selectedSection === 'onboarding' ? 'border-orange-600' : 'border-gray-200 hover:border-orange-300'
+              }`}
+            >
+              <FileCheck className="w-8 h-8 text-orange-600" />
+              <div className="text-center">
+                <div className="font-medium text-gray-900">Onboarding</div>
+                <div className="text-sm text-gray-500">{onboardingList.filter(o => o.status !== 'Completed').length} active</div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setSelectedSection('promotions')}
+              className={`bg-white p-6 rounded-xl border-2 transition-all flex flex-col items-center gap-3 ${
+                selectedSection === 'promotions' ? 'border-orange-600' : 'border-gray-200 hover:border-orange-300'
+              }`}
+            >
+              <GitBranch className="w-8 h-8 text-orange-600" />
+              <div className="text-center">
+                <div className="font-medium text-gray-900">Promotions</div>
+                <div className="text-sm text-gray-500">{promotionsTransfers.filter(p => p.status === 'Pending').length} pending</div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setSelectedSection('grievances')}
+              className={`bg-white p-6 rounded-xl border-2 transition-all flex flex-col items-center gap-3 ${
+                selectedSection === 'grievances' ? 'border-orange-600' : 'border-gray-200 hover:border-orange-300'
+              }`}
+            >
+              <AlertTriangle className="w-8 h-8 text-orange-600" />
+              <div className="text-center">
+                <div className="font-medium text-gray-900">Grievances</div>
+                <div className="text-sm text-gray-500">{grievances.filter(g => g.status !== 'Resolved').length} active</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Success Message */}
+        {successMessage && (
+          <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2">
+            <CheckCircle className="w-5 h-5" />
+            {successMessage}
+          </div>
+        )}
+
+        {/* Dynamic Content */}
+        {selectedSection === 'directory' && (
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">Employee Directory</h3>
+              <p className="text-sm text-gray-600 mt-1">Comprehensive employee repository</p>
+            </div>
+
             <div className="p-6">
-              <div className="space-y-3">
-                {employees.map((employee) => (
-                  <div key={employee.id} className="border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-4 flex-1">
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white font-semibold text-lg">
+              {employees.length === 0 ? (
+                <div className="text-center py-12">
+                  <UserPlus className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-600">No employees found</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {employees.map((employee, index) => (
+                    <div key={index} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                      <div className="flex items-start gap-4">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
                           {getInitials(employee.name)}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <h3 className="text-lg font-semibold text-gray-900">{employee.name}</h3>
-                            <span className={`px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(employee.status)}`}>
-                              {employee.status}
-                            </span>
+                            {getStatusBadge(employee.status || 'Active')}
                           </div>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm mb-3">
                             <div>
-                              <p className="text-gray-500 text-xs">Employee ID</p>
-                              <p className="font-medium text-gray-900">{employee.id}</p>
+                              <p className="text-gray-500 text-xs">Email</p>
+                              <p className="font-medium text-gray-900">{employee.email}</p>
                             </div>
                             <div>
-                              <p className="text-gray-500 text-xs">Designation</p>
-                              <p className="font-medium text-gray-900">{employee.designation}</p>
+                              <p className="text-gray-500 text-xs">Role</p>
+                              <p className="font-medium text-gray-900">{employee.role || 'Employee'}</p>
                             </div>
                             <div>
-                              <p className="text-gray-500 text-xs">Department</p>
-                              <p className="font-medium text-gray-900">{employee.department}</p>
+                              <p className="text-gray-500 text-xs">Source</p>
+                              <p className="font-medium text-gray-900">{employee.source === 'default' ? 'System' : 'Custom'}</p>
                             </div>
-                            <div>
-                              <p className="text-gray-500 text-xs">Join Date</p>
-                              <p className="font-medium text-gray-900">{employee.joinDate}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-4 mt-3 text-xs text-gray-600">
-                            <span className="flex items-center gap-1">
-                              <Mail className="w-3 h-3" />
-                              {employee.email}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <MapPin className="w-3 h-3" />
-                              {employee.location}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <User className="w-3 h-3" />
-                              Reports to: {employee.manager}
-                            </span>
                           </div>
                         </div>
                       </div>
-                      <div className="flex gap-2">
-                        <button className="p-2 hover:bg-gray-100 rounded-lg">
-                          <Eye className="w-4 h-4 text-gray-600" />
-                        </button>
-                        {isAdmin && (
-                          <>
-                            <button className="p-2 hover:bg-gray-100 rounded-lg">
-                              <Edit className="w-4 h-4 text-gray-600" />
-                            </button>
-                            <button className="p-2 hover:bg-gray-100 rounded-lg">
-                              <MoreVertical className="w-4 h-4 text-gray-600" />
-                            </button>
-                          </>
-                        )}
-                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-        )
+        )}
 
-      case 'onboarding':
-        return (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        {selectedSection === 'onboarding' && (
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200">
             <div className="p-6 border-b border-gray-200 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">Onboarding</h2>
-                <p className="text-sm text-gray-600 mt-1">Track new employee onboarding progress</p>
+                <h3 className="text-lg font-semibold text-gray-900">Onboarding Progress</h3>
+                <p className="text-sm text-gray-600 mt-1">Track new employee onboarding</p>
               </div>
-              {isAdmin && (
-                <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+              {canManage && (
+                <button
+                  onClick={() => setShowOnboardingForm(true)}
+                  className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2"
+                >
                   <Plus className="w-4 h-4" />
                   New Onboarding
                 </button>
               )}
             </div>
+
             <div className="p-6">
-              <div className="space-y-4">
-                {onboarding.map((item) => (
-                  <div key={item.id} className="border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-teal-600 flex items-center justify-center text-white font-semibold">
-                          {getInitials(item.employee)}
+              {onboardingList.length === 0 ? (
+                <div className="text-center py-12">
+                  <FileCheck className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-600">No onboarding processes yet</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {onboardingList.map(item => (
+                    <div key={item.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-teal-600 flex items-center justify-center text-white font-semibold">
+                            {getInitials(item.employeeName)}
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-gray-900">{item.employeeName}</h3>
+                            <p className="text-sm text-gray-600">{item.designation} • {item.department}</p>
+                          </div>
+                        </div>
+                        {getStatusBadge(item.status)}
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-4 mb-4">
+                        <div>
+                          <p className="text-xs text-gray-500">Join Date</p>
+                          <p className="text-sm font-medium text-gray-900">{formatDate(item.joinDate)}</p>
                         </div>
                         <div>
-                          <h3 className="font-semibold text-gray-900">{item.employee}</h3>
-                          <p className="text-sm text-gray-600">{item.designation} • {item.department}</p>
+                          <p className="text-xs text-gray-500">Tasks</p>
+                          <p className="text-sm font-medium text-gray-900">{item.completedTasks}/{item.totalTasks} completed</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Progress</p>
+                          <p className="text-sm font-medium text-gray-900">{item.progress}%</p>
                         </div>
                       </div>
-                      <span className={`px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(item.status)}`}>
-                        {item.status}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-4 mb-4">
-                      <div>
-                        <p className="text-xs text-gray-500">Join Date</p>
-                        <p className="text-sm font-medium text-gray-900">{item.joinDate}</p>
+                      
+                      <div className="relative w-full h-3 bg-gray-200 rounded-full overflow-hidden mb-3">
+                        <div 
+                          className="absolute top-0 left-0 h-full bg-green-600 transition-all"
+                          style={{ width: `${item.progress}%` }}
+                        />
                       </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Tasks</p>
-                        <p className="text-sm font-medium text-gray-900">{item.tasks.completed}/{item.tasks.total} completed</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Progress</p>
-                        <p className="text-sm font-medium text-gray-900">{item.progress}%</p>
-                      </div>
+                      
+                      {canManage && item.status !== 'Completed' && (
+                        <div className="flex items-center gap-2 mt-4">
+                          <label className="text-sm text-gray-700">Update completed tasks:</label>
+                          <input
+                            type="number"
+                            min="0"
+                            max={item.totalTasks}
+                            value={item.completedTasks}
+                            onChange={(e) => updateOnboardingProgress(item.id, parseInt(e.target.value))}
+                            className="w-20 px-3 py-1 border border-gray-300 rounded-lg text-sm"
+                          />
+                        </div>
+                      )}
                     </div>
-                    <div className="relative w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
-                        className="absolute top-0 left-0 h-full bg-green-600 transition-all"
-                        style={{ width: `${item.progress}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-        )
+        )}
 
-      case 'promotions':
-        return (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        {selectedSection === 'promotions' && (
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200">
             <div className="p-6 border-b border-gray-200 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">Promotions & Transfers</h2>
+                <h3 className="text-lg font-semibold text-gray-900">Promotions & Transfers</h3>
                 <p className="text-sm text-gray-600 mt-1">Manage employee career progression</p>
               </div>
-              {isAdmin && (
-                <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+              {canManage && (
+                <button
+                  onClick={() => setShowPromotionForm(true)}
+                  className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2"
+                >
                   <Plus className="w-4 h-4" />
                   New Request
                 </button>
               )}
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">From</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Salary Change</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Effective Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {promotionsTransfers.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.employee}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-3 py-1 text-xs font-medium rounded-full ${item.type === 'Promotion' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
-                          {item.type}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.from}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.to}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">{item.salary}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.effectiveDate}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(item.status)}`}>
-                          {item.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <button className="p-1 hover:bg-gray-100 rounded">
-                            <Eye className="w-4 h-4 text-gray-600" />
-                          </button>
-                          {isAdmin && item.status === 'Pending' && (
-                            <>
-                              <button className="p-1 text-green-600 hover:bg-green-50 rounded">
-                                <Check className="w-4 h-4" />
-                              </button>
-                              <button className="p-1 text-red-600 hover:bg-red-50 rounded">
-                                <X className="w-4 h-4" />
-                              </button>
-                            </>
+
+            <div className="p-6">
+              {promotionsTransfers.length === 0 ? (
+                <div className="text-center py-12">
+                  <GitBranch className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-600">No promotions or transfers yet</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Employee</th>
+                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Type</th>
+                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">From → To</th>
+                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Salary Change</th>
+                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Effective Date</th>
+                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
+                        {canManage && (
+                          <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Actions</th>
+                        )}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {promotionsTransfers.map(item => (
+                        <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
+                          <td className="py-3 px-4 text-sm font-medium text-gray-900">{item.employeeName}</td>
+                          <td className="py-3 px-4">
+                            <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+                              item.type === 'Promotion' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
+                            }`}>
+                              {item.type}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-sm text-gray-700">{item.from} → {item.to}</td>
+                          <td className="py-3 px-4 text-sm font-medium text-green-600">{item.salaryChange || 'N/A'}</td>
+                          <td className="py-3 px-4 text-sm text-gray-700">{formatDate(item.effectiveDate)}</td>
+                          <td className="py-3 px-4">{getStatusBadge(item.status)}</td>
+                          {canManage && (
+                            <td className="py-3 px-4">
+                              {item.status === 'Pending' && (
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => updatePromotionStatus(item.id, 'Approved')}
+                                    className="text-green-600 hover:text-green-700"
+                                    title="Approve"
+                                  >
+                                    <CheckCircle className="w-5 h-5" />
+                                  </button>
+                                  <button
+                                    onClick={() => updatePromotionStatus(item.id, 'Rejected')}
+                                    className="text-red-600 hover:text-red-700"
+                                    title="Reject"
+                                  >
+                                    <XCircle className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              )}
+                            </td>
                           )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
-        )
+        )}
 
-      case 'grievances':
-        return (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        {selectedSection === 'grievances' && (
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200">
             <div className="p-6 border-b border-gray-200 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">Employee Grievances</h2>
+                <h3 className="text-lg font-semibold text-gray-900">Employee Grievances</h3>
                 <p className="text-sm text-gray-600 mt-1">Track and resolve employee concerns</p>
               </div>
-              <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+              <button
+                onClick={() => setShowGrievanceForm(true)}
+                className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2"
+              >
                 <Plus className="w-4 h-4" />
                 Submit Grievance
               </button>
             </div>
+
             <div className="p-6">
-              <div className="space-y-3">
-                {grievances.map((grievance) => (
-                  <div key={grievance.id} className="border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="font-semibold text-gray-900">{grievance.id}</span>
-                          <span className={`px-3 py-1 text-xs font-medium rounded-full border ${getPriorityColor(grievance.priority)}`}>
-                            {grievance.priority} Priority
-                          </span>
-                          <span className={`px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(grievance.status)}`}>
-                            {grievance.status}
-                          </span>
+              {grievances.length === 0 ? (
+                <div className="text-center py-12">
+                  <AlertTriangle className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-600">No grievances submitted</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {grievances.map(grievance => (
+                    <div key={grievance.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="font-semibold text-gray-900">{grievance.id}</span>
+                            {getPriorityBadge(grievance.priority)}
+                            {getStatusBadge(grievance.status)}
+                          </div>
+                          <p className="text-sm font-medium text-gray-700 mb-2">{grievance.category}</p>
+                          <p className="text-sm text-gray-600 mb-3">{grievance.description}</p>
+                          <div className="grid grid-cols-3 gap-4 text-sm">
+                            <div>
+                              <p className="text-gray-500 text-xs">Submitted By</p>
+                              <p className="font-medium text-gray-900">{grievance.employeeName}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 text-xs">Assigned To</p>
+                              <p className="font-medium text-gray-900">{grievance.assignedTo}</p>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 text-xs">Submitted Date</p>
+                              <p className="font-medium text-gray-900">{formatDate(grievance.submittedDate)}</p>
+                            </div>
+                          </div>
                         </div>
-                        <p className="text-sm text-gray-700 mb-3"><strong>Category:</strong> {grievance.category}</p>
-                        <div className="grid grid-cols-3 gap-4 text-sm">
-                          <div>
-                            <p className="text-gray-500 text-xs">Submitted By</p>
-                            <p className="font-medium text-gray-900">{grievance.employee}</p>
+                        {canManage && grievance.status !== 'Resolved' && (
+                          <div className="flex gap-2 ml-4">
+                            {grievance.status === 'Acknowledged' && (
+                              <button
+                                onClick={() => updateGrievanceStatus(grievance.id, 'Under Investigation')}
+                                className="text-orange-600 hover:text-orange-700 text-sm"
+                              >
+                                Investigate
+                              </button>
+                            )}
+                            {grievance.status === 'Under Investigation' && (
+                              <button
+                                onClick={() => updateGrievanceStatus(grievance.id, 'Resolved')}
+                                className="text-green-600 hover:text-green-700 text-sm"
+                              >
+                                Resolve
+                              </button>
+                            )}
                           </div>
-                          <div>
-                            <p className="text-gray-500 text-xs">Assigned To</p>
-                            <p className="font-medium text-gray-900">{grievance.assignedTo}</p>
-                          </div>
-                          <div>
-                            <p className="text-gray-500 text-xs">Submitted Date</p>
-                            <p className="font-medium text-gray-900">{grievance.submittedDate}</p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button className="p-2 hover:bg-gray-100 rounded-lg">
-                          <Eye className="w-4 h-4 text-gray-600" />
-                        </button>
-                        {isAdmin && (
-                          <button className="p-2 hover:bg-gray-100 rounded-lg">
-                            <Edit className="w-4 h-4 text-gray-600" />
-                          </button>
                         )}
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-        )
+        )}
 
-      case 'exits':
-        return (
-          <div className="space-y-6">
-            {/* Exit Interviews */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900">Exit Interviews</h2>
-                  <p className="text-sm text-gray-600 mt-1">Document employee feedback before departure</p>
-                </div>
-                {isAdmin && (
-                  <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
-                    <Plus className="w-4 h-4" />
-                    Schedule Interview
-                  </button>
-                )}
+        {selectedSection === 'exits' && (
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Exit Interviews</h3>
+                <p className="text-sm text-gray-600 mt-1">Document employee feedback before departure</p>
               </div>
-              <div className="p-6">
-                <div className="space-y-3">
-                  {exitInterviews.map((exit) => (
-                    <div key={exit.id} className="border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow">
+              {canManage && (
+                <button
+                  onClick={() => setShowExitForm(true)}
+                  className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Schedule Exit Interview
+                </button>
+              )}
+            </div>
+
+            <div className="p-6">
+              {exitInterviews.length === 0 ? (
+                <div className="text-center py-12">
+                  <UserCheck className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-600">No exit interviews scheduled</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {exitInterviews.map(exit => (
+                    <div key={exit.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-3">
                             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-400 to-pink-600 flex items-center justify-center text-white font-semibold">
-                              {getInitials(exit.employee)}
+                              {getInitials(exit.employeeName)}
                             </div>
                             <div>
-                              <h3 className="font-semibold text-gray-900">{exit.employee}</h3>
+                              <h3 className="font-semibold text-gray-900">{exit.employeeName}</h3>
                               <p className="text-sm text-gray-600">{exit.designation}</p>
                             </div>
-                            <span className={`px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(exit.status)}`}>
-                              {exit.status}
-                            </span>
+                            {getStatusBadge(exit.status)}
                           </div>
-                          <div className="grid grid-cols-4 gap-4 text-sm">
+                          <div className="grid grid-cols-4 gap-4 text-sm mb-3">
                             <div>
                               <p className="text-gray-500 text-xs">Last Working Day</p>
-                              <p className="font-medium text-gray-900">{exit.lastDay}</p>
+                              <p className="font-medium text-gray-900">{formatDate(exit.lastDay)}</p>
                             </div>
                             <div>
                               <p className="text-gray-500 text-xs">Interview Date</p>
-                              <p className="font-medium text-gray-900">{exit.interviewDate}</p>
+                              <p className="font-medium text-gray-900">{formatDate(exit.interviewDate)}</p>
                             </div>
                             <div>
                               <p className="text-gray-500 text-xs">Reason</p>
-                              <p className="font-medium text-gray-900">{exit.reason}</p>
+                              <p className="font-medium text-gray-900">{exit.reason || 'Not specified'}</p>
                             </div>
                             <div>
                               <p className="text-gray-500 text-xs">Rating</p>
                               {renderRating(exit.rating)}
                             </div>
                           </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <button className="p-2 hover:bg-gray-100 rounded-lg">
-                            <Eye className="w-4 h-4 text-gray-600" />
-                          </button>
-                          {isAdmin && (
-                            <button className="p-2 hover:bg-gray-100 rounded-lg">
-                              <Edit className="w-4 h-4 text-gray-600" />
-                            </button>
+                          {canManage && exit.status === 'Scheduled' && (
+                            <div className="flex gap-2 mt-4">
+                              <button
+                                onClick={() => {
+                                  const rating = parseFloat(prompt('Enter rating (0-5):', '4.0'))
+                                  if (rating >= 0 && rating <= 5) {
+                                    updateExitStatus(exit.id, 'Completed', rating)
+                                  }
+                                }}
+                                className="text-green-600 hover:text-green-700 text-sm font-medium"
+                              >
+                                Mark as Completed
+                              </button>
+                            </div>
                           )}
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
-              </div>
-            </div>
-
-            {/* Full & Final Settlement */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="p-6 border-b border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-900">Full & Final Settlement</h2>
-                <p className="text-sm text-gray-600 mt-1">Settle employee dues and clearances</p>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Day</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Salary</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Leave Encashment</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bonus</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deductions</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Net Payable</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {fullFinalSettlement.map((settlement) => (
-                      <tr key={settlement.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{settlement.employee}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{settlement.lastDay}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{settlement.salary}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600">{settlement.leaveEncashment}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600">{settlement.bonus}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">-{settlement.deductions}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-600">{settlement.netPayable}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(settlement.status)}`}>
-                            {settlement.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              )}
             </div>
           </div>
-        )
-
-      default:
-        return null
-    }
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Top Navigation Bar */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button 
-                onClick={() => navigate('/dashboard')}
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                <Home className="w-5 h-5" />
-                <span className="text-sm font-medium">Dashboard</span>
-              </button>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-              <span className="text-sm font-semibold text-gray-900">Employee Lifecycle</span>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                <Bell className="w-5 h-5" />
-              </button>
-              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                <Settings className="w-5 h-5" />
-              </button>
-              
-              <div className="relative user-dropdown">
-                <button 
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-xs">
-                    {getInitials(user.name)}
-                  </div>
-                  <div className="text-left hidden sm:block">
-                    <p className="text-sm font-semibold text-gray-900">{user.name}</p>
-                    <p className="text-xs text-gray-500">{user.role}</p>
-                  </div>
-                </button>
-                
-                {dropdownOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-xl z-50 py-2">
-                    <div className="px-4 py-3 border-b border-gray-100">
-                      <p className="text-sm font-semibold text-gray-900">{user.name}</p>
-                      <p className="text-xs text-gray-500">{user.email}</p>
-                      <p className="text-xs text-blue-600 mt-1">{user.role}</p>
-                    </div>
-                    <button 
-                      onClick={() => navigate('/dashboard')}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                    >
-                      <Home className="w-4 h-4" />
-                      Dashboard
-                    </button>
-                    <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                      <Settings className="w-4 h-4" />
-                      Settings
-                    </button>
-                    <div className="border-t border-gray-100 my-1"></div>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Log out
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Employee Lifecycle</h1>
-          <p className="text-gray-600">From onboarding to exits - manage the complete employee journey</p>
-        </div>
-
-        {/* Shortcuts Section */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Shortcuts</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {shortcuts.map((shortcut, index) => (
-              <button
-                key={index}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 hover:shadow-md transition-all hover:scale-105 flex flex-col items-center gap-3 group"
-              >
-                <div className="p-3 bg-orange-50 rounded-lg text-orange-600 group-hover:bg-orange-100 transition-colors">
-                  <shortcut.icon className="w-6 h-6" />
-                </div>
-                <div className="text-center">
-                  <p className="text-sm font-medium text-gray-900">{shortcut.label}</p>
-                  {shortcut.count !== null && (
-                    <p className="text-xs text-gray-500 mt-1">{shortcut.count} items</p>
-                  )}
-                </div>
+      {/* Onboarding Form Modal */}
+      {showOnboardingForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+              <h2 className="text-xl font-bold text-gray-900">Create Onboarding Process</h2>
+              <button onClick={resetOnboardingForm} className="text-gray-400 hover:text-gray-600">
+                <X className="w-6 h-6" />
               </button>
-            ))}
+            </div>
+            
+            <form onSubmit={handleOnboardingSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Employee Name *</label>
+                <input
+                  type="text"
+                  value={onboardingForm.employeeName}
+                  onChange={(e) => setOnboardingForm({...onboardingForm, employeeName: e.target.value})}
+                  className={`w-full px-4 py-2 border ${errors.employeeName ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+                  placeholder="John Doe"
+                />
+                {errors.employeeName && <p className="mt-1 text-sm text-red-500">{errors.employeeName}</p>}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Designation *</label>
+                  <input
+                    type="text"
+                    value={onboardingForm.designation}
+                    onChange={(e) => setOnboardingForm({...onboardingForm, designation: e.target.value})}
+                    className={`w-full px-4 py-2 border ${errors.designation ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+                    placeholder="Software Engineer"
+                  />
+                  {errors.designation && <p className="mt-1 text-sm text-red-500">{errors.designation}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Department *</label>
+                  <input
+                    type="text"
+                    value={onboardingForm.department}
+                    onChange={(e) => setOnboardingForm({...onboardingForm, department: e.target.value})}
+                    className={`w-full px-4 py-2 border ${errors.department ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+                    placeholder="Engineering"
+                  />
+                  {errors.department && <p className="mt-1 text-sm text-red-500">{errors.department}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Join Date *</label>
+                  <input
+                    type="date"
+                    value={onboardingForm.joinDate}
+                    onChange={(e) => setOnboardingForm({...onboardingForm, joinDate: e.target.value})}
+                    className={`w-full px-4 py-2 border ${errors.joinDate ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+                  />
+                  {errors.joinDate && <p className="mt-1 text-sm text-red-500">{errors.joinDate}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Total Tasks</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={onboardingForm.totalTasks}
+                    onChange={(e) => setOnboardingForm({...onboardingForm, totalTasks: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-gradient-to-r from-orange-600 to-red-600 text-white py-2 rounded-lg font-medium hover:shadow-lg transition-all"
+                >
+                  Create Onboarding
+                </button>
+                <button
+                  type="button"
+                  onClick={resetOnboardingForm}
+                  className="px-6 bg-gray-200 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-300 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
         </div>
+      )}
 
-        {/* Reports & Masters Section */}
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Reports & Masters</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-            {/* Column 1: Employee Management */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
-              <h3 className="font-semibold text-gray-900 mb-4">Employee Management</h3>
-              <div className="space-y-2">
-                <button 
-                  onClick={() => setSelectedSection('directory')}
-                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+      {/* Promotion/Transfer Form Modal */}
+      {showPromotionForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+              <h2 className="text-xl font-bold text-gray-900">New Promotion/Transfer Request</h2>
+              <button onClick={resetPromotionForm} className="text-gray-400 hover:text-gray-600">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <form onSubmit={handlePromotionSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Employee Name *</label>
+                <input
+                  type="text"
+                  value={promotionForm.employeeName}
+                  onChange={(e) => setPromotionForm({...promotionForm, employeeName: e.target.value})}
+                  className={`w-full px-4 py-2 border ${errors.employeeName ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+                  placeholder="John Doe"
+                />
+                {errors.employeeName && <p className="mt-1 text-sm text-red-500">{errors.employeeName}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                <select
+                  value={promotionForm.type}
+                  onChange={(e) => setPromotionForm({...promotionForm, type: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 >
-                  <span>Employee Directory</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={() => setSelectedSection('onboarding')}
-                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                  <option>Promotion</option>
+                  <option>Transfer</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">From (Current Position) *</label>
+                  <input
+                    type="text"
+                    value={promotionForm.from}
+                    onChange={(e) => setPromotionForm({...promotionForm, from: e.target.value})}
+                    className={`w-full px-4 py-2 border ${errors.from ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+                    placeholder="Software Engineer"
+                  />
+                  {errors.from && <p className="mt-1 text-sm text-red-500">{errors.from}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">To (New Position) *</label>
+                  <input
+                    type="text"
+                    value={promotionForm.to}
+                    onChange={(e) => setPromotionForm({...promotionForm, to: e.target.value})}
+                    className={`w-full px-4 py-2 border ${errors.to ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+                    placeholder="Senior Software Engineer"
+                  />
+                  {errors.to && <p className="mt-1 text-sm text-red-500">{errors.to}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                  <input
+                    type="text"
+                    value={promotionForm.department}
+                    onChange={(e) => setPromotionForm({...promotionForm, department: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    placeholder="Engineering"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Effective Date *</label>
+                  <input
+                    type="date"
+                    value={promotionForm.effectiveDate}
+                    onChange={(e) => setPromotionForm({...promotionForm, effectiveDate: e.target.value})}
+                    className={`w-full px-4 py-2 border ${errors.effectiveDate ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+                  />
+                  {errors.effectiveDate && <p className="mt-1 text-sm text-red-500">{errors.effectiveDate}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Salary Change</label>
+                  <input
+                    type="text"
+                    value={promotionForm.salaryChange}
+                    onChange={(e) => setPromotionForm({...promotionForm, salaryChange: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    placeholder="+15% or $10,000"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-gradient-to-r from-orange-600 to-red-600 text-white py-2 rounded-lg font-medium hover:shadow-lg transition-all"
                 >
-                  <span>Onboarding</span>
-                  <ArrowRight className="w-4 h-4" />
+                  Submit Request
                 </button>
-                <button className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                  <span>Org Chart</span>
-                  <ArrowRight className="w-4 h-4" />
+                <button
+                  type="button"
+                  onClick={resetPromotionForm}
+                  className="px-6 bg-gray-200 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-300 transition-all"
+                >
+                  Cancel
                 </button>
               </div>
-            </div>
-
-            {/* Column 2: Career & Growth */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
-              <h3 className="font-semibold text-gray-900 mb-4">Career & Growth</h3>
-              <div className="space-y-2">
-                <button 
-                  onClick={() => setSelectedSection('promotions')}
-                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <span>Promotions & Transfers</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={() => setSelectedSection('grievances')}
-                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <span>Grievances</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <button className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                  <span>Employee Reminders</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Column 3: Exit Management */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
-              <h3 className="font-semibold text-gray-900 mb-4">Exit Management</h3>
-              <div className="space-y-2">
-                <button 
-                  onClick={() => setSelectedSection('exits')}
-                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <span>Exit Interviews</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={() => setSelectedSection('exits')}
-                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <span>Full & Final Settlement</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <button className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                  <span>Employee Clearance</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+            </form>
           </div>
-
-          {/* Dynamic Content Area */}
-          {selectedSection && (
-            <div className="mt-6">
-              {renderContent()}
-            </div>
-          )}
         </div>
-      </div>
+      )}
+
+      {/* Grievance Form Modal */}
+      {showGrievanceForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+              <h2 className="text-xl font-bold text-gray-900">Submit Grievance</h2>
+              <button onClick={resetGrievanceForm} className="text-gray-400 hover:text-gray-600">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleGrievanceSubmit} className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                  <select
+                    value={grievanceForm.category}
+                    onChange={(e) => setGrievanceForm({...grievanceForm, category: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  >
+                    <option>Workplace Issue</option>
+                    <option>Harassment</option>
+                    <option>Salary Dispute</option>
+                    <option>Work Environment</option>
+                    <option>Management Conflict</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                  <select
+                    value={grievanceForm.priority}
+                    onChange={(e) => setGrievanceForm({...grievanceForm, priority: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  >
+                    <option>Low</option>
+                    <option>Medium</option>
+                    <option>High</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
+                <textarea
+                  value={grievanceForm.description}
+                  onChange={(e) => setGrievanceForm({...grievanceForm, description: e.target.value})}
+                  className={`w-full px-4 py-2 border ${errors.description ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+                  rows={5}
+                  placeholder="Describe your concern in detail..."
+                />
+                {errors.description && <p className="mt-1 text-sm text-red-500">{errors.description}</p>}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="anonymous"
+                  checked={grievanceForm.anonymous}
+                  onChange={(e) => setGrievanceForm({...grievanceForm, anonymous: e.target.checked})}
+                  className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                />
+                <label htmlFor="anonymous" className="text-sm text-gray-700">
+                  Submit anonymously
+                </label>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-gradient-to-r from-orange-600 to-red-600 text-white py-2 rounded-lg font-medium hover:shadow-lg transition-all"
+                >
+                  Submit Grievance
+                </button>
+                <button
+                  type="button"
+                  onClick={resetGrievanceForm}
+                  className="px-6 bg-gray-200 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-300 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Exit Interview Form Modal */}
+      {showExitForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+              <h2 className="text-xl font-bold text-gray-900">Schedule Exit Interview</h2>
+              <button onClick={resetExitForm} className="text-gray-400 hover:text-gray-600">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleExitSubmit} className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Employee Name *</label>
+                  <input
+                    type="text"
+                    value={exitForm.employeeName}
+                    onChange={(e) => setExitForm({...exitForm, employeeName: e.target.value})}
+                    className={`w-full px-4 py-2 border ${errors.employeeName ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+                    placeholder="John Doe"
+                  />
+                  {errors.employeeName && <p className="mt-1 text-sm text-red-500">{errors.employeeName}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Designation *</label>
+                  <input
+                    type="text"
+                    value={exitForm.designation}
+                    onChange={(e) => setExitForm({...exitForm, designation: e.target.value})}
+                    className={`w-full px-4 py-2 border ${errors.designation ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+                    placeholder="Software Engineer"
+                  />
+                  {errors.designation && <p className="mt-1 text-sm text-red-500">{errors.designation}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Last Working Day *</label>
+                  <input
+                    type="date"
+                    value={exitForm.lastDay}
+                    onChange={(e) => setExitForm({...exitForm, lastDay: e.target.value})}
+                    className={`w-full px-4 py-2 border ${errors.lastDay ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+                  />
+                  {errors.lastDay && <p className="mt-1 text-sm text-red-500">{errors.lastDay}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Interview Date *</label>
+                  <input
+                    type="date"
+                    value={exitForm.interviewDate}
+                    onChange={(e) => setExitForm({...exitForm, interviewDate: e.target.value})}
+                    className={`w-full px-4 py-2 border ${errors.interviewDate ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+                  />
+                  {errors.interviewDate && <p className="mt-1 text-sm text-red-500">{errors.interviewDate}</p>}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Reason for Leaving</label>
+                <input
+                  type="text"
+                  value={exitForm.reason}
+                  onChange={(e) => setExitForm({...exitForm, reason: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="Better Opportunity, Relocation, etc."
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-gradient-to-r from-orange-600 to-red-600 text-white py-2 rounded-lg font-medium hover:shadow-lg transition-all"
+                >
+                  Schedule Interview
+                </button>
+                <button
+                  type="button"
+                  onClick={resetExitForm}
+                  className="px-6 bg-gray-200 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-300 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
 export default EmployeeLifecyclePage
-
