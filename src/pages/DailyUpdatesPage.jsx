@@ -27,6 +27,7 @@ function DailyUpdatesPage() {
   }, [navigate, selectedDate])
 
   const isAdmin = user?.role?.toLowerCase().includes('admin')
+  const isManager = user?.role?.toLowerCase().includes('manager')
 
   // Load daily updates from localStorage
   const loadDailyUpdates = () => {
@@ -243,7 +244,7 @@ function DailyUpdatesPage() {
   }
 
   const todayUpdates = getTodayTimeline()
-  const teamUpdates = isAdmin ? getTeamUpdates() : []
+  const teamUpdates = (isAdmin || isManager) ? getTeamUpdates() : []
   const hasSOD = todayUpdates?.sod
   const hasLunchExit = todayUpdates?.lunchExit
   const hasLunchReturn = todayUpdates?.lunchReturn
@@ -252,7 +253,7 @@ function DailyUpdatesPage() {
   
   // Check if viewing current date
   const isViewingToday = selectedDate === new Date().toISOString().split('T')[0]
-  const canPostUpdates = isAdmin || isViewingToday
+  const canPostUpdates = (isAdmin || isManager) || isViewingToday
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -283,9 +284,9 @@ function DailyUpdatesPage() {
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              min={isAdmin ? undefined : new Date().toISOString().split('T')[0]}
+              min={(isAdmin || isManager) ? undefined : new Date().toISOString().split('T')[0]}
               max={new Date().toISOString().split('T')[0]}
-              disabled={!isAdmin && selectedDate !== new Date().toISOString().split('T')[0]}
+              disabled={!(isAdmin || isManager) && selectedDate !== new Date().toISOString().split('T')[0]}
               className="px-3 py-2 border border-gray-300 rounded-lg text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
             />
           </div>
@@ -294,7 +295,7 @@ function DailyUpdatesPage() {
 
       <div className="max-w-7xl mx-auto px-6">
         {/* Info Banner for Past Dates */}
-        {!isAdmin && !isViewingToday && (
+        {!(isAdmin || isManager) && !isViewingToday && (
           <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
             <div className="flex items-start space-x-3">
               <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
@@ -435,8 +436,8 @@ function DailyUpdatesPage() {
               </div>
             )}
 
-            {/* Admin Section */}
-            {isAdmin && (
+            {/* Admin/Manager Section */}
+            {(isAdmin || isManager) && (
               <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl shadow-sm p-6 text-white">
                 <div className="flex items-center space-x-3 mb-4">
                   <Users className="w-6 h-6" />
@@ -463,11 +464,11 @@ function DailyUpdatesPage() {
             {/* Timeline */}
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h3 className="text-lg font-semibold mb-6">
-                {isAdmin ? 'Team Updates' : 'My Timeline'}
+                {(isAdmin || isManager) ? 'Team Updates' : 'My Timeline'}
               </h3>
 
               {/* Employee View */}
-              {!isAdmin ? (
+              {!(isAdmin || isManager) ? (
                 <div className="space-y-6">
                   {todayUpdates ? (
                     <>

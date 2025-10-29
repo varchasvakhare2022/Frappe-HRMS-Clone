@@ -1,0 +1,15 @@
+[
+  {
+    "email": "vk.varchasva@gmail.com",
+    "name": "Varchasva Khare",
+    "role": "Admin",
+    "password": "admin123"
+  },
+  {
+    "email": "admin@test.com",
+    "name": "Admin User",
+    "role": "Admin",
+    "password": "admin123"
+  }
+]
+

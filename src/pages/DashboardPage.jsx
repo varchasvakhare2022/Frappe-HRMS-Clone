@@ -46,8 +46,9 @@ function DashboardPage() {
     return null
   }
 
-  // Check if user is admin
+  // Check user role
   const isAdmin = user.role?.toLowerCase().includes('admin')
+  const isManager = user.role?.toLowerCase().includes('manager')
 
   // Get user initials
   const getInitials = (name) => {
@@ -67,6 +68,16 @@ function DashboardPage() {
     { icon: DollarSign, label: 'Expense Management', color: 'bg-purple-500', link: '/expense-management' },
     { icon: Award, label: 'My Performance', color: 'bg-pink-500', link: '/performance-management' },
     { icon: FileText, label: 'Payroll & Payslips', color: 'bg-teal-500', link: '/payroll' },
+    { icon: Smartphone, label: 'Mobile App', color: 'bg-cyan-500', link: '/mobile-app' }
+  ]
+
+  const managerActions = [
+    { icon: MessageSquare, label: 'Team Daily Updates', color: 'bg-teal-500', link: '/daily-updates' },
+    { icon: FileText, label: 'Approve Leave Requests', color: 'bg-blue-500', link: '/leave-management' },
+    { icon: Clock, label: 'Team Attendance', color: 'bg-green-600', link: '/attendance' },
+    { icon: Receipt, label: 'Expense Approvals', color: 'bg-indigo-500', link: '/expense-management' },
+    { icon: Award, label: 'Performance Reviews', color: 'bg-pink-500', link: '/performance-management' },
+    { icon: BarChart3, label: 'Team Reports', color: 'bg-purple-500', link: '/payroll-tax-reports' },
     { icon: Smartphone, label: 'Mobile App', color: 'bg-cyan-500', link: '/mobile-app' }
   ]
 
@@ -91,7 +102,7 @@ function DashboardPage() {
       pendingApprovals: { value: 5, items: ['3 Leave Requests', '2 Expense Claims'] },
       teamMembers: { value: 24, active: 22, onLeave: 2 }
     },
-    quickActions: isAdmin ? adminActions : employeeActions,
+    quickActions: isAdmin ? adminActions : (isManager ? managerActions : employeeActions),
     recentActivities: [
       { type: 'approved', icon: CheckCircle, text: 'Leave request approved for Dec 15-17', time: '2 hours ago', color: 'text-green-600' },
       { type: 'info', icon: Info, text: 'New payslip generated for November 2024', time: '1 day ago', color: 'text-blue-600' },
@@ -326,7 +337,7 @@ function DashboardPage() {
 
             {/* Stats Grid - Role-based */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              {isAdmin ? (
+              {isAdmin || isManager ? (
                 <>
                   {/* Admin View: Pending Approvals */}
                   <div className="bg-white rounded-lg shadow p-5 border border-gray-200 hover:shadow-md transition-shadow">

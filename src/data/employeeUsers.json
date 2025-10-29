@@ -1,0 +1,15 @@
+[
+  {
+    "email": "employee@test.com",
+    "name": "John Doe",
+    "role": "Employee",
+    "password": "employee123"
+  },
+  {
+    "email": "test@example.com",
+    "name": "Test Employee",
+    "role": "Employee",
+    "password": "test123"
+  }
+]
+
