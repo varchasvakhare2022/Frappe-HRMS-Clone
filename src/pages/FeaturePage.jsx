@@ -18,7 +18,7 @@ function FeaturePage({ feature }) {
   const featureContent = {
     recruitment: {
       title: 'Recruitment',
-      intro: 'With a growing company, comes a rapidly growing roster of employees. From planning your hiring strategy and scheduling interviews to identifying the best candidates and making job offers, Frappe HR has got you covered throughout your recruitment cycle.',
+      intro: 'With a growing company, comes a rapidly growing roster of employees. From planning your hiring strategy and scheduling interviews to identifying the best candidates and making job offers, Talrn has got you covered throughout your recruitment cycle.',
       steps: [
         'Anticipate your hiring needs',
         'Create staffing plans',
@@ -57,12 +57,12 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'Capture & analyze feedback for decision-making',
-          content: "Efficiently capture feedback from multiple interviewers across multiple rounds. Frappe HR generates an overview of the average ratings, demonstrated skills, and a detailed feedback timeline, enabling you to make informed decisions.",
+          content: "Efficiently capture feedback from multiple interviewers across multiple rounds. Talrn generates an overview of the average ratings, demonstrated skills, and a detailed feedback timeline, enabling you to make informed decisions.",
           video: "/interview-4k.mp4",
         },
         {
           title: 'Send job offers',
-          content: "You have found the perfect candidates! All that's left is to help you complete the final hiring steps by sending out offers to viable applicants. Frappe HR's customizable offer templates and electronic signatures speed up this process, ensuring a smooth transition from candidate to employee.",
+          content: "You have found the perfect candidates! All that's left is to help you complete the final hiring steps by sending out offers to viable applicants. Talrn's customizable offer templates and electronic signatures speed up this process, ensuring a smooth transition from candidate to employee.",
           video: "/send-job-offers.mp4",
         },
         {
@@ -95,7 +95,7 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'Visualize your org structure',
-          content: "The organizational chart in Frappe HR visually represents who a person is reporting to and their position in the organization hierarchy. Providing employees access to the organization chart can help them reach out to the right people, and improve communication and collaboration across teams and hierarchies.",
+          content: "The organizational chart in Talrn visually represents who a person is reporting to and their position in the organization hierarchy. Providing employees access to the organization chart can help them reach out to the right people, and improve communication and collaboration across teams and hierarchies.",
           image: '/org-chart.webp',
         },
         {
@@ -105,7 +105,7 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'Manage promotions & transfers',
-          content: "Reward your top employees with promotions and manage company/department-wise transfers seamlessly. Frappe HR maintains an internal work history to record your employee's journey within the organization.",
+          content: "Reward your top employees with promotions and manage company/department-wise transfers seamlessly. Talrn maintains an internal work history to record your employee's journey within the organization.",
           image: '/manage-promotions.webp',
         },
         {
@@ -120,7 +120,7 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'Settle full and final statements',
-          content: "Frappe HR simplifies separation tasks with full and final settlements. Settle payables, receivables, and assets allocated to the employee, and record the accounting impact. You can also choose to recover asset costs instead of returning them, letting the employees own the assets.",
+          content: "Talrn simplifies separation tasks with full and final settlements. Settle payables, receivables, and assets allocated to the employee, and record the accounting impact. You can also choose to recover asset costs instead of returning them, letting the employees own the assets.",
           image: '/fullandfinal.webp',
         },
         {
@@ -136,7 +136,7 @@ function FeaturePage({ feature }) {
     },
     'shifts-attendance': {
       title: 'Shifts & Attendance',
-      intro: "Managing attendance for a geographically scattered team can be a nightmare. Bid adieu to tedious spreadsheets and shift registers. Frappe HR offers a variety of options to ensure that attendance records are always up-to-date. Our mobile app enables your team to clock in and out from anywhere with geolocation capturing. You can also manage shifts and rosters effortlessly and integrate your biometric device for auto attendance. Need more control? The bulk attendance & shift tools help you efficiently manage attendance at scale.",
+      intro: "Managing attendance for a geographically scattered team can be a nightmare. Bid adieu to tedious spreadsheets and shift registers. Talrn offers a variety of options to ensure that attendance records are always up-to-date. Our mobile app enables your team to clock in and out from anywhere with geolocation capturing. You can also manage shifts and rosters effortlessly and integrate your biometric device for auto attendance. Need more control? The bulk attendance & shift tools help you efficiently manage attendance at scale.",
       steps: [
         'Configure shifts',
         'Apply & approve shift requests',
@@ -166,7 +166,7 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'Check-in and check-out with geolocation capturing',
-          content: "Make check-ins and check-outs a breeze with the Frappe HR mobile app's easy interface. You can also enable geolocation tracking for a detailed work location history.",
+          content: "Make check-ins and check-outs a breeze with the Talrn mobile app's easy interface. You can also enable geolocation tracking for a detailed work location history.",
           video: '/geolocation-checkin.mp4',
         },
         {
@@ -176,7 +176,7 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'Auto-attendance in sync with your payroll',
-          content: "Frappe HR marks auto attendance based on your check-ins and shift settings. It also calculates working hours, and flags late entries & early exits based on your configuration. If you are using separate systems for attendance & payroll, Frappe HR can make your life easier. The attendance system is closely integrated with payroll to ensure accurate and timely payments.",
+          content: "Talrn marks auto attendance based on your check-ins and shift settings. It also calculates working hours, and flags late entries & early exits based on your configuration. If you are using separate systems for attendance & payroll, Talrn can make your life easier. The attendance system is closely integrated with payroll to ensure accurate and timely payments.",
           image: '/auto-attendance.webp',
         },
         {
@@ -186,7 +186,7 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'Use bulk attendance tools for more control',
-          content: "If you prefer marking attendance manually, use Frappe HR's bulk tools. The employee attendance tool helps you mark attendance for all employees with drill-down filters while keeping the marked attendance data handy. You can also upload attendance from your spreadsheets using Upload Attendance or Data Import tools.",
+          content: "If you prefer marking attendance manually, use Talrn's bulk tools. The employee attendance tool helps you mark attendance for all employees with drill-down filters while keeping the marked attendance data handy. You can also upload attendance from your spreadsheets using Upload Attendance or Data Import tools.",
         },
         {
           title: 'Analyse with attendance reports',
@@ -201,7 +201,7 @@ function FeaturePage({ feature }) {
     },
     'leave-management': {
       title: 'Leave Management',
-      intro: "Frappe HR makes allocating, applying, tracking & managing leaves a breeze. Configure even the most complex leave policies & rules with ease. Carry-forwarding, expiry, leave without pay, earned leaves - it's all covered. Manage bulk leave policy assignments. Visualize and plan work efficiently with the leave calendar. View leave balances, apply & approve leaves - all from your phone. Keep your team informed with configurable workflows and notifications.",
+      intro: "Talrn makes allocating, applying, tracking & managing leaves a breeze. Configure even the most complex leave policies & rules with ease. Carry-forwarding, expiry, leave without pay, earned leaves - it's all covered. Manage bulk leave policy assignments. Visualize and plan work efficiently with the leave calendar. View leave balances, apply & approve leaves - all from your phone. Keep your team informed with configurable workflows and notifications.",
       steps: [
         'Configurable leave policies',
         'Bulk allocations from the leave control panel',
@@ -217,7 +217,7 @@ function FeaturePage({ feature }) {
       sections: [
         {
           title: 'Configurable leave policies',
-          content: "Tailor your leave policies to fit your organizational needs perfectly. Be it carry-forwarding, expiry, compensatory off, leave without pay, partially paid leave, earned leave, encashments, or consecutive leave allowance — Frappe HR offers a rich set of rules to configure your leave types. Define annual allocation for each leave type with leave policies.",
+          content: "Tailor your leave policies to fit your organizational needs perfectly. Be it carry-forwarding, expiry, compensatory off, leave without pay, partially paid leave, earned leave, encashments, or consecutive leave allowance — Talrn offers a rich set of rules to configure your leave types. Define annual allocation for each leave type with leave policies.",
           image: '/leave-type.webp',
         },
         {
@@ -247,7 +247,7 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'Configure earned leaves',
-          content: "Frappe HR allows you to configure earned leaves - i.e. leaves that are \"earned\" by employees after working in the company for a certain period. Based on your settings, earned leaves are allocated to the employee on a pro-rata basis for the defined duration. You can also configure rounding of allocated leaves for fractional allotments and choose the accrual day of the month - first day, last day, or day of joining for the employee.",
+          content: "Talrn allows you to configure earned leaves - i.e. leaves that are \"earned\" by employees after working in the company for a certain period. Based on your settings, earned leaves are allocated to the employee on a pro-rata basis for the defined duration. You can also configure rounding of allocated leaves for fractional allotments and choose the accrual day of the month - first day, last day, or day of joining for the employee.",
           image: '/earned-leave.webp',
         },
         {
@@ -257,7 +257,7 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'Pull regional holidays with a click',
-          content: "You don't need to manually add every local holiday to the list. Just select your country and subdivision and Frappe HR will pull that region's local holidays into the list.",
+          content: "You don't need to manually add every local holiday to the list. Just select your country and subdivision and Talrn will pull that region's local holidays into the list.",
           video: "/holiday-list-video.mp4",
         },
         {
@@ -285,7 +285,7 @@ function FeaturePage({ feature }) {
       sections: [
         {
           title: 'Claim expenses',
-          content: "Enable employees to claim expenses they make out of their pocket on behalf of the company. Snap and upload receipts supporting the claims. You can also partially sanction each claim item and update taxes on your expenses separately in the taxes & charges section. Reimburse business expenses, company perks, and mediclaim allowances, or configure expense types to fit your company's policies. Do all of this on the go with the Frappe HR mobile app.",
+          content: "Enable employees to claim expenses they make out of their pocket on behalf of the company. Snap and upload receipts supporting the claims. You can also partially sanction each claim item and update taxes on your expenses separately in the taxes & charges section. Reimburse business expenses, company perks, and mediclaim allowances, or configure expense types to fit your company's policies. Do all of this on the go with the Talrn mobile app.",
           image: '/claim-expense.webp',
         },
         {
@@ -295,17 +295,17 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'Manage employee advances',
-          content: "With Frappe HR, employees can easily request advances to cover upcoming business expenses or request salary advances. You have the flexibility to pay out these advances through payroll or separate payment entries and even manage the return of unclaimed advance amounts. Plus, the intuitive status tracking provides clear visibility into the claim & payment status of all advances.",
+          content: "With Talrn, employees can easily request advances to cover upcoming business expenses or request salary advances. You have the flexibility to pay out these advances through payroll or separate payment entries and even manage the return of unclaimed advance amounts. Plus, the intuitive status tracking provides clear visibility into the claim & payment status of all advances.",
           image: '/employee-advances.webp',
         },
         {
           title: 'Settle advances against expenses',
-          content: "When employees incur expenses on behalf of their company, they either spend it from their own pocket or use prepaid advances and claim later. Frappe HR takes care of auto-allocating unclaimed amounts from multiple advances against your expenses to eliminate the need for separate reconciliation.",
+          content: "When employees incur expenses on behalf of their company, they either spend it from their own pocket or use prepaid advances and claim later. Talrn takes care of auto-allocating unclaimed amounts from multiple advances against your expenses to eliminate the need for separate reconciliation.",
           image: '/settle-advances.webp',
         },
         {
           title: 'Seamless accounting integration',
-          content: "With Frappe HR, every HR & payroll transaction is meticulously recorded with its corresponding accounting impact. Easily assign accounting dimensions such as projects, cost centers, and departments to your claim items. This ensures costs are accurately tracked against the right entities for cleaner reporting. You can also manage partial payments against claims and advances and track employee payables and receivables for a complete financial picture.",
+          content: "With Talrn, every HR & payroll transaction is meticulously recorded with its corresponding accounting impact. Easily assign accounting dimensions such as projects, cost centers, and departments to your claim items. This ensures costs are accurately tracked against the right entities for cleaner reporting. You can also manage partial payments against claims and advances and track employee payables and receivables for a complete financial picture.",
           image: '/accounting-integration.webp',
         },
         {
@@ -321,7 +321,7 @@ function FeaturePage({ feature }) {
     },
     'performance-management': {
       title: 'Performance Management',
-      intro: "Effective performance management is key to unlocking your team's full potential and achieving organizational goals. Frappe HR offers a comprehensive system that empowers you to define department-wise Key Result Areas (KRAs) and individual goals, track progress, and provide continuous employee feedback. Embrace a more organized, growth-focused approach with features like appraisal templates, automated goal score computation, formula-based final scores, and more.",
+      intro: "Effective performance management is key to unlocking your team's full potential and achieving organizational goals. Talrn offers a comprehensive system that empowers you to define department-wise Key Result Areas (KRAs) and individual goals, track progress, and provide continuous employee feedback. Embrace a more organized, growth-focused approach with features like appraisal templates, automated goal score computation, formula-based final scores, and more.",
       steps: [
         'Create appraisal templates',
         'Manage appraisal cycles',
@@ -340,7 +340,7 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'Manage appraisal cycles',
-          content: "We understand that different departments might require different evaluation cycles. Engineering teams may benefit from annual reviews, while sales might thrive with quarterly feedback loops. Frappe HR allows you to group employees based on assessment periods, departments, designations, and more with appraisal cycles. Track progress at every stage of the appraisal process and configure automated reminders and notifications to keep everyone informed.",
+          content: "We understand that different departments might require different evaluation cycles. Engineering teams may benefit from annual reviews, while sales might thrive with quarterly feedback loops. Talrn allows you to group employees based on assessment periods, departments, designations, and more with appraisal cycles. Track progress at every stage of the appraisal process and configure automated reminders and notifications to keep everyone informed.",
           image: '/appraisal-cycle.webp',
         },
         {
@@ -355,7 +355,7 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'Capture timely performance feedback',
-          content: "Offer timely and constructive feedback to your employees with Frappe HR. Use 360° feedback to gather input from peers, managers, and subordinates, ensuring a well-rounded evaluation. Get a complete perspective on every employee's performance with the feedback timeline view and average ratings. You can also submit new feedback right from this view.",
+          content: "Offer timely and constructive feedback to your employees with Talrn. Use 360° feedback to gather input from peers, managers, and subordinates, ensuring a well-rounded evaluation. Get a complete perspective on every employee's performance with the feedback timeline view and average ratings. You can also submit new feedback right from this view.",
           image: '/feedback.webp',
         },
         {
@@ -381,7 +381,7 @@ function FeaturePage({ feature }) {
     },
     payroll: {
       title: 'Payroll',
-      intro: "Seeing a 'salary credited' message often brings a smile to your face, but there's a lot of work that goes into that. Diverse pay structures, complex regional tax regulations, and accurate generation of payslips for a large team can feel overwhelming. We're making all of this easier with a feature-packed payroll module. Cut ties with disparate payroll and accounting systems to save hours of reconciliation work every month on payroll and expense data. Frappe HR promises integrated accounting with your payroll.",
+      intro: "Seeing a 'salary credited' message often brings a smile to your face, but there's a lot of work that goes into that. Diverse pay structures, complex regional tax regulations, and accurate generation of payslips for a large team can feel overwhelming. We're making all of this easier with a feature-packed payroll module. Cut ties with disparate payroll and accounting systems to save hours of reconciliation work every month on payroll and expense data. Talrn promises integrated accounting with your payroll.",
       steps: [
         'Create salary structures',
         'Assign salary structures in bulk',
@@ -396,7 +396,7 @@ function FeaturePage({ feature }) {
       sections: [
         {
           title: 'Create salary structures',
-          content: "Frappe HR empowers you to build rule-based, complex salary structures easily. Define earning and deduction components with conditions and formulas. Map any payroll use case - from statutory & tax deductions to bonuses and allowances. Ensure accurate calculations for components based on actual working days, rounding preferences, and amount inclusions in salary totals. If you update component formulas anytime, simply synchronize changes with existing salary structures.",
+          content: "Talrn empowers you to build rule-based, complex salary structures easily. Define earning and deduction components with conditions and formulas. Map any payroll use case - from statutory & tax deductions to bonuses and allowances. Ensure accurate calculations for components based on actual working days, rounding preferences, and amount inclusions in salary totals. If you update component formulas anytime, simply synchronize changes with existing salary structures.",
           image: '/salary-structure.webp',
         },
         {
@@ -406,7 +406,7 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'Preview salary slips to avoid misconfigurations',
-          content: "Want to ensure your salary structure configurations are correct? Frappe HR lets you preview salary slips to see the configurations taking effect. Make amends wherever needed before running the actual payroll.",
+          content: "Want to ensure your salary structure configurations are correct? Talrn lets you preview salary slips to see the configurations taking effect. Make amends wherever needed before running the actual payroll.",
           image: '/preview-slips.webp',
         },
         {
@@ -416,22 +416,22 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'Accommodate additional salaries & off-cycle payments',
-          content: "Manage ad hoc salary components without revising your salary structure every time. The additional salary feature in Frappe HR helps you easily set up one-time or recurring payments or deductions. These could be performance bonuses, deputation allowances, pay cuts, arrears, incentives, or any other type of adjustment. You can also specify whether tax needs to be deducted for this specific component during payroll. Need to process reimbursements or salary advances outside the regular cycle? Easily handle off-cycle payments by creating journal entries.",
+          content: "Manage ad hoc salary components without revising your salary structure every time. The additional salary feature in Talrn helps you easily set up one-time or recurring payments or deductions. These could be performance bonuses, deputation allowances, pay cuts, arrears, incentives, or any other type of adjustment. You can also specify whether tax needs to be deducted for this specific component during payroll. Need to process reimbursements or salary advances outside the regular cycle? Easily handle off-cycle payments by creating journal entries.",
           image: '/off-cycle.webp',
         },
         {
           title: 'Book expenses against payroll cost centers',
-          content: "Payroll is a crucial part of your organizational expenses, and you may benefit from tracking these expenses on a granular level. Frappe HR allows you to book salary expenses against multiple cost centers based on employee or department. As your employees grow in their careers, they might contribute actively to more than 1 business unit. In that case, the salary expenses associated with that employee can be distributed against multiple cost centers by configuring this breakup in salary structure assignments.",
+          content: "Payroll is a crucial part of your organizational expenses, and you may benefit from tracking these expenses on a granular level. Talrn allows you to book salary expenses against multiple cost centers based on employee or department. As your employees grow in their careers, they might contribute actively to more than 1 business unit. In that case, the salary expenses associated with that employee can be distributed against multiple cost centers by configuring this breakup in salary structure assignments.",
           image: '/cost-center.webp',
         },
         {
           title: 'Handle multi-currency payroll',
-          content: "Frappe HR enables you to manage payroll for a global team. Create salary structures and assignments in a different currency and get gross and net totals in the selected currency as well as company currency with exchange rates. Keep your ledgers in sync with multi-currency accounting.",
+          content: "Talrn enables you to manage payroll for a global team. Create salary structures and assignments in a different currency and get gross and net totals in the selected currency as well as company currency with exchange rates. Keep your ledgers in sync with multi-currency accounting.",
           image: '/multi-currency.webp',
         },
         {
           title: 'Manage employee loans',
-          content: "Frappe HR's integration with Frappe Lending allows you to efficiently manage employee loans right from disbursement to recovery, and synchronize loan repayments with your payroll.",
+          content: "Talrn's loan management system allows you to efficiently manage employee loans right from disbursement to recovery, and synchronize loan repayments with your payroll.",
           image: '/loans.webp',
         },
         {
@@ -447,7 +447,7 @@ function FeaturePage({ feature }) {
     },
     'payroll-tax': {
       title: 'Payroll Tax & Reports',
-      intro: "Frappe HR's flexibility enables you to map tax configurations for any region. Define income tax slabs, manage tax exemptions, and proof submissions. Stay informed throughout your payroll period with tax breakups on salary slips and the income tax computation report.",
+      intro: "Talrn's flexibility enables you to map tax configurations for any region. Define income tax slabs, manage tax exemptions, and proof submissions. Stay informed throughout your payroll period with tax breakups on salary slips and the income tax computation report.",
       steps: [
         'Configure income tax slabs',
         'Submit tax declarations & exemption proofs',
@@ -459,7 +459,7 @@ function FeaturePage({ feature }) {
       sections: [
         {
           title: 'Configure income tax slabs',
-          content: "Frappe HR lets you configure multiple income tax slabs with rates and conditions. Link the employee's preferred tax regime in their salary structure assignment. Easily factor in additional taxes like Health and Educational Cess on top of the income tax calculations. You can also define the minimum and maximum taxable amount for which this tax would be applicable.",
+          content: "Talrn lets you configure multiple income tax slabs with rates and conditions. Link the employee's preferred tax regime in their salary structure assignment. Easily factor in additional taxes like Health and Educational Cess on top of the income tax calculations. You can also define the minimum and maximum taxable amount for which this tax would be applicable.",
           image: '/tax-slab.webp',
         },
         {
@@ -469,7 +469,7 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'View income tax breakup on salary slips',
-          content: "Have you ever struggled with understanding how the tax amount was derived on your Salary Slip? A salary slip generated in Frappe HR gives you a complete overview of your tax calculations - CTC, exemptions, declarations, non-taxable earnings, annual taxable amount, income tax deducted to date, and future deductions.",
+          content: "Have you ever struggled with understanding how the tax amount was derived on your Salary Slip? A salary slip generated in Talrn gives you a complete overview of your tax calculations - CTC, exemptions, declarations, non-taxable earnings, annual taxable amount, income tax deducted to date, and future deductions.",
           image: '/tax-breakup.webp',
         },
         {
@@ -479,7 +479,7 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'Review payroll cycle with the salary register report',
-          content: "Before finalizing your payroll, ensure accuracy with Frappe HR's salary register report. This report provides a meticulous overview of all the salary slips. It's packed with key details for every employee payslip - payment days, earnings, deduction, and statutory component amounts, loan repayments, gross pay, and total deductions accounting for the actual net pay. Identify any errors or discrepancies before submission, ensuring a smooth and accurate process. You can also refer back to this report for historical salary data.",
+          content: "Before finalizing your payroll, ensure accuracy with Talrn's salary register report. This report provides a meticulous overview of all the salary slips. It's packed with key details for every employee payslip - payment days, earnings, deduction, and statutory component amounts, loan repayments, gross pay, and total deductions accounting for the actual net pay. Identify any errors or discrepancies before submission, ensuring a smooth and accurate process. You can also refer back to this report for historical salary data.",
           video: "/salary-register.mp4",
         },
         {
@@ -495,7 +495,7 @@ function FeaturePage({ feature }) {
     },
     'mobile-app': {
       title: 'Mobile App',
-      intro: "The Frappe HR Mobile App brings everyday tasks to your fingertips — employee check-ins, leaves, claims, advances, and salary slips. The goal of this app is not just to ease operations for your employees but also to improve efficiency for your HR Managers. Track all the requests that need your attention on the go based on the employee's approver/workflows.",
+      intro: "The Talrn Mobile App brings everyday tasks to your fingertips — employee check-ins, leaves, claims, advances, and salary slips. The goal of this app is not just to ease operations for your employees but also to improve efficiency for your HR Managers. Track all the requests that need your attention on the go based on the employee's approver/workflows.",
       steps: [
         'Check-in and check-out with geolocation capturing',
         'Request Panel',
@@ -509,7 +509,7 @@ function FeaturePage({ feature }) {
       sections: [
         {
           title: 'Check-in and check-out with geolocation capturing',
-          content: "Make check-ins and check-outs a breeze with the Frappe HR mobile app's easy interface. You can also enable geolocation tracking for a detailed work location history.\n\nDashboard\n\nThe bottom tab menu helps you quickly navigate between individual dashboards.\n\nCheckin Panel: Keep track of your last checkin/checkout timestamp and checkin from the panel with just a few clicks. We will soon introduce geo-tagging and geo-fencing for employee checkins.\n\nQuick Links: Shortcuts to create/access commonly-used documents.\n\nRequest Panel: The goal of this app is not just to ease your employee ops but also improve efficiency for your HR Managers. Track all the requests that need your attention on the go based on the employee's approver/workflows.",
+          content: "Make check-ins and check-outs a breeze with the Talrn mobile app's easy interface. You can also enable geolocation tracking for a detailed work location history.\n\nDashboard\n\nThe bottom tab menu helps you quickly navigate between individual dashboards.\n\nCheckin Panel: Keep track of your last checkin/checkout timestamp and checkin from the panel with just a few clicks. We will soon introduce geo-tagging and geo-fencing for employee checkins.\n\nQuick Links: Shortcuts to create/access commonly-used documents.\n\nRequest Panel: The goal of this app is not just to ease your employee ops but also improve efficiency for your HR Managers. Track all the requests that need your attention on the go based on the employee's approver/workflows.",
           video: "/mobile-checkin.mp4",
         },
         {
@@ -534,7 +534,7 @@ function FeaturePage({ feature }) {
         },
         {
           title: 'Notifications',
-          content: "Notifications keep the approvers up-to-date with the documents that need their attention and employees are notified whenever their requests get reviewed. Clicking on a particular item takes you to the target document.\n\nSites hosted on Frappe Cloud can also enable push notifications for instant alerts.",
+          content: "Notifications keep the approvers up-to-date with the documents that need their attention and employees are notified whenever their requests get reviewed. Clicking on a particular item takes you to the target document.\n\nYou can also enable push notifications for instant alerts.",
           image: '/notifications.webp',
         },
         {

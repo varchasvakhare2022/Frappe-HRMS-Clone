@@ -411,7 +411,7 @@ const PayrollTaxReportsPage = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Payroll Tax & Reports</h1>
           <p className="text-gray-600">
-            Frappe HR's flexibility enables you to map tax configurations for any region. Define income tax slabs, 
+            Talrn's flexibility enables you to map tax configurations for any region. Define income tax slabs, 
             manage tax exemptions, and proof submissions. Stay informed throughout your payroll period with tax breakups 
             on salary slips and the income tax computation report.
           </p>

@@ -49,7 +49,7 @@ function DocumentationPage() {
       <div className="mb-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Documentation</h1>
         <p className="text-xl text-gray-600 mb-6">
-          Everything you need to know about Frappe HR
+          Everything you need to know about Talrn
         </p>
 
         {/* Search Bar */}

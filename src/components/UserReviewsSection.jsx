@@ -39,7 +39,7 @@ function UserReviewsSection() {
       title: 'Operations Manager, GlobalCorp',
       image: 'https://frappe.io/files/jose.jpg',
       review:
-        "Managing a distributed team across different time zones was challenging. Frappe HR's attendance and shift management features have made our lives so much easier. The mobile app is fantastic!",
+        "Managing a distributed team across different time zones was challenging. Talrn's attendance and shift management features have made our lives so much easier. The mobile app is fantastic!",
       initials: 'JG',
     },
     {
@@ -47,7 +47,7 @@ function UserReviewsSection() {
       title: 'Founder, StartupHub Asia',
       image: 'https://frappe.io/files/liwei.jpg',
       review:
-        "As a startup, we needed something flexible and affordable. Frappe HR checked all boxes. The leave management system is intuitive and our team loves it.",
+        "As a startup, we needed something flexible and affordable. Talrn checked all boxes. The leave management system is intuitive and our team loves it.",
       initials: 'LW',
     },
     {
@@ -55,7 +55,7 @@ function UserReviewsSection() {
       title: 'VP of People Operations, Enterprise Solutions Ltd.',
       image: 'https://frappe.io/files/priya.jpg',
       review:
-        "We've been using Frappe HR for 3 years now and it has scaled beautifully with our company's growth from 50 to 500 employees. The recruitment module helped us streamline our hiring process significantly. The customization options are endless, and the support team is incredibly responsive. We've integrated it with our existing tools seamlessly. This is exactly what modern HR software should be - powerful yet simple to use!",
+        "We've been using Talrn for 3 years now and it has scaled beautifully with our company's growth from 50 to 500 employees. The recruitment module helped us streamline our hiring process significantly. The customization options are endless, and the support team is incredibly responsive. We've integrated it with our existing tools seamlessly. This is exactly what modern HR software should be - powerful yet simple to use!",
       initials: 'PS',
     },
     {
@@ -87,7 +87,7 @@ function UserReviewsSection() {
       title: 'Co-founder & CTO, DevOps Solutions',
       image: 'https://frappe.io/files/raj.jpg',
       review:
-        "As a tech company, we appreciate good software. Frappe HR's open-source nature means we could customize it exactly to our needs. The API is well-documented and integration was smooth.",
+        "As a tech company, we appreciate good software. Talrn's open-source nature means we could customize it exactly to our needs. The API is well-documented and integration was smooth.",
       initials: 'RK',
     },
     {
@@ -95,7 +95,7 @@ function UserReviewsSection() {
       title: 'HR Manager, Manufacturing Co.',
       image: 'https://frappe.io/files/maria.jpg',
       review:
-        "The shift management and attendance tracking features are perfect for our manufacturing facility. We have multiple shifts running 24/7 and Frappe HR handles it effortlessly. The biometric integration works flawlessly!",
+        "The shift management and attendance tracking features are perfect for our manufacturing facility. We have multiple shifts running 24/7 and Talrn handles it effortlessly. The biometric integration works flawlessly!",
       initials: 'MG',
     },
   ]

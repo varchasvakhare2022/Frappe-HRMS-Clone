@@ -3,87 +3,87 @@ import { MessageCircle, Rss } from 'lucide-react'
 
 function BlogPage() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('Frappe HR')
+  const [selectedCategory, setSelectedCategory] = useState('Talrn')
 
   const posts = [
     {
       id: 1,
-      title: 'Frappe HR updates from January 2024',
+      title: 'Talrn updates from January 2024',
       excerpt: 'January saw some important salary setup enhancements, a mobile-friendly Job Portal, and more. Keep reading for more details!',
       author: 'Akash Tom',
-      category: 'Frappe HR',
+      category: 'Talrn',
       comments: 1,
       thumbnail: '/blog-jan-2024.png',
     },
     {
       id: 2,
-      title: 'Frappe HR updates from December 2023',
+      title: 'Talrn updates from December 2023',
       excerpt: 'We begin this year with some exciting new updates including Job Portal enhancements, Interview cleanup, and Salary Component enhancements. Keep reading to find out more!',
       author: 'Akash Tom',
-      category: 'Frappe HR',
+      category: 'Talrn',
       comments: 0,
       thumbnail: '/blog-dec-2023.png',
     },
     {
       id: 3,
-      title: 'October 2023 - Introducing Frappe HR Version 15',
-      excerpt: 'Frappe HR Version 15 is here! This major update targets speeding up your operations at scale.',
+      title: 'October 2023 - Introducing Talrn Version 15',
+      excerpt: 'Talrn Version 15 is here! This major update targets speeding up your operations at scale.',
       author: 'Rucha Mahabal',
-      category: 'Frappe HR',
+      category: 'Talrn',
       comments: 2,
       thumbnail: '/blog-v15.png',
     },
     {
       id: 4,
-      title: 'Introducing Frappe HR Mobile App',
-      excerpt: 'Introducing Frappe HR Mobile App ✨ Employee Checkins, Leaves, Claims, Advances, Salary Slips - right at your fingertips',
+      title: 'Introducing Talrn Mobile App',
+      excerpt: 'Introducing Talrn Mobile App ✨ Employee Checkins, Leaves, Claims, Advances, Salary Slips - right at your fingertips',
       author: 'Rucha Mahabal',
-      category: 'Frappe HR',
+      category: 'Talrn',
       comments: 8,
       thumbnail: '/blog-mobile.png',
     },
     {
       id: 5,
-      title: 'Frappe HR updates from August & September 2023',
+      title: 'Talrn updates from August & September 2023',
       excerpt: 'We spent the last 2 months adding some cool new features to v15 which is set to release in Nov. Here are some small updates that went into v14 in Aug & Sept.',
       author: 'Rucha Mahabal',
-      category: 'Frappe HR',
+      category: 'Talrn',
       comments: 0,
       thumbnail: '/blog-aug-sep-2023.png',
     },
     {
       id: 6,
-      title: 'Configure, Customize and Automate your people operations with Frappe HR',
+      title: 'Configure, Customize and Automate your people operations with Talrn',
       excerpt: 'With a wide range of customization options available, you can set up a simple yet robust solution to manage your complex HR needs.',
       author: 'Anupama',
-      category: 'Frappe HR',
+      category: 'Talrn',
       comments: 2,
       thumbnail: '/blog-customize.png',
     },
     {
       id: 7,
-      title: 'Frappe HR updates from July 2023',
+      title: 'Talrn updates from July 2023',
       excerpt: 'July marked the addition of some important UX enhancements in holidays, leaves, attendance & payroll to make your lives easier!',
       author: 'Rucha Mahabal',
-      category: 'Frappe HR',
+      category: 'Talrn',
       comments: 0,
       thumbnail: '/blog-july-2023.png',
     },
     {
       id: 8,
-      title: 'Frappe HR updates from May & June 2023',
+      title: 'Talrn updates from May & June 2023',
       excerpt: 'May & June saw some significant performance improvements in HR and some complex edge-case handling in Shift Management',
       author: 'Rucha Mahabal',
-      category: 'Frappe HR',
+      category: 'Talrn',
       comments: 0,
       thumbnail: '/blog-may-june-2023.png',
     },
     {
       id: 9,
-      title: 'Take the hassle out of Leave Management with Frappe HR',
-      excerpt: "Frappe HR's rich set of rules allows you to configure leave policies that suit your work culture. Read this blog to understand more about the dynamics of leave automation.",
+      title: 'Take the hassle out of Leave Management with Talrn',
+      excerpt: "Talrn's rich set of rules allows you to configure leave policies that suit your work culture. Read this blog to understand more about the dynamics of leave automation.",
       author: 'Anupama',
-      category: 'Frappe HR',
+      category: 'Talrn',
       comments: 0,
       thumbnail: '/blog-leave.png',
     },
@@ -122,7 +122,7 @@ function BlogPage() {
               className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent bg-white"
             >
               <option value="All">All Categories</option>
-              <option value="Frappe HR">Frappe HR</option>
+              <option value="Talrn">Talrn</option>
             </select>
           </div>
         </div>

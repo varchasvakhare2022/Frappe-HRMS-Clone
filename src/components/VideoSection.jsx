@@ -77,7 +77,7 @@ function VideoSection() {
       {/* Video Player - Centered with larger width */}
       <div className="max-w-[850px] mx-auto mb-10">
         <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black group">
-          {/* Video Element with Local Frappe HR Video */}
+          {/* Video Element with Local HR Video */}
           <video
             ref={videoRef}
             className="w-full aspect-video object-cover"
@@ -194,7 +194,7 @@ function VideoSection() {
       {/* Description Text Below Video - Aligned with content below */}
       <div className="max-w-3xl mx-auto px-4">
         <p className="text-base text-gray-700 leading-relaxed mb-12 max-w-[600px] pl-2">
-          Frappe HR is a <span className="font-semibold text-gray-900">100% open source</span>, modern, user-friendly solution to drive excellence within your team. Simplify your HR and Payroll operations with a product crafted as per your needs.
+          Talrn is a <span className="font-semibold text-gray-900">100% open source</span>, modern, user-friendly solution to drive excellence within your team. Simplify your HR and Payroll operations with a product crafted as per your needs.
         </p>
       </div>
     </div>

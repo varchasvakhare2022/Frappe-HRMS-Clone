@@ -130,16 +130,16 @@ function DashboardPage() {
   }
 
   const sidebarItems = [
-    { icon: Briefcase, label: 'HR', hasSubmenu: false },
-    { icon: Folder, label: 'Projects', hasSubmenu: false },
-    { icon: Users, label: 'Users', hasSubmenu: false },
-    { icon: Monitor, label: 'Website', hasSubmenu: false },
-    { icon: DollarSign, label: 'Payroll', hasSubmenu: true },
-    { icon: Wrench, label: 'Tools', hasSubmenu: false },
-    { icon: Settings, label: 'ERPNext Settings', hasSubmenu: false },
-    { icon: LinkIcon, label: 'Integrations', hasSubmenu: false },
-    { icon: LinkIcon, label: 'ERPNext Integrations', hasSubmenu: false },
-    { icon: Hammer, label: 'Build', hasSubmenu: false },
+    { icon: MessageSquare, label: 'Daily Updates (SOD/EOD)', url: '/daily-updates', hasSubmenu: false },
+    { icon: FileText, label: 'Leave Management', url: '/leave-management', hasSubmenu: false },
+    { icon: Clock, label: 'Attendance Tracking', url: '/attendance', hasSubmenu: false },
+    { icon: Briefcase, label: 'Recruitment', url: '/recruitment', hasSubmenu: false },
+    { icon: Users, label: 'Employee Lifecycle', url: '/employee-lifecycle', hasSubmenu: false },
+    { icon: Receipt, label: 'Expense Management', url: '/expense-management', hasSubmenu: false },
+    { icon: DollarSign, label: 'Payroll Management', url: '/payroll', hasSubmenu: false },
+    { icon: Award, label: 'Performance Management', url: '/performance-management', hasSubmenu: false },
+    { icon: BarChart3, label: 'Tax & Reports', url: '/payroll-tax-reports', hasSubmenu: false },
+    { icon: Smartphone, label: 'Mobile App', url: '/mobile-app', hasSubmenu: false },
   ]
 
   const shortcuts = [
@@ -202,11 +202,11 @@ function DashboardPage() {
       <div className="bg-white border-b border-gray-200 h-14 flex items-center px-4 sticky top-0 z-50">
         {/* Logo */}
         <div className="flex items-center gap-3 mr-4">
-          <svg fill="none" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8">
-            <path d="M36.9286 0.5H15.0714C7.02385 0.5 0.5 7.02385 0.5 15.0714V36.9286C0.5 44.9762 7.02385 51.5 15.0714 51.5H36.9286C44.9762 51.5 51.5 44.9762 51.5 36.9286V15.0714C51.5 7.02385 44.9762 0.5 36.9286 0.5Z" fill="#06B58B"></path>
-            <path d="M15.9638 40.5715L13.5049 37.8758C16.9474 34.7612 21.3734 33.0308 25.9816 33.0308C30.5898 33.0308 35.0342 34.743 38.4585 37.8758L35.9995 40.5715C33.2309 38.0579 29.6791 36.6736 25.9816 36.6736C22.2841 36.6736 18.7142 38.0579 15.9456 40.5715H15.9638Z" fill="white"></path>
-            <path d="M27.6756 11.4287H17.002V15.0716H27.6756C29.6792 15.0716 31.3185 16.7109 31.3185 18.7144V22.1023C31.3185 24.1058 29.6792 25.7451 27.6756 25.7451H24.2877C22.2841 25.7451 20.6448 24.1058 20.6448 22.1023V19.8072H17.002V22.1023C17.002 26.1276 20.2623 29.388 24.2877 29.388H27.6756C31.701 29.388 34.9613 26.1276 34.9613 22.1023V18.7144C34.9613 14.6891 31.701 11.4287 27.6756 11.4287Z" fill="white"></path>
-          </svg>
+          <img 
+            src="/talrn-logo.jpeg" 
+            alt="Talrn Logo" 
+            className="w-8 h-8 object-contain"
+          />
         </div>
 
         {/* Search Bar */}
@@ -287,7 +287,7 @@ function DashboardPage() {
             <button className="text-gray-600 hover:text-gray-900">
               <Menu className="w-5 h-5" />
             </button>
-            <h2 className="font-semibold text-gray-900 text-lg">Payables</h2>
+            <h2 className="font-semibold text-gray-900 text-lg">HRMS Modules</h2>
           </div>
 
           {/* Sidebar Content */}
@@ -303,6 +303,7 @@ function DashboardPage() {
               {sidebarItems.map((item, index) => (
                 <button
                   key={index}
+                  onClick={() => item.url && navigate(item.url)}
                   className="w-full flex items-center gap-2.5 px-2 py-2 text-sm text-gray-700 hover:bg-gray-200 rounded transition-colors"
                 >
                   <item.icon className="w-4 h-4 text-gray-600" strokeWidth={1.8} />

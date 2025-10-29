@@ -15,7 +15,7 @@ function CTASection() {
             href="/signup"
             className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-900 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 hover:shadow-md"
           >
-            <span>Get started with Frappe HR</span>
+            <span>Get started with Talrn</span>
             <ArrowRight className="w-4 h-4" strokeWidth={2} />
           </a>
         </div>

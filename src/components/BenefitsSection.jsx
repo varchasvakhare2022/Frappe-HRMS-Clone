@@ -4,13 +4,13 @@ function BenefitsSection() {
       number: 1,
       title: '100% open source',
       description:
-        'Frappe HR is a 100% open-source HR & Payroll product, offering you complete transparency and flexibility. Backed by a community of over 20,000 developers and 180 partners, there will never be a struggle for solutions',
+        'Talrn is a 100% open-source HR & Payroll product, offering you complete transparency and flexibility. Backed by a community of over 20,000 developers and 180 partners, there will never be a struggle for solutions',
     },
     {
       number: 2,
       title: 'Affordable & inclusive',
       description:
-        'Say goodbye to overvalued SaaS solutions with inflated per-user pricing. With Frappe HR, your software expenses wouldn\'t grow as your team grows. Deliver the best employee and HR experience with a product designed for everyone in the organization',
+        'Say goodbye to overvalued SaaS solutions with inflated per-user pricing. With Talrn, your software expenses wouldn\'t grow as your team grows. Deliver the best employee and HR experience with a product designed for everyone in the organization',
     },
     {
       number: 3,
@@ -22,13 +22,13 @@ function BenefitsSection() {
       number: 4,
       title: 'Easy integrations',
       description:
-        'Cut ties with disparate payroll and accounting systems to save hours of reconciliation work. Frappe HR promises integrated accounting with ERPNext every step of the way. Integrate with biometric tools, banks, or any third-party software',
+        'Cut ties with disparate payroll and accounting systems to save hours of reconciliation work. Talrn promises integrated accounting with ERPNext every step of the way. Integrate with biometric tools, banks, or any third-party software',
     },
     {
       number: 5,
-      title: 'Powered by the low-code, no-code Frappe Framework',
+      title: 'Powered by modern low-code, no-code technology',
       description:
-        'Frappe framework enables you to build your own forms, set up advanced approval workflows on any form, manage roles and permissions, set up notifications and reminders, and build reports and dashboards to meet all your needs',
+        'Our platform enables you to build your own forms, set up advanced approval workflows on any form, manage roles and permissions, set up notifications and reminders, and build reports and dashboards to meet all your needs',
     },
     {
       number: 6,
@@ -48,7 +48,7 @@ function BenefitsSection() {
 
         {/* Section Heading */}
         <h2 className="text-xl font-semibold text-gray-900 leading-[1.3] tracking-[0.12px] mb-8">
-          Why Frappe HR?
+          Why Talrn?
         </h2>
 
         {/* Benefits List */}

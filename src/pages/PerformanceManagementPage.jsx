@@ -489,7 +489,7 @@ const PerformanceManagementPage = () => {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Performance Management</h1>
           <p className="text-gray-600">
             Effective performance management is key to unlocking your team's full potential and achieving organizational goals. 
-            Frappe HR offers a comprehensive system that empowers you to define department-wise Key Result Areas (KRAs) and 
+            Talrn offers a comprehensive system that empowers you to define department-wise Key Result Areas (KRAs) and 
             individual goals, track progress, and provide continuous employee feedback. Embrace a more organized, growth-focused 
             approach with features like appraisal templates, automated goal score computation, formula-based final scores, and more.
           </p>

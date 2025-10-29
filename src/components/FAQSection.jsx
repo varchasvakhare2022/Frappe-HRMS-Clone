@@ -7,68 +7,68 @@ function FAQSection() {
   const faqs = [
     {
       question:
-        'How does Frappe HR compare to traditional HRMS solutions in terms of cost and flexibility?',
+        'How does Talrn compare to traditional HRMS solutions in terms of cost and flexibility?',
       answer:
-        'Frappe HR is 100% open-source, meaning there are no licensing fees or per-user charges that traditional HRMS solutions impose. This makes it significantly more affordable, especially as your team grows. Additionally, being built on the Frappe Framework, it offers unmatched flexibility and customization options compared to rigid, proprietary systems.',
+        'Talrn is 100% open-source, meaning there are no licensing fees or per-user charges that traditional HRMS solutions impose. This makes it significantly more affordable, especially as your team grows. Additionally, it offers unmatched flexibility and customization options compared to rigid, proprietary systems.',
     },
     {
-      question: 'Does Frappe HR support remote and hybrid workforce management?',
+      question: 'Does Talrn support remote and hybrid workforce management?',
       answer:
-        'Yes, Frappe HR is designed to support modern work arrangements including remote and hybrid workforces. Features like mobile check-ins, GPS-based attendance, flexible shift scheduling, and comprehensive leave management make it easy to manage distributed teams effectively.',
+        'Yes, Talrn is designed to support modern work arrangements including remote and hybrid workforces. Features like mobile check-ins, GPS-based attendance, flexible shift scheduling, and comprehensive leave management make it easy to manage distributed teams effectively.',
     },
     {
-      question: 'How customizable is Frappe HR compared to other HR software?',
+      question: 'How customizable is Talrn compared to other HR software?',
       answer:
-        'Frappe HR is highly customizable thanks to the Frappe Framework. You can create custom fields, forms, reports, workflows, and even modify the source code to meet your specific requirements. This level of customization is rarely available in proprietary HR software.',
+        'Talrn is highly customizable thanks to the modern HR platform. You can create custom fields, forms, reports, workflows, and even modify the source code to meet your specific requirements. This level of customization is rarely available in proprietary HR software.',
     },
     {
-      question: 'Is Frappe HR suitable for enterprises or small businesses?',
+      question: 'Is Talrn suitable for enterprises or small businesses?',
       answer:
-        'Frappe HR is suitable for organizations of all sizes. Small businesses benefit from its affordability and ease of use, while enterprises appreciate its scalability, advanced features, and ability to handle complex organizational structures and workflows.',
-    },
-    {
-      question:
-        'Can I integrate Frappe HR with my existing ERP or accounting system?',
-      answer:
-        'Yes, Frappe HR integrates seamlessly with ERPNext for accounting and can be connected to other systems through REST APIs. The integration capabilities allow you to sync employee data, payroll information, and other HR metrics with your existing business systems.',
+        'Talrn is suitable for organizations of all sizes. Small businesses benefit from its affordability and ease of use, while enterprises appreciate its scalability, advanced features, and ability to handle complex organizational structures and workflows.',
     },
     {
       question:
-        'What kind of reports and analytics does Frappe HR provide for decision making?',
+        'Can I integrate Talrn with my existing ERP or accounting system?',
       answer:
-        'Frappe HR provides comprehensive reporting and analytics capabilities including attendance reports, leave analytics, payroll summaries, recruitment metrics, and performance insights. You can also create custom reports and dashboards to track the metrics that matter most to your organization.',
-    },
-    {
-      question: 'How secure is employee data stored in Frappe HR?',
-      answer:
-        'Frappe HR takes data security seriously with role-based permissions, encrypted data storage, audit logs, and regular security updates. Since you can self-host Frappe HR, you maintain complete control over your data and can implement additional security measures as needed.',
+        'Yes, Talrn integrates seamlessly with ERPNext for accounting and can be connected to other systems through REST APIs. The integration capabilities allow you to sync employee data, payroll information, and other HR metrics with your existing business systems.',
     },
     {
       question:
-        'Does Frappe HR include employee self-service and mobile access features?',
+        'What kind of reports and analytics does Talrn provide for decision making?',
       answer:
-        'Yes, Frappe HR includes a mobile app that allows employees to check in/out, apply for leaves, view payslips, update personal information, and access other HR services on the go. The self-service portal reduces administrative burden and empowers employees.',
+        'Talrn provides comprehensive reporting and analytics capabilities including attendance reports, leave analytics, payroll summaries, recruitment metrics, and performance insights. You can also create custom reports and dashboards to track the metrics that matter most to your organization.',
+    },
+    {
+      question: 'How secure is employee data stored in Talrn?',
+      answer:
+        'Talrn takes data security seriously with role-based permissions, encrypted data storage, audit logs, and regular security updates. Since you can self-host Talrn, you maintain complete control over your data and can implement additional security measures as needed.',
     },
     {
       question:
-        'What support and training options are available when implementing Frappe HR?',
+        'Does Talrn include employee self-service and mobile access features?',
       answer:
-        'Frappe HR is backed by a strong community of over 20,000 developers and 180+ partners worldwide. You can access documentation, community forums, video tutorials, and professional support from Frappe or certified partners for implementation, customization, and training.',
+        'Yes, Talrn includes a mobile app that allows employees to check in/out, apply for leaves, view payslips, update personal information, and access other HR services on the go. The self-service portal reduces administrative burden and empowers employees.',
     },
     {
-      question: 'Can Frappe HR handle multi-currency payroll for global teams?',
+      question:
+        'What support and training options are available when implementing Talrn?',
       answer:
-        'Absolutely! Frappe HR supports multi-currency payroll processing, making it ideal for companies with international teams. You can create salary structures in different currencies, handle exchange rates automatically, and maintain accurate financial records across all regions.',
+        'Talrn is backed by a strong community of developers and partners worldwide. You can access documentation, community forums, video tutorials, and professional support from our team or certified partners for implementation, customization, and training.',
     },
     {
-      question: 'How does Frappe HR handle compliance with labor laws?',
+      question: 'Can Talrn handle multi-currency payroll for global teams?',
       answer:
-        'Frappe HR provides configurable tax slabs, statutory compliance reports, and customizable workflows to help you comply with regional labor laws. You can configure income tax calculations, provident fund contributions, and other statutory requirements specific to your location.',
+        'Absolutely! Talrn supports multi-currency payroll processing, making it ideal for companies with international teams. You can create salary structures in different currencies, handle exchange rates automatically, and maintain accurate financial records across all regions.',
     },
     {
-      question: 'Is there a mobile app available for Frappe HR?',
+      question: 'How does Talrn handle compliance with labor laws?',
       answer:
-        'Yes, Frappe HR has a dedicated mobile app for both iOS and Android. The app allows employees to perform daily tasks like attendance marking, leave applications, expense claims, and viewing salary slips. Managers can also approve requests and access important HR information on the go.',
+        'Talrn provides configurable tax slabs, statutory compliance reports, and customizable workflows to help you comply with regional labor laws. You can configure income tax calculations, provident fund contributions, and other statutory requirements specific to your location.',
+    },
+    {
+      question: 'Is there a mobile app available for Talrn?',
+      answer:
+        'Yes, Talrn has a dedicated mobile app for both iOS and Android. The app allows employees to perform daily tasks like attendance marking, leave applications, expense claims, and viewing salary slips. Managers can also approve requests and access important HR information on the go.',
     },
     {
       question: 'How does the performance management system work?',
@@ -78,12 +78,12 @@ function FAQSection() {
     {
       question: 'Can I migrate data from my existing HR system?',
       answer:
-        'Yes, Frappe HR provides data import tools that allow you to migrate employee data, leave balances, salary structures, and other information from your existing HR system. The import process is well-documented, and our community can help with complex migrations.',
+        'Yes, Talrn provides data import tools that allow you to migrate employee data, leave balances, salary structures, and other information from your existing HR system. The import process is well-documented, and our community can help with complex migrations.',
     },
     {
       question: 'What happens if I need a feature that doesn\'t exist?',
       answer:
-        'Since Frappe HR is open-source, you have multiple options: you can customize the system yourself, hire a developer from the community, work with a certified partner, or submit a feature request to the community. The modular architecture makes it easy to add new features without affecting core functionality.',
+        'Since Talrn is open-source, you have multiple options: you can customize the system yourself, hire a developer from the community, work with a certified partner, or submit a feature request to the community. The modular architecture makes it easy to add new features without affecting core functionality.',
     },
   ]
 

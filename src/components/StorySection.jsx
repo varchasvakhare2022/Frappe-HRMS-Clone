@@ -9,13 +9,13 @@ function StorySection() {
 
         {/* Section Heading */}
         <h2 className="text-xl font-semibold text-gray-900 leading-[1.3] tracking-[0.12px] mb-10">
-          Story of Frappe HR
+          Story of Talrn
         </h2>
 
         {/* Story Content */}
         <div className="space-y-5 text-base text-gray-700 leading-relaxed mb-10">
           <p>
-            As Frappe grew, we started looking for open-source HR and Payroll
+            As our company grew, we started looking for open-source HR and Payroll
             software to manage our own team and were surprised to find none! There
             were options that claimed to be open-source but we didn't feel like
             there was a true open-source product to manage HR and Payroll.
@@ -28,10 +28,10 @@ function StorySection() {
           </p>
 
           <p>
-            Frappe HR started as a set of HR modules within ERPNext in 2012. Over
-            the years it matured as a product and from version 14 onwards, it is
-            now available as a separate product built on the Frappe Framework that
-            enables rapid application development.
+            Talrn started as a comprehensive HR management solution in 2012. Over
+            the years it matured as a product and is now available as a standalone
+            platform built on modern technology that enables rapid application
+            development.
           </p>
         </div>
 

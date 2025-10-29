@@ -26,9 +26,9 @@ function Footer() {
           <div className="w-32 border-t border-gray-200"></div>
         </div>
 
-        {/* Frappe Brand Name */}
+        {/* Brand Name */}
         <div className="text-center mb-6">
-          <h3 className="text-2xl font-bold text-gray-900">Frappe</h3>
+          <h3 className="text-2xl font-bold text-gray-900">Talrn</h3>
         </div>
 
         {/* Social Media Icons */}

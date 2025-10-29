@@ -83,7 +83,7 @@ const PayrollPage = () => {
     {
       id: 'SS-001',
       name: 'Software Engineer - Standard',
-      company: 'Frappe Technologies',
+      company: 'Talrn',
       currency: 'USD',
       payroll_frequency: 'Monthly',
       employees: 15,
@@ -95,7 +95,7 @@ const PayrollPage = () => {
     {
       id: 'SS-002',
       name: 'Sales Team - Commission Based',
-      company: 'Frappe Technologies',
+      company: 'Talrn',
       currency: 'USD',
       payroll_frequency: 'Monthly',
       employees: 8,
@@ -107,7 +107,7 @@ const PayrollPage = () => {
     {
       id: 'SS-003',
       name: 'Consultant - Hourly',
-      company: 'Frappe Technologies',
+      company: 'Talrn',
       currency: 'USD',
       payroll_frequency: 'Monthly',
       employees: 5,
@@ -119,7 +119,7 @@ const PayrollPage = () => {
     {
       id: 'SS-004',
       name: 'Management - Executive',
-      company: 'Frappe Technologies',
+      company: 'Talrn',
       currency: 'USD',
       payroll_frequency: 'Monthly',
       employees: 4,
@@ -513,7 +513,7 @@ const PayrollPage = () => {
             Seeing a 'salary credited' message often brings a smile to your face, but there's a lot of work that goes into that. 
             Diverse pay structures, complex regional tax regulations, and accurate generation of payslips for a large team can feel overwhelming. 
             We're making all of this easier with a feature-packed payroll module. Cut ties with disparate payroll and accounting systems 
-            to save hours of reconciliation work every month on payroll and expense data. Frappe HR promises integrated accounting with your payroll.
+            to save hours of reconciliation work every month on payroll and expense data. Talrn promises integrated accounting with your payroll.
           </p>
         </div>
 

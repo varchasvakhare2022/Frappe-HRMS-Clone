@@ -1,33 +1,42 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import {
-  Home,
+  Info,
   FileText,
-  Clock,
-  Briefcase,
-  Users,
-  Receipt,
   DollarSign,
-  Award,
-  BarChart3,
-  Smartphone,
-  MessageSquare,
+  BookOpen,
+  Mail,
   Share2,
   Check,
+  UserPlus,
+  Users,
+  Clock,
+  Umbrella,
+  PieChart,
+  Award,
+  Banknote,
+  Percent,
+  Smartphone,
 } from 'lucide-react'
 
 const mainMenuItems = [
-  { id: 'dashboard', icon: Home, label: 'Dashboard', url: '/dashboard' },
-  { id: 'daily-updates', icon: MessageSquare, label: 'Daily Updates (SOD/EOD)', url: '/daily-updates' },
-  { id: 'leave-management', icon: FileText, label: 'Leave Management', url: '/leave-management' },
-  { id: 'attendance', icon: Clock, label: 'Team Attendance', url: '/attendance' },
-  { id: 'recruitment', icon: Briefcase, label: 'Recruitment', url: '/recruitment' },
-  { id: 'employee-lifecycle', icon: Users, label: 'Employee Lifecycle', url: '/employee-lifecycle' },
-  { id: 'expense-management', icon: Receipt, label: 'Expense Management', url: '/expense-management' },
-  { id: 'payroll', icon: DollarSign, label: 'Payroll Management', url: '/payroll' },
-  { id: 'performance-management', icon: Award, label: 'Performance Management', url: '/performance-management' },
-  { id: 'payroll-tax-reports', icon: BarChart3, label: 'Tax & Reports', url: '/payroll-tax-reports' },
-  { id: 'mobile-app', icon: Smartphone, label: 'Mobile App', url: '/mobile-app' },
+  { id: 'about', icon: Info, label: 'About', url: '/' },
+  { id: 'pricing', icon: DollarSign, label: 'Pricing', url: '/pricing' },
+  { id: 'documentation', icon: BookOpen, label: 'Documentation', url: '/documentation' },
+  { id: 'blog', icon: FileText, label: 'Blog', url: '/blog' },
+  { id: 'contact', icon: Mail, label: 'Contact', url: '/contact' },
+]
+
+const featureItems = [
+  { id: 'recruitment', icon: UserPlus, label: 'Recruitment', url: '/features/recruitment' },
+  { id: 'employee-lifecycle', icon: Users, label: 'Employee Lifecycle', url: '/features/employee-lifecycle' },
+  { id: 'shifts-attendance', icon: Clock, label: 'Shifts & Attendance', url: '/features/attendance' },
+  { id: 'leave', icon: Umbrella, label: 'Leave Management', url: '/features/leave' },
+  { id: 'expense', icon: PieChart, label: 'Expense Management', url: '/features/expense' },
+  { id: 'performance', icon: Award, label: 'Performance Management', url: '/features/performance' },
+  { id: 'payroll', icon: Banknote, label: 'Payroll', url: '/features/payroll' },
+  { id: 'payroll-tax', icon: Percent, label: 'Payroll Tax & Reports', url: '/features/payroll-tax' },
+  { id: 'mobile', icon: Smartphone, label: 'Mobile App', url: '/features/mobile' },
 ]
 
 function Sidebar({ isHovered, setIsHovered }) {
@@ -62,10 +71,9 @@ function Sidebar({ isHovered, setIsHovered }) {
 
       {/* Sidebar */}
     <aside
-      className={`fixed left-0 top-0 h-screen bg-gray-100 z-50 overflow-hidden ${
-        isHovered ? 'w-64' : 'w-12'
-      }`}
+      className="fixed left-0 top-0 h-screen bg-gray-100 z-50 overflow-hidden"
       style={{
+        width: isHovered ? '256px' : '48px',
         transition: 'width 250ms cubic-bezier(0.4, 0, 0.2, 1)',
       }}
       onMouseEnter={() => setIsHovered(true)}
@@ -77,26 +85,25 @@ function Sidebar({ isHovered, setIsHovered }) {
           to="/"
           className="py-4 flex-shrink-0 flex items-center"
         >
-          <div className="w-12 flex items-center justify-center flex-shrink-0">
-            <svg fill="none" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" className="w-9 h-9">
-              <path d="M36.9286 0.5H15.0714C7.02385 0.5 0.5 7.02385 0.5 15.0714V36.9286C0.5 44.9762 7.02385 51.5 15.0714 51.5H36.9286C44.9762 51.5 51.5 44.9762 51.5 36.9286V15.0714C51.5 7.02385 44.9762 0.5 36.9286 0.5Z" fill="#06B58B"></path>
-              <path d="M15.9638 40.5715L13.5049 37.8758C16.9474 34.7612 21.3734 33.0308 25.9816 33.0308C30.5898 33.0308 35.0342 34.743 38.4585 37.8758L35.9995 40.5715C33.2309 38.0579 29.6791 36.6736 25.9816 36.6736C22.2841 36.6736 18.7142 38.0579 15.9456 40.5715H15.9638Z" fill="white"></path>
-              <path d="M27.6756 11.4287H17.002V15.0716H27.6756C29.6792 15.0716 31.3185 16.7109 31.3185 18.7144V22.1023C31.3185 24.1058 29.6792 25.7451 27.6756 25.7451H24.2877C22.2841 25.7451 20.6448 24.1058 20.6448 22.1023V19.8072H17.002V22.1023C17.002 26.1276 20.2623 29.388 24.2877 29.388H27.6756C31.701 29.388 34.9613 26.1276 34.9613 22.1023V18.7144C34.9613 14.6891 31.701 11.4287 27.6756 11.4287Z" fill="white"></path>
-            </svg>
+          <div style={{ width: '48px', minWidth: '48px' }} className="flex items-center justify-center">
+            <img 
+              src="/talrn-logo.jpeg" 
+              alt="Talrn Logo" 
+              className="w-9 h-9 object-contain"
+            />
           </div>
           <span 
-            className="font-semibold text-gray-900 whitespace-nowrap overflow-hidden"
+            className="font-semibold text-gray-900 whitespace-nowrap"
             style={{
               opacity: isHovered ? 1 : 0,
               transition: 'opacity 200ms ease-out',
-              width: isHovered ? 'auto' : '0',
             }}
           >
-            Frappe HR
+            Talrn
           </span>
         </Link>
 
-        {/* HRMS Modules */}
+        {/* Main Navigation */}
         <nav className="pb-2">
           <div className="space-y-0.5">
             {mainMenuItems.map((item) => {
@@ -108,7 +115,7 @@ function Sidebar({ isHovered, setIsHovered }) {
                 <Link
                   key={item.id}
                   to={item.url}
-                  className={`w-full py-2 rounded-lg cursor-pointer flex items-center group relative ${
+                  className={`w-full py-2 rounded-lg cursor-pointer flex items-center group ${
                     isActive
                       ? 'bg-gray-200 text-gray-900'
                       : 'text-gray-600 hover:bg-gray-200 hover:text-gray-900'
@@ -117,37 +124,109 @@ function Sidebar({ isHovered, setIsHovered }) {
                     transition: 'background-color 150ms ease-out, color 150ms ease-out',
                   }}
                 >
-                  <div className="w-12 flex items-center justify-center flex-shrink-0">
+                  <div style={{ width: '48px', minWidth: '48px' }} className="flex items-center justify-center">
                     <Icon className="w-[17px] h-[17px]" strokeWidth={1.8} />
                   </div>
-                  <span 
-                    className="whitespace-nowrap text-sm font-normal overflow-hidden flex-1"
-                    style={{
-                      opacity: isHovered ? 1 : 0,
-                      transition: 'opacity 200ms ease-out',
-                      width: isHovered ? 'auto' : '0',
-                    }}
-                  >
-                    {item.label}
-                  </span>
-                  {isHovered && (
-                    <button
-                      onClick={(e) => handleShare(e, item.url, item.id)}
-                      className="opacity-0 group-hover:opacity-100 mr-2 p-1 hover:bg-gray-300 rounded transition-all"
-                      title="Copy link"
+                  <div className="flex-1 overflow-hidden flex items-center justify-between">
+                    <span 
+                      className="whitespace-nowrap text-sm font-normal"
+                      style={{
+                        opacity: isHovered ? 1 : 0,
+                        transition: 'opacity 200ms ease-out',
+                      }}
                     >
-                      {isCopied ? (
-                        <Check className="w-3.5 h-3.5 text-green-600" strokeWidth={2} />
-                      ) : (
-                        <Share2 className="w-3.5 h-3.5" strokeWidth={2} />
-                      )}
-                    </button>
-                  )}
+                      {item.label}
+                    </span>
+                    {isHovered && (
+                      <button
+                        onClick={(e) => handleShare(e, item.url, item.id)}
+                        className="opacity-0 group-hover:opacity-100 mr-2 p-1 hover:bg-gray-300 rounded transition-all flex-shrink-0"
+                        title="Copy link"
+                      >
+                        {isCopied ? (
+                          <Check className="w-3.5 h-3.5 text-green-600" strokeWidth={2} />
+                        ) : (
+                          <Share2 className="w-3.5 h-3.5" strokeWidth={2} />
+                        )}
+                      </button>
+                    )}
+                  </div>
                 </Link>
               )
             })}
           </div>
         </nav>
+
+        {/* Features Section */}
+        <div className="pt-2">
+          <div
+            className="flex items-center overflow-hidden"
+            style={{
+              height: '28px',
+            }}
+          >
+            <div style={{ width: '48px', minWidth: '48px' }}></div>
+            <span
+              className="text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap"
+              style={{
+                opacity: isHovered ? 1 : 0,
+                transition: 'opacity 200ms ease-out',
+              }}
+            >
+              Features
+            </span>
+          </div>
+          <div className="space-y-0.5">
+            {featureItems.map((item) => {
+              const Icon = item.icon
+              const isActive = location.pathname === item.url
+              const isCopied = copiedId === item.id
+
+              return (
+                <Link
+                  key={item.id}
+                  to={item.url}
+                  className={`w-full py-2 rounded-lg cursor-pointer flex items-center group ${
+                    isActive
+                      ? 'bg-gray-200 text-gray-900'
+                      : 'text-gray-600 hover:bg-gray-200 hover:text-gray-900'
+                  }`}
+                  style={{
+                    transition: 'background-color 150ms ease-out, color 150ms ease-out',
+                  }}
+                >
+                  <div style={{ width: '48px', minWidth: '48px' }} className="flex items-center justify-center">
+                    <Icon className="w-[17px] h-[17px]" strokeWidth={1.8} />
+                  </div>
+                  <div className="flex-1 overflow-hidden flex items-center justify-between">
+                    <span 
+                      className="whitespace-nowrap text-sm font-normal"
+                      style={{
+                        opacity: isHovered ? 1 : 0,
+                        transition: 'opacity 200ms ease-out',
+                      }}
+                    >
+                      {item.label}
+                    </span>
+                    {isHovered && (
+                      <button
+                        onClick={(e) => handleShare(e, item.url, item.id)}
+                        className="opacity-0 group-hover:opacity-100 mr-2 p-1 hover:bg-gray-300 rounded transition-all flex-shrink-0"
+                        title="Copy link"
+                      >
+                        {isCopied ? (
+                          <Check className="w-3.5 h-3.5 text-green-600" strokeWidth={2} />
+                        ) : (
+                          <Share2 className="w-3.5 h-3.5" strokeWidth={2} />
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
       </div>
     </aside>
     </>

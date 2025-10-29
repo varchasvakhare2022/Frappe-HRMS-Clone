@@ -7,9 +7,8 @@ function TopBar({ isSidebarHovered }) {
   const getBreadcrumbs = () => {
     const path = location.pathname
     const breadcrumbs = [
-      { label: 'Frappe', active: false },
-      { label: 'Products', active: false },
-      { label: 'Frappe HR', active: path === '/' },
+      { label: 'Talrn', active: false },
+      { label: 'HRMS', active: path === '/' },
     ]
 
     // Add page-specific breadcrumb
@@ -63,7 +62,7 @@ function TopBar({ isSidebarHovered }) {
           href="/signup"
           className="flex items-center gap-2 text-[14px] text-gray-900 hover:text-gray-700 transition-all duration-200 font-medium hover:gap-3"
         >
-          <span>Get started with Frappe HR</span>
+          <span>Get started with Talrn HRMS</span>
           <span className="text-base">→</span>
         </a>
       </div>

@@ -44,7 +44,7 @@ const MobileAppPage = () => {
     lastCheckin: {
       time: '09:15 AM',
       date: 'October 28, 2024',
-      location: 'Frappe Office, Mumbai',
+      location: 'Talrn Office, Mumbai',
       coordinates: '19.0760° N, 72.8777° E',
       type: 'Check-in'
     },
@@ -210,7 +210,7 @@ const MobileAppPage = () => {
             </div>
           </div>
           <p className="text-gray-600">
-            The Frappe HR Mobile App brings everyday tasks to your fingertips — employee check-ins, leaves, claims, 
+            The Talrn Mobile App brings everyday tasks to your fingertips — employee check-ins, leaves, claims, 
             advances, and salary slips. The goal of this app is not just to ease operations for your employees but 
             also to improve efficiency for your HR Managers. Track all the requests that need your attention on the 
             go based on the employee's approver/workflows.
@@ -222,7 +222,7 @@ const MobileAppPage = () => {
           <div className="flex items-start justify-between mb-6">
             <div>
               <h2 className="text-xl font-bold text-gray-900 mb-2">Installation & Demo</h2>
-              <p className="text-gray-600">Download the Frappe HR mobile app on your device</p>
+              <p className="text-gray-600">Download the Talrn mobile app on your device</p>
             </div>
             <div className="flex space-x-3">
               <button

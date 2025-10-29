@@ -60,7 +60,7 @@ function FeaturesSection() {
     {
       icon: Smartphone,
       title: 'Mobile App',
-      description: 'Access Frappe HR from the convenience of your smartphone',
+      description: 'Access Talrn from the convenience of your smartphone',
     },
   ]
 
@@ -74,7 +74,7 @@ function FeaturesSection() {
 
         {/* Section Heading */}
         <h2 className="text-xl font-semibold text-gray-900 leading-[1.3] tracking-[0.12px] mb-12">
-          What Frappe HR has to offer you
+          What Talrn has to offer you
         </h2>
 
         {/* Features Grid */}

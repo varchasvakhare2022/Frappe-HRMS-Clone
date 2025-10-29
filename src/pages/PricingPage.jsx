@@ -6,12 +6,12 @@ function PricingPage() {
 
   const faqs = [
     {
-      question: 'How do I implement Frappe HR?',
-      answer: 'You can implement Frappe HR through Frappe Cloud for managed hosting, or self-host it on your own servers. We also offer consultation and implementation support through our certified partners.',
+      question: 'How do I implement Talrn?',
+      answer: 'You can implement Talrn through cloud hosting for managed services, or self-host it on your own servers. We also offer consultation and implementation support through our certified partners.',
     },
     {
       question: 'Do I need self-hosting?',
-      answer: 'Self-hosting is recommended if you have a technical team that can manage servers and deployments. For most businesses, Frappe Cloud provides a hassle-free managed hosting solution.',
+      answer: 'Self-hosting is recommended if you have a technical team that can manage servers and deployments. For most businesses, cloud hosting provides a hassle-free managed hosting solution.',
     },
     {
       question: 'How can I get consultation?',
@@ -26,8 +26,8 @@ function PricingPage() {
       answer: 'Yes, we offer special pricing for educational institutions and non-profit organizations. Please contact us with details about your organization.',
     },
     {
-      question: 'Is Frappe HR available in my language?',
-      answer: 'Frappe HR supports multiple languages. Check our documentation or contact us to confirm if your preferred language is available.',
+      question: 'Is Talrn available in my language?',
+      answer: 'Talrn supports multiple languages. Check our documentation or contact us to confirm if your preferred language is available.',
     },
     {
       question: 'I have more questions.',
@@ -51,7 +51,7 @@ function PricingPage() {
             color: '#171717',
           }}
         >
-          Compute-based pricing on Frappe Cloud
+          Compute-based pricing on Cloud Hosting
         </h1>
         <p className="text-base text-gray-700 leading-relaxed max-w-2xl mx-auto">
           Save big with compute-based pricing that is simple, transparent, and predictable. 
