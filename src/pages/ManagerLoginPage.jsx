@@ -10,9 +10,6 @@ function ManagerLoginPage() {
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
-  // Manager users from JSON file
-  const allowedUsers = managerUsers
-
   const handleLogin = (e) => {
     e.preventDefault()
     setError('')
@@ -34,8 +31,12 @@ function ManagerLoginPage() {
       return
     }
 
+    // Combine users from JSON and localStorage
+    const customManagers = JSON.parse(localStorage.getItem('customManagers') || '[]')
+    const allManagers = [...managerUsers, ...customManagers]
+
     // Check if user is registered
-    const user = allowedUsers.find(u => u.email.toLowerCase() === email.toLowerCase())
+    const user = allManagers.find(u => u.email.toLowerCase() === email.toLowerCase())
     
     if (!user) {
       setError('Access denied. Manager credentials required.')

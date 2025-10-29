@@ -70,7 +70,7 @@ function PortalSelectionPage() {
                 {/* Content */}
                 <div className="relative z-10">
                   {/* Icon */}
-                  <div className={`w-16 h-16 mx-auto mb-6 rounded-xl bg-gradient-to-br ${portal.color} flex items-center justify-center group-hover:bg-white transition-all duration-300`}>
+                  <div className={`w-16 h-16 mx-auto mb-6 rounded-xl bg-gradient-to-br ${portal.color} flex items-center justify-center group-hover:bg-white group-hover:border-2 group-hover:border-white/30 transition-all duration-300`}>
                     <Icon className="w-8 h-8 text-white group-hover:text-gray-900 transition-colors duration-300" strokeWidth={2} />
                   </div>
 

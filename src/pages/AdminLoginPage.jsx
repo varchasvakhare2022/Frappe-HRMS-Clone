@@ -10,9 +10,6 @@ function AdminLoginPage() {
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
-  // Admin users from JSON file
-  const allowedUsers = adminUsers
-
   const handleLogin = (e) => {
     e.preventDefault()
     setError('')
@@ -34,8 +31,12 @@ function AdminLoginPage() {
       return
     }
 
+    // Combine users from JSON and localStorage
+    const customAdmins = JSON.parse(localStorage.getItem('customAdmins') || '[]')
+    const allAdmins = [...adminUsers, ...customAdmins]
+
     // Check if user is registered
-    const user = allowedUsers.find(u => u.email.toLowerCase() === email.toLowerCase())
+    const user = allAdmins.find(u => u.email.toLowerCase() === email.toLowerCase())
     
     if (!user) {
       setError('Access denied. Admin credentials required.')

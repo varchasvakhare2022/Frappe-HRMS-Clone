@@ -14,6 +14,9 @@ import PayrollPage from './pages/PayrollPage'
 import PayrollTaxReportsPage from './pages/PayrollTaxReportsPage'
 import MobileAppPage from './pages/MobileAppPage'
 import DailyUpdatesPage from './pages/DailyUpdatesPage'
+import UserManagementPage from './pages/UserManagementPage'
+import EmployeeManagementPage from './pages/EmployeeManagementPage'
+import ProjectManagementPage from './pages/ProjectManagementPage'
 
 function App() {
   return (
@@ -33,6 +36,9 @@ function App() {
         
         {/* Dashboard and Feature Routes */}
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/user-management" element={<UserManagementPage />} />
+        <Route path="/employee-management" element={<EmployeeManagementPage />} />
+        <Route path="/project-management" element={<ProjectManagementPage />} />
         <Route path="/leave-management" element={<LeaveManagementPage />} />
         <Route path="/attendance" element={<AttendancePage />} />
         <Route path="/recruitment" element={<RecruitmentPage />} />

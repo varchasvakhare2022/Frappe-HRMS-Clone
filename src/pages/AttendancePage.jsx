@@ -1,47 +1,247 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { 
-  Home, ChevronRight, Calendar, Clock, FileText, TrendingUp,
-  User, Users, Settings, Bell, HelpCircle, LogOut, Search,
-  Plus, Filter, Download, Eye, Edit, Trash2, Check, X,
-  ArrowRight, MapPin, MoreVertical, AlertCircle, UserCheck,
-  LogIn, LogOut as LogOutIcon, Activity, BarChart3
-} from 'lucide-react'
+import { Home, Calendar, Clock, CheckCircle, XCircle, Users, Download } from 'lucide-react'
+import employeeUsersData from '../data/employeeUsers.json'
+import managerUsersData from '../data/managerUsers.json'
 
 function AttendancePage() {
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [selectedSection, setSelectedSection] = useState('today')
-  const [currentTime, setCurrentTime] = useState(new Date())
+  const [attendanceData, setAttendanceData] = useState([])
+  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7)) // YYYY-MM format
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]) // YYYY-MM-DD format
+  const [activeTab, setActiveTab] = useState('my-attendance')
+  const [teamView, setTeamView] = useState('daily') // 'daily' or 'monthly'
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem('user')
     if (!loggedInUser) {
-      navigate('/signup')
+      navigate('/')
     } else {
       setUser(JSON.parse(loggedInUser))
     }
   }, [navigate])
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownOpen && !event.target.closest('.user-dropdown')) {
-        setDropdownOpen(false)
+    if (user) {
+      loadAttendance()
+    }
+  }, [user, selectedMonth, selectedDate, activeTab, teamView])
+
+  const loadAttendance = () => {
+    const dailyUpdates = JSON.parse(localStorage.getItem('dailyUpdates') || '{}')
+    const [year, month] = selectedMonth.split('-')
+    
+    // Get all dates in the selected month
+    const daysInMonth = new Date(year, month, 0).getDate()
+    const attendanceRecords = []
+
+    // Check user role
+    const isAdmin = user?.role?.toLowerCase().includes('admin')
+    const isManager = user?.role?.toLowerCase().includes('manager')
+
+    // Get all employees and managers from JSON and localStorage
+    const customEmployees = JSON.parse(localStorage.getItem('customEmployees') || '[]')
+    const customManagers = JSON.parse(localStorage.getItem('customManagers') || '[]')
+    
+    const allEmployees = [...employeeUsersData, ...customEmployees]
+    const allManagers = [...managerUsersData, ...customManagers]
+    
+    // Combine all users for team view
+    const allTeamMembers = [...allEmployees, ...allManagers]
+
+    if (activeTab === 'my-attendance') {
+      // Show only current user's attendance
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = `${year}-${month}-${String(day).padStart(2, '0')}`
+        const key = `${user.email}_${date}`
+        const record = dailyUpdates[key]
+        
+        if (record) {
+          attendanceRecords.push({
+            date,
+            name: user.name,
+            email: user.email,
+            status: record.sod && record.eod ? 'Present' : record.sod ? 'Incomplete' : 'Absent',
+            sod: record.sod?.timestamp,
+            eod: record.eod?.timestamp,
+            lunchExit: record.lunchExit?.timestamp,
+            lunchReturn: record.lunchReturn?.timestamp,
+            workingHours: calculateWorkingHours(record),
+            tasks: record.sod?.tasks || []
+          })
+        } else {
+          // Check if it's a future date
+          const isPastOrToday = new Date(date) <= new Date()
+          if (isPastOrToday) {
+            attendanceRecords.push({
+              date,
+              name: user.name,
+              email: user.email,
+              status: 'Absent',
+              workingHours: '0h 0m'
+            })
+          }
+        }
+      }
+    } else {
+      // Show team attendance
+      if (teamView === 'daily') {
+        // Daily view - show today's attendance
+        allTeamMembers.forEach(member => {
+          // Skip current user in team view
+          if (member.email === user.email) return
+          
+          // Managers can only see employees, Admins see everyone
+          if (isManager && member.role !== 'Employee') return
+          
+          const key = `${member.email}_${selectedDate}`
+          const record = dailyUpdates[key]
+          
+          let status = 'Absent'
+          if (record) {
+            if (record.sod && record.eod) {
+              status = 'Present'
+            } else if (record.sod) {
+              status = 'Incomplete'
+            }
+          }
+          
+          attendanceRecords.push({
+            name: member.name,
+            email: member.email,
+            role: member.role,
+            status,
+            sod: record?.sod?.timestamp,
+            eod: record?.eod?.timestamp,
+            lunchExit: record?.lunchExit?.timestamp,
+            lunchReturn: record?.lunchReturn?.timestamp,
+            workingHours: record ? calculateWorkingHours(record) : '0h 0m'
+          })
+        })
+      } else {
+        // Monthly view - show summary
+        allTeamMembers.forEach(member => {
+          // Skip current user in team view
+          if (member.email === user.email) return
+          
+          // Managers can only see employees, Admins see everyone
+          if (isManager && member.role !== 'Employee') return
+          
+          // Calculate stats for the month
+          let presentDays = 0
+          let incompleteDays = 0
+          let totalWorkingHours = 0
+          
+          for (let day = 1; day <= daysInMonth; day++) {
+            const date = `${year}-${month}-${String(day).padStart(2, '0')}`
+            const key = `${member.email}_${date}`
+            const record = dailyUpdates[key]
+            
+            if (record) {
+              if (record.sod && record.eod) {
+                presentDays++
+                const hours = parseWorkingHours(calculateWorkingHours(record))
+                totalWorkingHours += hours
+              } else if (record.sod) {
+                incompleteDays++
+              }
+            }
+          }
+          
+          // Check if it's a future date for calculating absent days
+          const today = new Date()
+          const lastDayToCount = new Date(year, month, 0) > today 
+            ? today.getDate() 
+            : daysInMonth
+          
+          const absentDays = lastDayToCount - presentDays - incompleteDays
+          
+          attendanceRecords.push({
+            name: member.name,
+            email: member.email,
+            role: member.role,
+            presentDays,
+            incompleteDays,
+            absentDays,
+            totalWorkingHours: formatTotalHours(totalWorkingHours),
+            attendancePercentage: lastDayToCount > 0 
+              ? ((presentDays / lastDayToCount) * 100).toFixed(1) 
+              : 0
+          })
+        })
       }
     }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [dropdownOpen])
 
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000)
-    return () => clearInterval(timer)
-  }, [])
+    setAttendanceData(attendanceRecords)
+  }
 
-  const handleLogout = () => {
-    localStorage.removeItem('user')
-    navigate('/')
+  const calculateWorkingHours = (record) => {
+    if (!record.sod || !record.eod) return '0h 0m'
+
+    const sodTime = new Date(record.sod.timestamp)
+    const eodTime = new Date(record.eod.timestamp)
+    
+    let totalMinutes = Math.floor((eodTime - sodTime) / (1000 * 60))
+
+    // Subtract lunch break duration if both timestamps exist
+    if (record.lunchExit && record.lunchReturn) {
+      const lunchExitTime = new Date(record.lunchExit.timestamp)
+      const lunchReturnTime = new Date(record.lunchReturn.timestamp)
+      const lunchMinutes = Math.floor((lunchReturnTime - lunchExitTime) / (1000 * 60))
+      totalMinutes -= lunchMinutes
+    }
+
+    const hours = Math.floor(totalMinutes / 60)
+    const minutes = totalMinutes % 60
+
+    return `${hours}h ${minutes}m`
+  }
+
+  const parseWorkingHours = (hoursStr) => {
+    const match = hoursStr.match(/(\d+)h\s*(\d+)m/)
+    if (match) {
+      return parseInt(match[1]) + parseInt(match[2]) / 60
+    }
+    return 0
+  }
+
+  const formatTotalHours = (totalHours) => {
+    const hours = Math.floor(totalHours)
+    const minutes = Math.round((totalHours - hours) * 60)
+    return `${hours}h ${minutes}m`
+  }
+
+  const formatTime = (timestamp) => {
+    if (!timestamp) return '-'
+    const date = new Date(timestamp)
+    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+  }
+
+  const formatDate = (dateString) => {
+    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }
+    return new Date(dateString).toLocaleDateString('en-US', options)
+  }
+
+  const getStatusBadge = (status) => {
+    const styles = {
+      Present: 'bg-green-100 text-green-700',
+      Incomplete: 'bg-yellow-100 text-yellow-700',
+      Absent: 'bg-red-100 text-red-700'
+    }
+    
+    const icons = {
+      Present: <CheckCircle className="w-3 h-3" />,
+      Incomplete: <Clock className="w-3 h-3" />,
+      Absent: <XCircle className="w-3 h-3" />
+    }
+    
+    return (
+      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${styles[status]}`}>
+        {icons[status]}
+        {status}
+      </span>
+    )
   }
 
   if (!user) {
@@ -49,609 +249,296 @@ function AttendancePage() {
   }
 
   const isAdmin = user.role?.toLowerCase().includes('admin')
+  const isManager = user.role?.toLowerCase().includes('manager')
 
-  const getInitials = (name) => {
-    return name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2)
-  }
-
-  // Dummy Data
-  const todayAttendance = {
-    status: 'Present',
-    checkIn: '09:15 AM',
-    checkOut: null,
-    workingHours: '3h 45m',
-    break: '15m',
-    location: 'Office - Floor 3'
-  }
-
-  const attendanceRecords = [
-    {
-      date: '2024-10-27',
-      day: 'Monday',
-      status: 'Present',
-      checkIn: '09:15 AM',
-      checkOut: '06:30 PM',
-      workingHours: '8h 45m',
-      overtime: '30m'
-    },
-    {
-      date: '2024-10-26',
-      day: 'Sunday',
-      status: 'Weekly Off',
-      checkIn: '-',
-      checkOut: '-',
-      workingHours: '-',
-      overtime: '-'
-    },
-    {
-      date: '2024-10-25',
-      day: 'Saturday',
-      status: 'Present',
-      checkIn: '09:00 AM',
-      checkOut: '05:45 PM',
-      workingHours: '8h 15m',
-      overtime: '-'
-    },
-    {
-      date: '2024-10-24',
-      day: 'Friday',
-      status: 'Present',
-      checkIn: '09:10 AM',
-      checkOut: '06:00 PM',
-      workingHours: '8h 20m',
-      overtime: '-'
-    },
-    {
-      date: '2024-10-23',
-      day: 'Thursday',
-      status: 'Half Day',
-      checkIn: '09:00 AM',
-      checkOut: '01:30 PM',
-      workingHours: '4h 00m',
-      overtime: '-'
-    },
-    {
-      date: '2024-10-22',
-      day: 'Wednesday',
-      status: 'Absent',
-      checkIn: '-',
-      checkOut: '-',
-      workingHours: '-',
-      overtime: '-'
-    },
-    {
-      date: '2024-10-21',
-      day: 'Tuesday',
-      status: 'Present',
-      checkIn: '08:55 AM',
-      checkOut: '06:15 PM',
-      workingHours: '8h 50m',
-      overtime: '20m'
-    }
-  ]
-
-  const teamAttendance = [
-    { employee: 'Sarah Johnson', status: 'Present', checkIn: '09:00 AM', location: 'Office' },
-    { employee: 'Raj Kumar', status: 'Present', checkIn: '08:45 AM', location: 'Remote' },
-    { employee: 'Emma Thompson', status: 'On Leave', checkIn: '-', location: '-' },
-    { employee: 'Li Wei', status: 'Present', checkIn: '09:15 AM', location: 'Office' },
-    { employee: 'José García', status: 'Late', checkIn: '10:30 AM', location: 'Office' },
-    { employee: 'Mohammed Al-Rashid', status: 'Present', checkIn: '09:05 AM', location: 'Remote' },
-    { employee: 'Priya Sharma', status: 'Absent', checkIn: '-', location: '-' },
-    { employee: 'John Doe', status: 'Present', checkIn: '08:50 AM', location: 'Office' }
-  ]
-
-  const shiftsList = [
-    { name: 'Morning Shift', timing: '06:00 AM - 02:00 PM', employees: 45, type: 'Fixed' },
-    { name: 'Day Shift', timing: '09:00 AM - 06:00 PM', employees: 120, type: 'Fixed' },
-    { name: 'Evening Shift', timing: '02:00 PM - 10:00 PM', employees: 38, type: 'Fixed' },
-    { name: 'Night Shift', timing: '10:00 PM - 06:00 AM', employees: 22, type: 'Rotational' },
-    { name: 'Flexible Shift', timing: 'Flexible Hours', employees: 65, type: 'Flexible' }
-  ]
-
-  const attendanceStats = {
-    thisMonth: { present: 20, absent: 1, halfDay: 1, leaves: 0, weeklyOffs: 4 },
-    thisYear: { present: 240, absent: 5, halfDay: 3, leaves: 8, weeklyOffs: 48 }
-  }
-
-  const shortcuts = isAdmin ? [
-    { icon: Users, label: 'Team Attendance', count: `${teamAttendance.filter(a => a.status === 'Present').length}/${teamAttendance.length}` },
-    { icon: Clock, label: 'Shift Management', count: null },
-    { icon: BarChart3, label: 'Attendance Reports', count: null },
-    { icon: Settings, label: 'Attendance Settings', count: null }
-  ] : [
-    { icon: LogIn, label: 'Check In', count: null },
-    { icon: Calendar, label: 'My Attendance', count: null },
-    { icon: Clock, label: 'Work Hours', count: null },
-    { icon: FileText, label: 'Attendance Request', count: null }
-  ]
-
-  const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
-      case 'present': return 'bg-green-100 text-green-700 border-green-200'
-      case 'absent': return 'bg-red-100 text-red-700 border-red-200'
-      case 'late': return 'bg-orange-100 text-orange-700 border-orange-200'
-      case 'half day': return 'bg-yellow-100 text-yellow-700 border-yellow-200'
-      case 'on leave': return 'bg-blue-100 text-blue-700 border-blue-200'
-      case 'weekly off': return 'bg-gray-100 text-gray-700 border-gray-200'
-      default: return 'bg-gray-100 text-gray-700 border-gray-200'
-    }
-  }
-
-  const renderContent = () => {
-    switch (selectedSection) {
-      case 'today':
-        return (
-          <div className="space-y-6">
-            {/* Check In/Out Card */}
-            <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg p-8 text-white">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold mb-2">Today's Attendance</h2>
-                  <p className="text-blue-100">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-5xl font-bold">{currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
-                  <p className="text-sm text-blue-100">{currentTime.toLocaleTimeString('en-US', { second: '2-digit' }).split(' ')[1]}</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-                  <p className="text-sm text-blue-100 mb-1">Status</p>
-                  <p className="text-xl font-bold">{todayAttendance.status}</p>
-                </div>
-                <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-                  <p className="text-sm text-blue-100 mb-1">Check In</p>
-                  <p className="text-xl font-bold">{todayAttendance.checkIn}</p>
-                </div>
-                <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-                  <p className="text-sm text-blue-100 mb-1">Working Hours</p>
-                  <p className="text-xl font-bold">{todayAttendance.workingHours}</p>
-                </div>
-                <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-                  <p className="text-sm text-blue-100 mb-1">Location</p>
-                  <p className="text-sm font-medium">{todayAttendance.location}</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                {!todayAttendance.checkOut ? (
-                  <button className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-semibold">
-                    <LogOutIcon className="w-5 h-5" />
-                    Check Out
-                  </button>
-                ) : (
-                  <button className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-semibold">
-                    <LogIn className="w-5 h-5" />
-                    Check In
-                  </button>
-                )}
-                <button className="flex items-center justify-center gap-2 px-6 py-4 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm">
-                  <MapPin className="w-5 h-5" />
-                  Update Location
-                </button>
-              </div>
-            </div>
-
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-sm font-medium text-gray-600 mb-4">This Month</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Present</span>
-                    <span className="text-lg font-bold text-green-600">{attendanceStats.thisMonth.present}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Absent</span>
-                    <span className="text-lg font-bold text-red-600">{attendanceStats.thisMonth.absent}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Half Day</span>
-                    <span className="text-lg font-bold text-yellow-600">{attendanceStats.thisMonth.halfDay}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-sm font-medium text-gray-600 mb-4">Attendance Rate</h3>
-                <div className="text-center">
-                  <p className="text-4xl font-bold text-blue-600 mb-2">96.5%</p>
-                  <p className="text-sm text-gray-600">Last 30 days</p>
-                  <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-600" style={{ width: '96.5%' }}></div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-sm font-medium text-gray-600 mb-4">Average Hours</h3>
-                <div className="text-center">
-                  <p className="text-4xl font-bold text-purple-600 mb-2">8.5h</p>
-                  <p className="text-sm text-gray-600">Per working day</p>
-                  <div className="mt-4 flex items-center justify-center gap-2 text-xs text-green-600">
-                    <TrendingUp className="w-4 h-4" />
-                    <span>+15m from last month</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )
-
-      case 'records':
-        return (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">Attendance Records</h2>
-                <p className="text-sm text-gray-600 mt-1">Your attendance history</p>
-              </div>
-              <div className="flex gap-2">
-                <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">
-                  <Filter className="w-4 h-4" />
-                  Filter
-                </button>
-                <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">
-                  <Download className="w-4 h-4" />
-                  Export
-                </button>
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Day</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check In</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check Out</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Working Hours</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Overtime</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {attendanceRecords.map((record, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{record.date}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{record.day}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(record.status)}`}>
-                          {record.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{record.checkIn}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{record.checkOut}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{record.workingHours}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-medium">{record.overtime}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )
-
-      case 'team':
-        return (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">Team Attendance - Today</h2>
-                <p className="text-sm text-gray-600 mt-1">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
-              </div>
-              <div className="flex gap-2">
-                <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
-                  <Plus className="w-4 h-4" />
-                  Mark Attendance
-                </button>
-              </div>
-            </div>
-
-            {/* Summary Cards */}
-            <div className="p-6 border-b border-gray-200">
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-green-600">{teamAttendance.filter(a => a.status === 'Present').length}</p>
-                  <p className="text-sm text-gray-600">Present</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-red-600">{teamAttendance.filter(a => a.status === 'Absent').length}</p>
-                  <p className="text-sm text-gray-600">Absent</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-orange-600">{teamAttendance.filter(a => a.status === 'Late').length}</p>
-                  <p className="text-sm text-gray-600">Late</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-blue-600">{teamAttendance.filter(a => a.status === 'On Leave').length}</p>
-                  <p className="text-sm text-gray-600">On Leave</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-gray-900">{teamAttendance.length}</p>
-                  <p className="text-sm text-gray-600">Total</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6">
-              <div className="space-y-3">
-                {teamAttendance.map((attendance, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
-                        {getInitials(attendance.employee)}
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{attendance.employee}</h3>
-                        <p className="text-sm text-gray-600">{attendance.checkIn !== '-' ? `Checked in at ${attendance.checkIn}` : 'Not checked in'}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
-                        <span className={`px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(attendance.status)}`}>
-                          {attendance.status}
-                        </span>
-                        {attendance.location !== '-' && (
-                          <p className="text-xs text-gray-500 mt-1">{attendance.location}</p>
-                        )}
-                      </div>
-                      <button className="p-2 hover:bg-gray-100 rounded">
-                        <MoreVertical className="w-4 h-4 text-gray-600" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )
-
-      case 'shifts':
-        return (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">Shift Management</h2>
-                <p className="text-sm text-gray-600 mt-1">Configure and manage work shifts</p>
-              </div>
-              {isAdmin && (
-                <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
-                  <Plus className="w-4 h-4" />
-                  Add Shift
-                </button>
-              )}
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {shiftsList.map((shift, index) => (
-                  <div key={index} className="border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h3 className="font-semibold text-gray-900 mb-1">{shift.name}</h3>
-                        <p className="text-sm text-gray-600">{shift.timing}</p>
-                      </div>
-                      <span className="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-full">
-                        {shift.type}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Users className="w-4 h-4" />
-                        <span>{shift.employees} employees</span>
-                      </div>
-                      {isAdmin && (
-                        <div className="flex gap-2">
-                          <button className="p-1 hover:bg-gray-100 rounded">
-                            <Edit className="w-4 h-4 text-gray-600" />
-                          </button>
-                          <button className="p-1 hover:bg-gray-100 rounded">
-                            <MoreVertical className="w-4 h-4 text-gray-600" />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )
-
-      default:
-        return null
-    }
-  }
+  // Get current month name for display
+  const monthName = new Date(selectedMonth + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Top Navigation Bar */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      {/* Top Navigation */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
               <button 
                 onClick={() => navigate('/dashboard')}
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+                className="hover:text-blue-600 transition-colors flex items-center gap-1"
               >
-                <Home className="w-5 h-5" />
-                <span className="text-sm font-medium">Dashboard</span>
+                <Home className="w-4 h-4" />
+                <span>Dashboard</span>
               </button>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-              <span className="text-sm font-semibold text-gray-900">Attendance</span>
+              <span>/</span>
+              <span className="text-gray-900 font-medium">Attendance Tracking</span>
             </div>
-
-            <div className="flex items-center gap-4">
-              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                <Bell className="w-5 h-5" />
-              </button>
-              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                <Settings className="w-5 h-5" />
-              </button>
-              
-              <div className="relative user-dropdown">
-                <button 
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-xs">
-                    {getInitials(user.name)}
-                  </div>
-                  <div className="text-left hidden sm:block">
-                    <p className="text-sm font-semibold text-gray-900">{user.name}</p>
-                    <p className="text-xs text-gray-500">{user.role}</p>
-                  </div>
-                </button>
-                
-                {dropdownOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-xl z-50 py-2">
-                    <div className="px-4 py-3 border-b border-gray-100">
-                      <p className="text-sm font-semibold text-gray-900">{user.name}</p>
-                      <p className="text-xs text-gray-500">{user.email}</p>
-                      <p className="text-xs text-blue-600 mt-1">{user.role}</p>
-                    </div>
-                    <button 
-                      onClick={() => navigate('/dashboard')}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                    >
-                      <Home className="w-4 h-4" />
-                      Dashboard
-                    </button>
-                    <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                      <Settings className="w-4 h-4" />
-                      Settings
-                    </button>
-                    <div className="border-t border-gray-100 my-1"></div>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Log out
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+            
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="text-gray-600 hover:text-gray-900 text-sm font-medium"
+            >
+              Back to Dashboard
+            </button>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Attendance Tracking</h1>
-          <p className="text-gray-600">Track employee attendance, shifts, and working hours</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-teal-600 rounded-xl flex items-center justify-center">
+                <Clock className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Attendance Tracking</h1>
+                <p className="text-gray-600">Track attendance based on SOD/EOD submissions</p>
+              </div>
+            </div>
+
+            {/* Month Selector */}
+            <div className="flex items-center gap-3">
+              <input
+                type="month"
+                value={selectedMonth}
+                max={new Date().toISOString().slice(0, 7)}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Shortcuts Section */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Shortcuts</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {shortcuts.map((shortcut, index) => (
+        {/* Tabs */}
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+          <div className="border-b border-gray-200">
+            <div className="flex">
               <button
-                key={index}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 hover:shadow-md transition-all hover:scale-105 flex flex-col items-center gap-3 group"
+                onClick={() => setActiveTab('my-attendance')}
+                className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
+                  activeTab === 'my-attendance'
+                    ? 'bg-green-50 text-green-700 border-b-2 border-green-600'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
               >
-                <div className="p-3 bg-green-50 rounded-lg text-green-600 group-hover:bg-green-100 transition-colors">
-                  <shortcut.icon className="w-6 h-6" />
-                </div>
-                <div className="text-center">
-                  <p className="text-sm font-medium text-gray-900">{shortcut.label}</p>
-                  {shortcut.count !== null && (
-                    <p className="text-xs text-gray-500 mt-1">{shortcut.count}</p>
-                  )}
-                </div>
+                My Attendance
               </button>
-            ))}
+              {(isAdmin || isManager) && (
+                <button
+                  onClick={() => setActiveTab('team-attendance')}
+                  className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
+                    activeTab === 'team-attendance'
+                      ? 'bg-green-50 text-green-700 border-b-2 border-green-600'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  Team Attendance
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Attendance Content */}
+          <div className="p-6">
+            {/* View toggle for team attendance */}
+            {activeTab === 'team-attendance' && (
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setTeamView('daily')}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      teamView === 'daily'
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    Today's Attendance
+                  </button>
+                  <button
+                    onClick={() => setTeamView('monthly')}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      teamView === 'monthly'
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    Monthly Summary
+                  </button>
+                </div>
+                {teamView === 'daily' ? (
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    max={new Date().toISOString().split('T')[0]}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                ) : (
+                  attendanceData.length > 0 && (
+                    <p className="text-sm text-gray-600">
+                      Total Records: {attendanceData.length}
+                    </p>
+                  )
+                )}
+              </div>
+            )}
+
+            {activeTab === 'my-attendance' && (
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">{monthName}</h3>
+                {attendanceData.length > 0 && (
+                  <p className="text-sm text-gray-600">
+                    Total Records: {attendanceData.length}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {attendanceData.length === 0 ? (
+              <div className="text-center py-12">
+                <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-600">No attendance data found</p>
+                <p className="text-sm text-gray-500 mt-1">Attendance is tracked via Daily Updates (SOD/EOD)</p>
+              </div>
+            ) : activeTab === 'my-attendance' ? (
+              // My Attendance - Daily View
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Date</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">SOD Time</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Lunch Exit</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Lunch Return</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">EOD Time</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Working Hours</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {attendanceData.sort((a, b) => new Date(b.date) - new Date(a.date)).map((record, index) => (
+                      <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
+                        <td className="py-3 px-4 text-sm font-medium text-gray-900">{formatDate(record.date)}</td>
+                        <td className="py-3 px-4">{getStatusBadge(record.status)}</td>
+                        <td className="py-3 px-4 text-sm text-gray-600">{formatTime(record.sod)}</td>
+                        <td className="py-3 px-4 text-sm text-gray-600">{formatTime(record.lunchExit)}</td>
+                        <td className="py-3 px-4 text-sm text-gray-600">{formatTime(record.lunchReturn)}</td>
+                        <td className="py-3 px-4 text-sm text-gray-600">{formatTime(record.eod)}</td>
+                        <td className="py-3 px-4 text-sm font-medium text-gray-900">{record.workingHours}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : teamView === 'daily' ? (
+              // Team Attendance - Daily View
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Employee</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Email</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">SOD Time</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Lunch Exit</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Lunch Return</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">EOD Time</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Working Hours</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {attendanceData.map((record, index) => (
+                      <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
+                        <td className="py-3 px-4 text-sm font-medium text-gray-900">{record.name}</td>
+                        <td className="py-3 px-4 text-sm text-gray-600">{record.email}</td>
+                        <td className="py-3 px-4">{getStatusBadge(record.status)}</td>
+                        <td className="py-3 px-4 text-sm text-gray-600">{formatTime(record.sod)}</td>
+                        <td className="py-3 px-4 text-sm text-gray-600">{formatTime(record.lunchExit)}</td>
+                        <td className="py-3 px-4 text-sm text-gray-600">{formatTime(record.lunchReturn)}</td>
+                        <td className="py-3 px-4 text-sm text-gray-600">{formatTime(record.eod)}</td>
+                        <td className="py-3 px-4 text-sm font-medium text-gray-900">{record.workingHours}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              // Team Attendance - Monthly Summary View
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Employee</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Email</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Present Days</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Incomplete</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Absent Days</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Total Hours</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Attendance %</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {attendanceData.sort((a, b) => b.presentDays - a.presentDays).map((record, index) => (
+                      <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
+                        <td className="py-3 px-4 text-sm font-medium text-gray-900">{record.name}</td>
+                        <td className="py-3 px-4 text-sm text-gray-600">{record.email}</td>
+                        <td className="py-3 px-4">
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                            {record.presentDays}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                            {record.incompleteDays}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                            {record.absentDays}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-sm font-medium text-gray-900">{record.totalWorkingHours}</td>
+                        <td className="py-3 px-4">
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 bg-gray-200 rounded-full h-2 max-w-[100px]">
+                              <div 
+                                className={`h-2 rounded-full ${
+                                  record.attendancePercentage >= 90 ? 'bg-green-500' :
+                                  record.attendancePercentage >= 75 ? 'bg-yellow-500' :
+                                  'bg-red-500'
+                                }`}
+                                style={{ width: `${record.attendancePercentage}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm font-medium text-gray-900 min-w-[45px]">
+                              {record.attendancePercentage}%
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Reports & Masters Section */}
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Reports & Masters</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-            {/* Column 1: Daily */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
-              <h3 className="font-semibold text-gray-900 mb-4">Daily</h3>
-              <div className="space-y-2">
-                <button 
-                  onClick={() => setSelectedSection('today')}
-                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <span>Today's Attendance</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={() => setSelectedSection('records')}
-                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <span>Attendance Records</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <button className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                  <span>Attendance Request</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Column 2: Configuration */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
-              <h3 className="font-semibold text-gray-900 mb-4">Configuration</h3>
-              <div className="space-y-2">
-                <button 
-                  onClick={() => setSelectedSection('shifts')}
-                  className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <span>Shift Management</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <button className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                  <span>Attendance Settings</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <button className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                  <span>Work Timings</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Column 3: Reports */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
-              <h3 className="font-semibold text-gray-900 mb-4">Reports</h3>
-              <div className="space-y-2">
-                {isAdmin && (
-                  <button 
-                    onClick={() => setSelectedSection('team')}
-                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                  >
-                    <span>Team Attendance</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                )}
-                <button className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                  <span>Monthly Summary</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <button className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                  <span>Attendance Analytics</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
+        {/* Info Box */}
+        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex gap-2">
+            <Clock className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="text-sm font-semibold text-blue-900 mb-1">How Attendance is Calculated</h4>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• <strong>Present:</strong> Both SOD and EOD submitted for the day</li>
+                <li>• <strong>Incomplete:</strong> Only SOD submitted, missing EOD</li>
+                <li>• <strong>Absent:</strong> No SOD/EOD submitted</li>
+                <li>• <strong>Working Hours:</strong> Time between SOD and EOD, minus lunch break duration</li>
+              </ul>
             </div>
           </div>
-
-          {/* Dynamic Content Area */}
-          {selectedSection && (
-            <div className="mt-6">
-              {renderContent()}
-            </div>
-          )}
         </div>
       </div>
     </div>
@@ -659,4 +546,3 @@ function AttendancePage() {
 }
 
 export default AttendancePage
-

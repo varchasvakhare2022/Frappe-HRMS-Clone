@@ -10,9 +10,6 @@ function EmployeeLoginPage() {
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
-  // Employee users from JSON file
-  const allowedUsers = employeeUsers
-
   const handleLogin = (e) => {
     e.preventDefault()
     setError('')
@@ -34,8 +31,12 @@ function EmployeeLoginPage() {
       return
     }
 
+    // Combine users from JSON and localStorage
+    const customEmployees = JSON.parse(localStorage.getItem('customEmployees') || '[]')
+    const allEmployees = [...employeeUsers, ...customEmployees]
+
     // Check if user is registered
-    const user = allowedUsers.find(u => u.email.toLowerCase() === email.toLowerCase())
+    const user = allEmployees.find(u => u.email.toLowerCase() === email.toLowerCase())
     
     if (!user) {
       setError('User not found. Please check your email address.')

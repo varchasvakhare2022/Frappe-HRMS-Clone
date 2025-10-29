@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { 
-  Search, Bell, HelpCircle, Menu, ChevronDown, ChevronRight,
+  Bell, HelpCircle, Menu, X,
   Briefcase, Folder, Users, Monitor, DollarSign, Wrench, 
   Settings, Link as LinkIcon, Hammer, Info, Zap, Calendar,
   Clock, FileText, TrendingUp, UserCheck, Coffee, Gift,
@@ -12,8 +12,8 @@ import {
 function DashboardPage() {
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
-  const [sidebarExpanded, setSidebarExpanded] = useState(true)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
 
   useEffect(() => {
     // Check if user is logged in
@@ -63,6 +63,7 @@ function DashboardPage() {
   // Role-based Quick Actions
   const employeeActions = [
     { icon: MessageSquare, label: 'Daily Updates (SOD/EOD)', color: 'bg-teal-500', link: '/daily-updates' },
+    { icon: Folder, label: 'My Projects', color: 'bg-indigo-500', link: '/project-management' },
     { icon: Calendar, label: 'Leave Management', color: 'bg-blue-500', link: '/leave-management' },
     { icon: Clock, label: 'Attendance', color: 'bg-green-500', link: '/attendance' },
     { icon: DollarSign, label: 'Expense Management', color: 'bg-purple-500', link: '/expense-management' },
@@ -72,6 +73,8 @@ function DashboardPage() {
   ]
 
   const managerActions = [
+    { icon: Users, label: 'Employee Management', color: 'bg-blue-600', link: '/employee-management' },
+    { icon: Folder, label: 'Project Management', color: 'bg-indigo-600', link: '/project-management' },
     { icon: MessageSquare, label: 'Team Daily Updates', color: 'bg-teal-500', link: '/daily-updates' },
     { icon: FileText, label: 'Approve Leave Requests', color: 'bg-blue-500', link: '/leave-management' },
     { icon: Clock, label: 'Team Attendance', color: 'bg-green-600', link: '/attendance' },
@@ -82,11 +85,13 @@ function DashboardPage() {
   ]
 
   const adminActions = [
+    { icon: Users, label: 'User Management', color: 'bg-purple-600', link: '/user-management' },
+    { icon: Folder, label: 'Project Management', color: 'bg-indigo-600', link: '/project-management' },
     { icon: MessageSquare, label: 'Team Daily Updates', color: 'bg-teal-500', link: '/daily-updates' },
     { icon: FileText, label: 'Leave Management', color: 'bg-blue-500', link: '/leave-management' },
     { icon: Clock, label: 'Team Attendance', color: 'bg-green-600', link: '/attendance' },
     { icon: Briefcase, label: 'Recruitment', color: 'bg-purple-500', link: '/recruitment' },
-    { icon: Users, label: 'Employee Lifecycle', color: 'bg-orange-500', link: '/employee-lifecycle' },
+    { icon: UserCheck, label: 'Employee Lifecycle', color: 'bg-orange-500', link: '/employee-lifecycle' },
     { icon: Receipt, label: 'Expense Management', color: 'bg-indigo-500', link: '/expense-management' },
     { icon: DollarSign, label: 'Payroll Management', color: 'bg-teal-500', link: '/payroll' },
     { icon: Award, label: 'Performance Management', color: 'bg-pink-500', link: '/performance-management' },
@@ -140,18 +145,47 @@ function DashboardPage() {
     }
   }
 
-  const sidebarItems = [
-    { icon: MessageSquare, label: 'Daily Updates (SOD/EOD)', url: '/daily-updates', hasSubmenu: false },
-    { icon: FileText, label: 'Leave Management', url: '/leave-management', hasSubmenu: false },
-    { icon: Clock, label: 'Attendance Tracking', url: '/attendance', hasSubmenu: false },
-    { icon: Briefcase, label: 'Recruitment', url: '/recruitment', hasSubmenu: false },
-    { icon: Users, label: 'Employee Lifecycle', url: '/employee-lifecycle', hasSubmenu: false },
-    { icon: Receipt, label: 'Expense Management', url: '/expense-management', hasSubmenu: false },
-    { icon: DollarSign, label: 'Payroll Management', url: '/payroll', hasSubmenu: false },
-    { icon: Award, label: 'Performance Management', url: '/performance-management', hasSubmenu: false },
-    { icon: BarChart3, label: 'Tax & Reports', url: '/payroll-tax-reports', hasSubmenu: false },
-    { icon: Smartphone, label: 'Mobile App', url: '/mobile-app', hasSubmenu: false },
+  // Role-based Sidebar Items
+  const employeeSidebarItems = [
+    { icon: MessageSquare, label: 'Daily Updates (SOD/EOD)', url: '/daily-updates' },
+    { icon: Folder, label: 'My Projects', url: '/project-management' },
+    { icon: FileText, label: 'Leave Management', url: '/leave-management' },
+    { icon: Clock, label: 'Attendance Tracking', url: '/attendance' },
+    { icon: Receipt, label: 'Expense Management', url: '/expense-management' },
+    { icon: Award, label: 'Performance Management', url: '/performance-management' },
+    { icon: DollarSign, label: 'Payroll Management', url: '/payroll' },
+    { icon: Smartphone, label: 'Mobile App', url: '/mobile-app' },
   ]
+
+  const managerSidebarItems = [
+    { icon: Users, label: 'Employee Management', url: '/employee-management' },
+    { icon: Folder, label: 'Project Management', url: '/project-management' },
+    { icon: MessageSquare, label: 'Daily Updates (SOD/EOD)', url: '/daily-updates' },
+    { icon: FileText, label: 'Leave Management', url: '/leave-management' },
+    { icon: Clock, label: 'Attendance Tracking', url: '/attendance' },
+    { icon: Receipt, label: 'Expense Management', url: '/expense-management' },
+    { icon: Award, label: 'Performance Management', url: '/performance-management' },
+    { icon: BarChart3, label: 'Tax & Reports', url: '/payroll-tax-reports' },
+    { icon: Smartphone, label: 'Mobile App', url: '/mobile-app' },
+  ]
+
+  const adminSidebarItems = [
+    { icon: Users, label: 'User Management', url: '/user-management' },
+    { icon: Folder, label: 'Project Management', url: '/project-management' },
+    { icon: MessageSquare, label: 'Daily Updates (SOD/EOD)', url: '/daily-updates' },
+    { icon: FileText, label: 'Leave Management', url: '/leave-management' },
+    { icon: Clock, label: 'Attendance Tracking', url: '/attendance' },
+    { icon: Briefcase, label: 'Recruitment', url: '/recruitment' },
+    { icon: UserCheck, label: 'Employee Lifecycle', url: '/employee-lifecycle' },
+    { icon: Receipt, label: 'Expense Management', url: '/expense-management' },
+    { icon: DollarSign, label: 'Payroll Management', url: '/payroll' },
+    { icon: Award, label: 'Performance Management', url: '/performance-management' },
+    { icon: BarChart3, label: 'Tax & Reports', url: '/payroll-tax-reports' },
+    { icon: Smartphone, label: 'Mobile App', url: '/mobile-app' },
+  ]
+
+  // Select sidebar items based on role
+  const sidebarItems = isAdmin ? adminSidebarItems : isManager ? managerSidebarItems : employeeSidebarItems
 
   const shortcuts = [
     'Purchase Invoice',
@@ -211,6 +245,15 @@ function DashboardPage() {
     <div className="min-h-screen bg-white flex flex-col">
       {/* Top Header */}
       <div className="bg-white border-b border-gray-200 h-14 flex items-center px-4 sticky top-0 z-50">
+        {/* Sidebar Toggle */}
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="text-gray-600 hover:text-gray-900 mr-3 p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+          aria-label="Toggle sidebar"
+        >
+          {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+
         {/* Logo */}
         <div className="flex items-center gap-3 mr-4">
           <img 
@@ -218,18 +261,6 @@ function DashboardPage() {
             alt="Talrn Logo" 
             className="w-8 h-8 object-contain"
           />
-        </div>
-
-        {/* Search Bar */}
-        <div className="flex-1 max-w-2xl">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search or type a command (Ctrl + G)"
-              className="w-full pl-10 pr-4 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
-            />
-          </div>
         </div>
 
         {/* Right Icons */}
@@ -292,37 +323,30 @@ function DashboardPage() {
 
       <div className="flex flex-1">
         {/* Sidebar */}
-        <div className="w-64 bg-gray-50 border-r border-gray-200 flex-shrink-0">
+        <div 
+          className={`bg-white border-r border-gray-200 flex-shrink-0 transition-all duration-300 ease-in-out ${
+            sidebarOpen ? 'w-64' : 'w-0'
+          } overflow-hidden`}
+        >
           {/* Sidebar Header */}
-          <div className="p-4 border-b border-gray-200 flex items-center gap-2">
-            <button className="text-gray-600 hover:text-gray-900">
-              <Menu className="w-5 h-5" />
-            </button>
-            <h2 className="font-semibold text-gray-900 text-lg">HRMS Modules</h2>
+          <div className="px-4 py-5 border-b border-gray-200 w-64">
+            <h2 className="font-semibold text-gray-900 text-base tracking-tight">HRMS Modules</h2>
           </div>
 
           {/* Sidebar Content */}
-          <div className="p-3">
-            <div className="mb-3">
-              <button className="flex items-center gap-2 text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 hover:text-gray-700 w-full">
-                <span>PUBLIC</span>
-                <ChevronDown className="w-3 h-3" />
-              </button>
-            </div>
-
-            <div className="space-y-0.5">
+          <div className="p-4 w-64">
+            <nav className="space-y-1">
               {sidebarItems.map((item, index) => (
                 <button
                   key={index}
                   onClick={() => item.url && navigate(item.url)}
-                  className="w-full flex items-center gap-2.5 px-2 py-2 text-sm text-gray-700 hover:bg-gray-200 rounded transition-colors"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-all group"
                 >
-                  <item.icon className="w-4 h-4 text-gray-600" strokeWidth={1.8} />
-                  <span className="flex-1 text-left">{item.label}</span>
-                  {item.hasSubmenu && <ChevronDown className="w-3 h-3 text-gray-500" />}
+                  <item.icon className="w-5 h-5 text-gray-500 group-hover:text-gray-700" strokeWidth={1.8} />
+                  <span className="flex-1 text-left font-medium">{item.label}</span>
                 </button>
               ))}
-            </div>
+            </nav>
           </div>
         </div>
 
