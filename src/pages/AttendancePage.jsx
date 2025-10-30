@@ -12,6 +12,7 @@ function AttendancePage() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]) // YYYY-MM-DD format
   const [activeTab, setActiveTab] = useState('my-attendance')
   const [teamView, setTeamView] = useState('daily') // 'daily' or 'monthly'
+  const [includePast, setIncludePast] = useState(false) // include former employees with historical data
 
   // Export helpers
   const exportTeamAttendanceCSV = () => {
@@ -145,9 +146,49 @@ function AttendancePage() {
     
     const allEmployees = [...employeeUsersData, ...customEmployees]
     const allManagers = [...managerUsersData, ...customManagers]
+    const currentByEmail = new Map([...allEmployees, ...allManagers].map(u => [u.email, u]))
     
-    // Combine all users for team view
-    const allTeamMembers = [...allEmployees, ...allManagers]
+    // Derive past employees from historical dailyUpdates when requested
+    const additionalMembers = []
+    if (includePast && activeTab !== 'my-attendance') {
+      const emailsSet = new Set(Object.keys(dailyUpdates).map(k => k.split('_')[0]))
+      // Limit scope to selected date/month
+      if (teamView === 'daily') {
+        const daySuffix = `_${selectedDate}`
+        for (const key of Object.keys(dailyUpdates)) {
+          if (key.endsWith(daySuffix)) {
+            const email = key.split('_')[0]
+            if (!currentByEmail.has(email) && email !== user.email) {
+              emailsSet.add(email)
+            }
+          }
+        }
+      } else {
+        // month scope
+        for (const key of Object.keys(dailyUpdates)) {
+          const parts = key.split('_')
+          const d = parts[1]
+          if (d && d.startsWith(`${year}-${month}-`)) {
+            const email = parts[0]
+            if (!currentByEmail.has(email) && email !== user.email) {
+              emailsSet.add(email)
+            }
+          }
+        }
+      }
+      for (const email of emailsSet) {
+        if (!currentByEmail.has(email) && email !== user.email) {
+          additionalMembers.push({
+            name: email.split('@')[0],
+            email,
+            role: 'Employee (Former)'
+          })
+        }
+      }
+    }
+    
+    // Combine all users for team view (current + derived past)
+    const allTeamMembers = [...allEmployees, ...allManagers, ...additionalMembers]
 
     if (activeTab === 'my-attendance') {
       // Show only current user's attendance
@@ -192,7 +233,7 @@ function AttendancePage() {
           if (member.email === user.email) return
           
           // Managers can only see employees, Admins see everyone
-          if (isManager && member.role !== 'Employee') return
+          if (isManager && member.role !== 'Employee' && member.role !== 'Employee (Former)') return
           
           const key = `${member.email}_${selectedDate}`
           const record = dailyUpdates[key]
@@ -225,7 +266,7 @@ function AttendancePage() {
           if (member.email === user.email) return
           
           // Managers can only see employees, Admins see everyone
-          if (isManager && member.role !== 'Employee') return
+          if (isManager && member.role !== 'Employee' && member.role !== 'Employee (Former)') return
           
           // Calculate stats for the month
           let presentDays = 0
@@ -481,8 +522,17 @@ function AttendancePage() {
                     </p>
                   )
                 )}
-                {(isAdmin || isManager) && attendanceData.length > 0 && (
+                {(isAdmin || isManager) && (
                   <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 text-sm text-gray-700">
+                      <input
+                        type="checkbox"
+                        checked={includePast}
+                        onChange={(e) => setIncludePast(e.target.checked)}
+                        className="w-4 h-4 text-green-600 border-gray-300 rounded"
+                      />
+                      Include past employees
+                    </label>
                     <button
                       onClick={exportTeamAttendanceCSV}
                       className="px-3 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 flex items-center gap-2"
