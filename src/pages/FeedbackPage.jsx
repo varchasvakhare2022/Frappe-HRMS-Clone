@@ -8,6 +8,8 @@ function FeedbackPage() {
   const [feedbacks, setFeedbacks] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [categoryFilter, setCategoryFilter] = useState('All')
+  const [statusFilter, setStatusFilter] = useState('All')
+  const [noteModal, setNoteModal] = useState({ open: false, id: null, note: '' })
 
   const [form, setForm] = useState({
     category: 'General',
@@ -43,7 +45,9 @@ function FeedbackPage() {
       id: `FB-${Date.now()}`,
       category: form.category,
       message: form.message.trim(),
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      status: 'New',
+      adminNotes: []
       // Intentionally not storing author to keep it anonymous
     }
 
@@ -64,11 +68,50 @@ function FeedbackPage() {
     loadFeedbacks()
   }
 
+  const updateFeedbackStatus = (id, status) => {
+    const items = JSON.parse(localStorage.getItem('feedbacks') || '[]')
+    const updated = items.map(f => f.id === id ? { ...f, status } : f)
+    localStorage.setItem('feedbacks', JSON.stringify(updated))
+    loadFeedbacks()
+  }
+
+  const openNoteModal = (id) => {
+    setNoteModal({ open: true, id, note: '' })
+  }
+
+  const submitAdminNote = (e) => {
+    e.preventDefault()
+    if (!noteModal.note.trim()) return
+    const items = JSON.parse(localStorage.getItem('feedbacks') || '[]')
+    const updated = items.map(f => {
+      if (f.id === noteModal.id) {
+        const notes = Array.isArray(f.adminNotes) ? f.adminNotes : []
+        return {
+          ...f,
+          adminNotes: [
+            ...notes,
+            {
+              note: noteModal.note.trim(),
+              by: (user?.role || 'Admin'),
+              at: new Date().toISOString()
+            }
+          ]
+        }
+      }
+      return f
+    })
+    localStorage.setItem('feedbacks', JSON.stringify(updated))
+    setNoteModal({ open: false, id: null, note: '' })
+    loadFeedbacks()
+  }
+
   if (!user) return null
 
   const isAdminOrManager = user.role?.toLowerCase().includes('admin') || user.role?.toLowerCase().includes('manager')
   const categories = ['All', 'General', 'HR & Policies', 'Work Environment', 'Compensation', 'Management', 'Product/Process', 'Other']
-  const filtered = categoryFilter === 'All' ? feedbacks : feedbacks.filter(f => f.category === categoryFilter)
+  const statuses = ['All', 'New', 'In Review', 'Resolved']
+  const filteredByCategory = categoryFilter === 'All' ? feedbacks : feedbacks.filter(f => f.category === categoryFilter)
+  const filtered = statusFilter === 'All' ? filteredByCategory : filteredByCategory.filter(f => (f.status || 'New') === statusFilter)
 
   const formatDateTime = (iso) => new Date(iso).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
 
@@ -134,16 +177,28 @@ function FeedbackPage() {
 
         {/* Filters */}
         <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
-          <div className="flex items-center gap-3">
-            <Filter className="w-4 h-4 text-gray-500" />
-            <span className="text-sm text-gray-700">Filter by category:</span>
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-            >
-              {categories.map(c => <option key={c}>{c}</option>)}
-            </select>
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-gray-500" />
+              <span className="text-sm text-gray-700">Category:</span>
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+                {categories.map(c => <option key={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-700">Status:</span>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+                {statuses.map(s => <option key={s}>{s}</option>)}
+              </select>
+            </div>
             <span className="ml-auto text-sm text-gray-500">{filtered.length} feedback</span>
           </div>
         </div>
@@ -166,12 +221,62 @@ function FeedbackPage() {
               {filtered.map(item => (
                 <div key={item.id} className="p-6">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                      {item.category}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                        {item.category}
+                      </span>
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${
+                        (item.status||'New') === 'Resolved' ? 'bg-green-50 text-green-700 border-green-200' :
+                        (item.status||'New') === 'In Review' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+                        'bg-gray-50 text-gray-700 border-gray-200'
+                      }`}>
+                        {item.status || 'New'}
+                      </span>
+                    </div>
                     <span className="text-xs text-gray-500">{formatDateTime(item.createdAt)}</span>
                   </div>
                   <p className="text-sm text-gray-800 whitespace-pre-wrap">{item.message}</p>
+
+                  {isAdminOrManager && (
+                    <div className="mt-3 flex items-center gap-2">
+                      {(item.status||'New') !== 'In Review' && (
+                        <button
+                          onClick={() => updateFeedbackStatus(item.id, 'In Review')}
+                          className="px-3 py-1.5 text-xs rounded-lg bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+                        >
+                          Mark In Review
+                        </button>
+                      )}
+                      {(item.status||'New') !== 'Resolved' && (
+                        <button
+                          onClick={() => updateFeedbackStatus(item.id, 'Resolved')}
+                          className="px-3 py-1.5 text-xs rounded-lg bg-green-100 text-green-800 hover:bg-green-200"
+                        >
+                          Mark Resolved
+                        </button>
+                      )}
+                      <button
+                        onClick={() => openNoteModal(item.id)}
+                        className="px-3 py-1.5 text-xs rounded-lg bg-gray-100 text-gray-800 hover:bg-gray-200"
+                      >
+                        Add Note
+                      </button>
+                    </div>
+                  )}
+
+                  {Array.isArray(item.adminNotes) && item.adminNotes.length > 0 && (
+                    <div className="mt-3 bg-gray-50 border border-gray-200 rounded-lg p-3">
+                      <p className="text-xs font-semibold text-gray-700 mb-2">Admin Notes</p>
+                      <ul className="space-y-2">
+                        {item.adminNotes.map((n, idx) => (
+                          <li key={idx} className="text-xs text-gray-700">
+                            <span className="font-medium">{n.by}</span> • {formatDateTime(n.at)}
+                            <div className="text-gray-800 whitespace-pre-wrap">{n.note}</div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -217,6 +322,31 @@ function FeedbackPage() {
                   <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">Cancel</button>
                   <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Submit</button>
                 </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Admin Note Modal */}
+      {noteModal.open && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-xl w-full">
+            <div className="p-5 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-900">Add Admin Note</h2>
+              <button onClick={() => setNoteModal({ open: false, id: null, note: '' })} className="text-gray-400 hover:text-gray-600">×</button>
+            </div>
+            <form onSubmit={submitAdminNote} className="p-5 space-y-4">
+              <textarea
+                value={noteModal.note}
+                onChange={(e) => setNoteModal({ ...noteModal, note: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                rows={6}
+                placeholder="Add context, actions taken, next steps..."
+              />
+              <div className="flex items-center justify-end gap-2">
+                <button type="button" onClick={() => setNoteModal({ open: false, id: null, note: '' })} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Note</button>
               </div>
             </form>
           </div>
