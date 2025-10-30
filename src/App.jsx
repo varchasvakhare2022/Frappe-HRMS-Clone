@@ -17,6 +17,7 @@ import DailyUpdatesPage from './pages/DailyUpdatesPage'
 import UserManagementPage from './pages/UserManagementPage'
 import EmployeeManagementPage from './pages/EmployeeManagementPage'
 import ProjectManagementPage from './pages/ProjectManagementPage'
+import FeedbackPage from './pages/FeedbackPage'
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
         <Route path="/payroll-tax-reports" element={<PayrollTaxReportsPage />} />
         <Route path="/mobile-app" element={<MobileAppPage />} />
         <Route path="/daily-updates" element={<DailyUpdatesPage />} />
+        <Route path="/feedback" element={<FeedbackPage />} />
         
         {/* Catch all - redirect to portal selection */}
         <Route path="/*" element={<PortalSelectionPage />} />

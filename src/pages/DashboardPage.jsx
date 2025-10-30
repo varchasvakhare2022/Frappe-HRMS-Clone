@@ -63,6 +63,7 @@ function DashboardPage() {
   // Role-based Quick Actions
   const employeeActions = [
     { icon: MessageSquare, label: 'Daily Updates (SOD/EOD)', color: 'bg-teal-500', link: '/daily-updates' },
+    { icon: MessageSquare, label: 'Anonymous Feedback', color: 'bg-blue-600', link: '/feedback' },
     { icon: Folder, label: 'My Projects', color: 'bg-indigo-500', link: '/project-management' },
     { icon: Calendar, label: 'Leave Management', color: 'bg-blue-500', link: '/leave-management' },
     { icon: Clock, label: 'Attendance', color: 'bg-green-500', link: '/attendance' },
@@ -76,6 +77,7 @@ function DashboardPage() {
     { icon: Users, label: 'Employee Management', color: 'bg-blue-600', link: '/employee-management' },
     { icon: Folder, label: 'Project Management', color: 'bg-indigo-600', link: '/project-management' },
     { icon: MessageSquare, label: 'Team Daily Updates', color: 'bg-teal-500', link: '/daily-updates' },
+    { icon: MessageSquare, label: 'Anonymous Feedback', color: 'bg-blue-600', link: '/feedback' },
     { icon: FileText, label: 'Approve Leave Requests', color: 'bg-blue-500', link: '/leave-management' },
     { icon: Clock, label: 'Team Attendance', color: 'bg-green-600', link: '/attendance' },
     { icon: Receipt, label: 'Expense Approvals', color: 'bg-indigo-500', link: '/expense-management' },
@@ -88,6 +90,7 @@ function DashboardPage() {
     { icon: Users, label: 'User Management', color: 'bg-purple-600', link: '/user-management' },
     { icon: Folder, label: 'Project Management', color: 'bg-indigo-600', link: '/project-management' },
     { icon: MessageSquare, label: 'Team Daily Updates', color: 'bg-teal-500', link: '/daily-updates' },
+    { icon: MessageSquare, label: 'Anonymous Feedback', color: 'bg-blue-600', link: '/feedback' },
     { icon: FileText, label: 'Leave Management', color: 'bg-blue-500', link: '/leave-management' },
     { icon: Clock, label: 'Team Attendance', color: 'bg-green-600', link: '/attendance' },
     { icon: Briefcase, label: 'Recruitment', color: 'bg-purple-500', link: '/recruitment' },
@@ -148,6 +151,7 @@ function DashboardPage() {
   // Role-based Sidebar Items
   const employeeSidebarItems = [
     { icon: MessageSquare, label: 'Daily Updates (SOD/EOD)', url: '/daily-updates' },
+    { icon: MessageSquare, label: 'Anonymous Feedback', url: '/feedback' },
     { icon: Folder, label: 'My Projects', url: '/project-management' },
     { icon: FileText, label: 'Leave Management', url: '/leave-management' },
     { icon: Clock, label: 'Attendance Tracking', url: '/attendance' },
@@ -161,6 +165,7 @@ function DashboardPage() {
     { icon: Users, label: 'Employee Management', url: '/employee-management' },
     { icon: Folder, label: 'Project Management', url: '/project-management' },
     { icon: MessageSquare, label: 'Daily Updates (SOD/EOD)', url: '/daily-updates' },
+    { icon: MessageSquare, label: 'Anonymous Feedback', url: '/feedback' },
     { icon: FileText, label: 'Leave Management', url: '/leave-management' },
     { icon: Clock, label: 'Attendance Tracking', url: '/attendance' },
     { icon: Receipt, label: 'Expense Management', url: '/expense-management' },
@@ -173,6 +178,7 @@ function DashboardPage() {
     { icon: Users, label: 'User Management', url: '/user-management' },
     { icon: Folder, label: 'Project Management', url: '/project-management' },
     { icon: MessageSquare, label: 'Daily Updates (SOD/EOD)', url: '/daily-updates' },
+    { icon: MessageSquare, label: 'Anonymous Feedback', url: '/feedback' },
     { icon: FileText, label: 'Leave Management', url: '/leave-management' },
     { icon: Clock, label: 'Attendance Tracking', url: '/attendance' },
     { icon: Briefcase, label: 'Recruitment', url: '/recruitment' },
