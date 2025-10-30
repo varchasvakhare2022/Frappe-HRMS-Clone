@@ -13,6 +13,105 @@ function AttendancePage() {
   const [activeTab, setActiveTab] = useState('my-attendance')
   const [teamView, setTeamView] = useState('daily') // 'daily' or 'monthly'
 
+  // Export helpers
+  const exportTeamAttendanceCSV = () => {
+    const isDaily = teamView === 'daily'
+    const header = isDaily
+      ? ['Name','Email','Role','Status','SOD Time','Lunch Exit','Lunch Return','EOD Time','Working Hours']
+      : ['Name','Email','Role','Present Days','Incomplete Days','Absent Days','Total Hours','Attendance %']
+
+    const rows = attendanceData.map(r => (
+      teamView === 'daily'
+        ? [r.name, r.email, r.role || '', r.status, formatTime(r.sod), formatTime(r.lunchExit), formatTime(r.lunchReturn), formatTime(r.eod), r.workingHours]
+        : [r.name, r.email, r.role || '', r.presentDays, r.incompleteDays, r.absentDays, r.totalWorkingHours, r.attendancePercentage]
+    ))
+
+    const title = teamView === 'daily'
+      ? `Team_Attendance_${selectedDate}`
+      : `Team_Attendance_${selectedMonth}`
+
+    const csv = [header, ...rows]
+      .map(row => row.map(val => {
+        if (val === undefined || val === null) return ''
+        const s = String(val)
+        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s
+      }).join(','))
+      .join('\n')
+
+    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${title}.csv`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const exportTeamAttendancePrintable = () => {
+    const win = window.open('', '_blank')
+    if (!win) return
+
+    const isDaily = teamView === 'daily'
+    const title = teamView === 'daily'
+      ? `Team Attendance - ${selectedDate}`
+      : `Team Attendance - ${monthName}`
+
+    const tableHeaders = isDaily
+      ? '<th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>SOD</th><th>Lunch Exit</th><th>Lunch Return</th><th>EOD</th><th>Working Hours</th>'
+      : '<th>Name</th><th>Email</th><th>Role</th><th>Present Days</th><th>Incomplete</th><th>Absent</th><th>Total Hours</th><th>Attendance %</th>'
+
+    const tableRows = attendanceData.map(r => isDaily
+      ? `<tr>
+          <td>${r.name || ''}</td>
+          <td>${r.email || ''}</td>
+          <td>${r.role || ''}</td>
+          <td>${r.status || ''}</td>
+          <td>${formatTime(r.sod) || ''}</td>
+          <td>${formatTime(r.lunchExit) || ''}</td>
+          <td>${formatTime(r.lunchReturn) || ''}</td>
+          <td>${formatTime(r.eod) || ''}</td>
+          <td>${r.workingHours || ''}</td>
+        </tr>`
+      : `<tr>
+          <td>${r.name || ''}</td>
+          <td>${r.email || ''}</td>
+          <td>${r.role || ''}</td>
+          <td>${r.presentDays ?? ''}</td>
+          <td>${r.incompleteDays ?? ''}</td>
+          <td>${r.absentDays ?? ''}</td>
+          <td>${r.totalWorkingHours ?? ''}</td>
+          <td>${r.attendancePercentage ?? ''}</td>
+        </tr>`
+    ).join('')
+
+    const html = `<!doctype html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>${title}</title>
+          <style>
+            body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; padding: 24px; }
+            h1 { font-size: 20px; margin: 0 0 16px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #ddd; padding: 8px; font-size: 12px; }
+            th { background: #f3f4f6; text-align: left; }
+          </style>
+        </head>
+        <body>
+          <h1>${title}</h1>
+          <table>
+            <thead><tr>${tableHeaders}</tr></thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+          <script>window.onload = () => window.print();</script>
+        </body>
+      </html>`
+
+    win.document.open()
+    win.document.write(html)
+    win.document.close()
+  }
+
   useEffect(() => {
     const loggedInUser = localStorage.getItem('user')
     if (!loggedInUser) {
@@ -366,6 +465,7 @@ function AttendancePage() {
                     Monthly Summary
                   </button>
                 </div>
+                <div className="flex items-center gap-3">
                 {teamView === 'daily' ? (
                   <input
                     type="date"
@@ -381,6 +481,24 @@ function AttendancePage() {
                     </p>
                   )
                 )}
+                {(isAdmin || isManager) && attendanceData.length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={exportTeamAttendanceCSV}
+                      className="px-3 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 flex items-center gap-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      Export CSV
+                    </button>
+                    <button
+                      onClick={exportTeamAttendancePrintable}
+                      className="px-3 py-2 bg-gray-800 text-white rounded-lg text-sm hover:bg-gray-900"
+                    >
+                      Printable (PDF)
+                    </button>
+                  </div>
+                )}
+                </div>
               </div>
             )}
 
