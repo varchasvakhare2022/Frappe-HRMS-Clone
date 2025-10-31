@@ -424,6 +424,7 @@ const PerformanceManagementPage = () => {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-gray-50">
       {/* Top Navigation Bar */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -1236,7 +1237,7 @@ function FormModal({ title, onClose, onSubmit, children }){
           </div>
         </form>
       </div>
-    </div>
+    </>
   )
 }
 
