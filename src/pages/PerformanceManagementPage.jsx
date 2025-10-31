@@ -548,7 +548,7 @@ const PerformanceManagementPage = () => {
           </div>
         </div>
 
-        {/* Main Content Tabs */
+        {/* Main Content Tabs */}
         <div className="bg-white rounded-lg shadow-sm">
           {/* Tab Navigation */}
           <div className="border-b border-gray-200 overflow-x-auto">
@@ -1214,6 +1214,7 @@ const PerformanceManagementPage = () => {
       </FormModal>
     )}
     </div>
+    </>
   )
 }
 
@@ -1243,7 +1244,7 @@ function FormModal({ title, onClose, onSubmit, children }){
           </div>
         </form>
       </div>
-    </>
+    </div>
   )
 }
 
