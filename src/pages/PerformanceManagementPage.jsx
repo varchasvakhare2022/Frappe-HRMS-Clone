@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { 
   ArrowLeft, 
@@ -33,12 +33,34 @@ import {
 
 const PerformanceManagementPage = () => {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState('templates')
+  const [activeTab, setActiveTab] = useState('goals')
   const [selectedFilter, setSelectedFilter] = useState('all')
+  const [showAddGoal, setShowAddGoal] = useState(false)
+  const [showAddReview, setShowAddReview] = useState(false)
+  const [showAddCycle, setShowAddCycle] = useState(false)
+
+  // Local state backed by localStorage
+  const [cycles, setCycles] = useState(() => JSON.parse(localStorage.getItem('appraisalCycles') || '[]'))
+  const [goals, setGoals] = useState(() => JSON.parse(localStorage.getItem('performanceGoals') || '[]'))
+  const [reviews, setReviews] = useState(() => JSON.parse(localStorage.getItem('performanceReviews') || '[]'))
+
+  useEffect(() => localStorage.setItem('appraisalCycles', JSON.stringify(cycles)), [cycles])
+  useEffect(() => localStorage.setItem('performanceGoals', JSON.stringify(goals)), [goals])
+  useEffect(() => localStorage.setItem('performanceReviews', JSON.stringify(reviews)), [reviews])
 
   // Get user data from localStorage
   const user = JSON.parse(localStorage.getItem('user') || '{}')
   const isAdmin = user.role?.toLowerCase().includes('admin')
+  const isManager = user.role?.toLowerCase().includes('manager')
+
+  // Helper: all known users (from JSON + custom)
+  const employeeUsersData = JSON.parse(localStorage.getItem('employeeUsersData') || '[]')
+  const managerUsersData = JSON.parse(localStorage.getItem('managerUsersData') || '[]')
+  const customEmployees = JSON.parse(localStorage.getItem('customEmployees') || '[]')
+  const customManagers = JSON.parse(localStorage.getItem('customManagers') || '[]')
+  const allEmployees = [...employeeUsersData, ...customEmployees]
+  const allManagers = [...managerUsersData, ...customManagers]
+  const everyone = [...allEmployees, ...allManagers]
 
   // Shortcuts based on role
   const employeeShortcuts = [
@@ -125,174 +147,39 @@ const PerformanceManagementPage = () => {
     }
   ]
 
-  // Dummy data for appraisal cycles
-  const appraisalCycles = [
-    {
-      id: 'CYC-2024-Q4',
-      name: 'Q4 2024 Performance Review',
-      template: 'Annual Performance Review',
-      start_date: '2024-10-01',
-      end_date: '2024-12-31',
-      status: 'In Progress',
-      employees: 45,
-      completed: 12,
-      pending: 33,
-      created_by: 'Admin User'
-    },
-    {
-      id: 'CYC-2024-Q3',
-      name: 'Q3 2024 Quarterly Check',
-      template: 'Quarterly Assessment',
-      start_date: '2024-07-01',
-      end_date: '2024-09-30',
-      status: 'Completed',
-      employees: 45,
-      completed: 45,
-      pending: 0,
-      created_by: 'Admin User'
-    },
-    {
-      id: 'CYC-2024-Q2',
-      name: 'Q2 2024 Mid-Year Review',
-      template: 'Annual Performance Review',
-      start_date: '2024-04-01',
-      end_date: '2024-06-30',
-      status: 'Completed',
-      employees: 42,
-      completed: 42,
-      pending: 0,
-      created_by: 'Sarah Wilson'
+  // Ensure there is at least one sample cycle for first run
+  useEffect(() => {
+    if (cycles.length === 0) {
+      setCycles([
+        {
+          id: 'CYC-2024-Q4',
+          name: 'Q4 2024 Performance Review',
+          template: 'Annual Performance Review',
+          start_date: '2024-10-01',
+          end_date: '2024-12-31',
+          status: 'In Progress',
+          employees: everyone.length,
+          created_by: user.name || 'Admin User'
+        }
+      ])
     }
-  ]
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  // Dummy data for goals and KRAs
-  const goalsData = [
-    {
-      id: 'GOAL-001',
-      employee: 'John Doe',
-      department: 'Engineering',
-      kra: 'Product Development',
-      goal: 'Complete mobile app redesign',
-      target: 100,
-      achieved: 75,
-      status: 'In Progress',
-      due_date: '2024-12-15',
-      priority: 'High'
-    },
-    {
-      id: 'GOAL-002',
-      employee: 'Sarah Wilson',
-      department: 'HR',
-      kra: 'Talent Acquisition',
-      goal: 'Hire 10 software engineers',
-      target: 10,
-      achieved: 8,
-      status: 'In Progress',
-      due_date: '2024-11-30',
-      priority: 'High'
-    },
-    {
-      id: 'GOAL-003',
-      employee: 'Mike Johnson',
-      department: 'Sales',
-      kra: 'Revenue Growth',
-      goal: 'Achieve $500K in sales',
-      target: 500000,
-      achieved: 520000,
-      status: 'Achieved',
-      due_date: '2024-10-31',
-      priority: 'Critical'
-    },
-    {
-      id: 'GOAL-004',
-      employee: 'Emily Chen',
-      department: 'Marketing',
-      kra: 'Brand Awareness',
-      goal: 'Increase social media followers by 50%',
-      target: 50,
-      achieved: 45,
-      status: 'In Progress',
-      due_date: '2024-12-20',
-      priority: 'Medium'
-    },
-    {
-      id: 'GOAL-005',
-      employee: 'David Lee',
-      department: 'Engineering',
-      kra: 'Code Quality',
-      goal: 'Reduce bug count by 30%',
-      target: 30,
-      achieved: 35,
-      status: 'Achieved',
-      due_date: '2024-10-25',
-      priority: 'High'
+  // Derived views
+  const myGoals = useMemo(() => goals.filter(g => g.employeeEmail === user.email), [goals, user.email])
+  const teamGoals = useMemo(() => {
+    if (isAdmin) return goals
+    if (isManager) {
+      return goals.filter(g => g.managerEmail === user.email || g.reviewerEmail === user.email || (g.employeeManagerEmail && g.employeeManagerEmail === user.email))
     }
-  ]
+    return []
+  }, [goals, isAdmin, isManager, user.email])
 
-  // Dummy data for feedback
-  const feedbackData = [
-    {
-      id: 'FB-001',
-      employee: 'John Doe',
-      from: 'Sarah Wilson',
-      date: '2024-10-20',
-      type: 'Performance Review',
-      rating: 4.5,
-      comments: 'Excellent technical skills and team collaboration. Shows great initiative in solving complex problems.',
-      feedback_for: 'Q4 2024'
-    },
-    {
-      id: 'FB-002',
-      employee: 'Emily Chen',
-      from: 'Admin User',
-      date: '2024-10-18',
-      type: 'Project Completion',
-      rating: 5.0,
-      comments: 'Outstanding work on the marketing campaign. Exceeded all expectations and delivered ahead of schedule.',
-      feedback_for: 'Social Media Campaign'
-    },
-    {
-      id: 'FB-003',
-      employee: 'David Lee',
-      from: 'John Doe',
-      date: '2024-10-15',
-      type: 'Peer Feedback',
-      rating: 4.0,
-      comments: 'Very reliable team member. Great at code reviews and always willing to help others.',
-      feedback_for: 'Q4 2024'
-    },
-    {
-      id: 'FB-004',
-      employee: 'Mike Johnson',
-      from: 'Sarah Wilson',
-      date: '2024-10-12',
-      type: 'Monthly Check-in',
-      rating: 4.5,
-      comments: 'Consistently meeting sales targets. Good relationship building with clients.',
-      feedback_for: 'October 2024'
-    }
-  ]
+  const feedbackData = reviews
 
   // Dummy data for self-evaluations
-  const selfEvaluations = [
-    {
-      id: 'SE-001',
-      employee: user.name || 'John Doe',
-      cycle: 'Q4 2024 Performance Review',
-      submitted_date: '2024-10-22',
-      status: 'Submitted',
-      self_rating: 4.2,
-      achievements: [
-        'Led the mobile app redesign project',
-        'Mentored 2 junior developers',
-        'Improved code quality by implementing better testing practices'
-      ],
-      areas_of_improvement: [
-        'Want to improve public speaking skills',
-        'Learn more about cloud architecture'
-      ]
-    }
-  ]
+  const selfEvaluations = reviews.filter(r => r.reviewerEmail === user.email && r.reviewerRole === 'Self')
 
   // Dummy data for KRAs
   const krasList = [
@@ -366,23 +253,36 @@ const PerformanceManagementPage = () => {
   // Analytics data
   const analyticsData = {
     overview: {
-      totalEmployees: 45,
-      completedAppraisals: 28,
-      avgRating: 4.2,
-      goalsAchieved: 85
+      totalEmployees: everyone.length,
+      completedAppraisals: reviews.length,
+      avgRating: reviews.length ? (reviews.reduce((s, r) => s + (Number(r.rating) || 0), 0) / reviews.length).toFixed(1) : 0,
+      goalsAchieved: goals.length ? Math.round((goals.filter(g => (g.status || '').toLowerCase() === 'achieved').length / goals.length) * 100) : 0
     },
-    ratingDistribution: [
-      { rating: '5.0', count: 8, percentage: 28.6, color: 'bg-green-500' },
-      { rating: '4.0-4.9', count: 12, percentage: 42.9, color: 'bg-blue-500' },
-      { rating: '3.0-3.9', count: 6, percentage: 21.4, color: 'bg-yellow-500' },
-      { rating: '2.0-2.9', count: 2, percentage: 7.1, color: 'bg-orange-500' },
-      { rating: '<2.0', count: 0, percentage: 0, color: 'bg-red-500' }
-    ],
-    topPerformers: [
-      { name: 'Mike Johnson', department: 'Sales', rating: 5.0, achievements: 5 },
-      { name: 'Emily Chen', department: 'Marketing', rating: 5.0, achievements: 4 },
-      { name: 'David Lee', department: 'Engineering', rating: 4.8, achievements: 4 }
-    ]
+    ratingDistribution: (() => {
+      const buckets = [{label:'5.0',min:5,max:5,color:'bg-green-500'},{label:'4.0-4.9',min:4,max:4.99,color:'bg-blue-500'},{label:'3.0-3.9',min:3,max:3.99,color:'bg-yellow-500'},{label:'2.0-2.9',min:2,max:2.99,color:'bg-orange-500'},{label:'<2.0',min:0,max:1.99,color:'bg-red-500'}]
+      const totals = buckets.map(b=>({rating:b.label,count:0,percentage:0,color:b.color}))
+      if (reviews.length===0) return totals
+      for (const r of reviews){
+        const val = Number(r.rating)||0
+        for (let i=0;i<buckets.length;i++){
+          const b=buckets[i]
+          if ((val>=b.min && val<=b.max) || (b.label==='5.0' && val===5)) { totals[i].count++; break }
+        }
+      }
+      for (const t of totals){ t.percentage = Math.round((t.count/reviews.length)*1000)/10 }
+      return totals
+    })(),
+    topPerformers: (() => {
+      const byEmp = new Map()
+      for (const r of reviews){
+        const key = r.employeeEmail
+        if (!byEmp.has(key)) byEmp.set(key,{count:0,sum:0,name:r.employeeName||key,department:r.department||'—',achievements:0})
+        const m = byEmp.get(key); m.count++; m.sum += Number(r.rating)||0
+      }
+      const rows = [...byEmp.values()].map(v=>({name:v.name,department:v.department,rating: Number((v.sum/v.count).toFixed(1)), achievements: goals.filter(g=>g.employeeEmail && (g.employeeEmail===everyone.find(e=>e.name===v.name)?.email || g.employeeName===v.name) && (g.status||'').toLowerCase()==='achieved').length}))
+      rows.sort((a,b)=>b.rating-a.rating)
+      return rows.slice(0,3)
+    })()
   }
 
   const handleLogout = () => {
@@ -432,6 +332,95 @@ const PerformanceManagementPage = () => {
 
   const calculateProgress = (achieved, target) => {
     return Math.min((achieved / target) * 100, 100)
+  }
+
+  // CRUD handlers
+  const addGoal = (form) => {
+    const emp = everyone.find(e => e.email === form.employeeEmail)
+    const newGoal = {
+      id: `GOAL-${Date.now()}`,
+      employeeEmail: form.employeeEmail,
+      employeeName: emp?.name || form.employeeName || form.employeeEmail,
+      department: form.department || emp?.department || '—',
+      managerEmail: form.managerEmail || (isManager ? user.email : ''),
+      kra: form.kra,
+      goal: form.goal,
+      target: Number(form.target || 100),
+      achieved: Number(form.achieved || 0),
+      status: form.status || 'In Progress',
+      due_date: form.due_date || '',
+      priority: form.priority || 'Medium',
+      createdAt: new Date().toISOString(),
+    }
+    setGoals(prev => [newGoal, ...prev])
+    setShowAddGoal(false)
+  }
+
+  const updateGoalProgress = (goalId, achieved, status) => {
+    setGoals(prev => prev.map(g => g.id === goalId ? { ...g, achieved: Number(achieved), status } : g))
+  }
+
+  const deleteGoal = (goalId) => {
+    setGoals(prev => prev.filter(g => g.id !== goalId))
+  }
+
+  const addReview = (form) => {
+    const emp = everyone.find(e => e.email === form.employeeEmail) || {}
+    const newReview = {
+      id: `RV-${Date.now()}`,
+      employeeEmail: form.employeeEmail,
+      employeeName: emp.name || form.employeeName || form.employeeEmail,
+      reviewerEmail: user.email,
+      reviewerRole: isAdmin || isManager ? 'Manager' : 'Self',
+      cycle: form.cycle || cycles[0]?.name || 'General',
+      rating: Number(form.rating || 0),
+      comments: form.comments || '',
+      date: new Date().toISOString().slice(0,10)
+    }
+    setReviews(prev => [newReview, ...prev])
+    setShowAddReview(false)
+  }
+
+  const addCycle = (form) => {
+    const newCycle = {
+      id: `CYC-${Date.now()}`,
+      name: form.name,
+      template: form.template || appraisalTemplates[0]?.name || 'Standard',
+      start_date: form.start_date,
+      end_date: form.end_date,
+      status: 'In Progress',
+      employees: everyone.length,
+      created_by: user.name || 'Admin'
+    }
+    setCycles(prev => [newCycle, ...prev])
+    setShowAddCycle(false)
+  }
+
+  // Export team overview to CSV (admins/managers)
+  const exportTeamCSV = () => {
+    const data = (isAdmin ? goals : teamGoals)
+      .map(g => ({
+        Employee: g.employeeName,
+        Email: g.employeeEmail,
+        Department: g.department,
+        Goal: g.goal,
+        KRA: g.kra,
+        Target: g.target,
+        Achieved: g.achieved,
+        ProgressPercent: Math.round(calculateProgress(g.achieved, g.target)),
+        Status: g.status,
+        Priority: g.priority,
+        DueDate: g.due_date
+      }))
+    const header = Object.keys(data[0] || { Notice: 'No data' })
+    const rows = [header.join(','), ...data.map(r => header.map(k => String(r[k]).replaceAll(',', ';')).join(','))]
+    const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'performance-team-overview.csv'
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   return (
@@ -558,7 +547,7 @@ const PerformanceManagementPage = () => {
           </div>
         </div>
 
-        {/* Main Content Tabs */}
+        {/* Main Content Tabs */
         <div className="bg-white rounded-lg shadow-sm">
           {/* Tab Navigation */}
           <div className="border-b border-gray-200 overflow-x-auto">
@@ -723,7 +712,7 @@ const PerformanceManagementPage = () => {
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-lg font-semibold text-gray-900">Appraisal Cycles</h3>
                   {isAdmin && (
-                    <button className="px-4 py-2 bg-purple-600 rounded-lg text-sm font-medium text-white hover:bg-purple-700 flex items-center space-x-2">
+                    <button onClick={() => setShowAddCycle(true)} className="px-4 py-2 bg-purple-600 rounded-lg text-sm font-medium text-white hover:bg-purple-700 flex items-center space-x-2">
                       <Plus className="w-4 h-4" />
                       <span>Create Cycle</span>
                     </button>
@@ -731,7 +720,7 @@ const PerformanceManagementPage = () => {
                 </div>
 
                 <div className="space-y-6">
-                  {appraisalCycles.map((cycle) => (
+                  {cycles.map((cycle) => (
                     <div key={cycle.id} className="bg-gray-50 rounded-lg p-6">
                       <div className="flex justify-between items-start mb-4">
                         <div>
@@ -773,7 +762,7 @@ const PerformanceManagementPage = () => {
                             <p className="text-xs text-gray-500">Progress</p>
                           </div>
                           <p className="text-2xl font-bold text-purple-600">
-                            {Math.round((cycle.completed / cycle.employees) * 100)}%
+                            {cycle.employees ? Math.round(((cycle.completed || 0) / cycle.employees) * 100) : 0}%
                           </p>
                         </div>
                       </div>
@@ -781,12 +770,12 @@ const PerformanceManagementPage = () => {
                       <div className="mb-4">
                         <div className="flex justify-between text-xs text-gray-600 mb-1">
                           <span>Completion Progress</span>
-                          <span>{cycle.completed} / {cycle.employees}</span>
+                          <span>{cycle.completed || 0} / {cycle.employees}</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
                             className="bg-purple-600 h-2 rounded-full transition-all"
-                            style={{ width: `${(cycle.completed / cycle.employees) * 100}%` }}
+                            style={{ width: `${cycle.employees ? ((cycle.completed || 0) / cycle.employees) * 100 : 0}%` }}
                           />
                         </div>
                       </div>
@@ -821,8 +810,8 @@ const PerformanceManagementPage = () => {
                       <Filter className="w-4 h-4" />
                       <span>Filter</span>
                     </button>
-                    {!isAdmin && (
-                      <button className="px-4 py-2 bg-purple-600 rounded-lg text-sm font-medium text-white hover:bg-purple-700 flex items-center space-x-2">
+                    {(isAdmin || isManager) && (
+                      <button onClick={() => setShowAddGoal(true)} className="px-4 py-2 bg-purple-600 rounded-lg text-sm font-medium text-white hover:bg-purple-700 flex items-center space-x-2">
                         <Plus className="w-4 h-4" />
                         <span>Add Goal</span>
                       </button>
@@ -857,9 +846,16 @@ const PerformanceManagementPage = () => {
                 )}
 
                 {/* Goals List */}
-                <h4 className="text-md font-semibold text-gray-900 mb-4">Individual Goals</h4>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-md font-semibold text-gray-900">Individual Goals</h4>
+                  {(isAdmin || isManager) && (
+                    <button onClick={exportTeamCSV} className="px-3 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 flex items-center gap-2">
+                      <Download className="w-4 h-4" /> Export CSV
+                    </button>
+                  )}
+                </div>
                 <div className="space-y-4">
-                  {goalsData.map((goal) => (
+                  {(isAdmin ? goals : isManager ? teamGoals : myGoals).map((goal) => (
                     <div key={goal.id} className="bg-gray-50 rounded-lg p-6">
                       <div className="flex justify-between items-start mb-4">
                         <div className="flex-1">
@@ -873,7 +869,7 @@ const PerformanceManagementPage = () => {
                             </span>
                           </div>
                           <p className="text-sm text-gray-600">
-                            {goal.employee} • {goal.department} • KRA: {goal.kra}
+                            {goal.employeeName} • {goal.department || '—'} • KRA: {goal.kra}
                           </p>
                         </div>
                         <div className="text-right">
@@ -886,7 +882,7 @@ const PerformanceManagementPage = () => {
                         <div className="flex justify-between text-sm text-gray-600 mb-1">
                           <span>Progress</span>
                           <span>
-                            {goal.achieved.toLocaleString()} / {goal.target.toLocaleString()} 
+                            {Number(goal.achieved).toLocaleString()} / {Number(goal.target).toLocaleString()} 
                             <span className="ml-1 font-medium">
                               ({Math.round(calculateProgress(goal.achieved, goal.target))}%)
                             </span>
@@ -899,6 +895,23 @@ const PerformanceManagementPage = () => {
                           />
                         </div>
                       </div>
+
+                      {(isAdmin || isManager) && (
+                        <div className="mt-3 flex items-center gap-2 text-sm">
+                          <input type="number" min="0" placeholder="Achieved" defaultValue={goal.achieved}
+                            onBlur={(e)=>updateGoalProgress(goal.id, e.target.value, goal.status)}
+                            className="w-24 px-2 py-1 border border-gray-300 rounded" />
+                          <select defaultValue={goal.status} onChange={(e)=>updateGoalProgress(goal.id, goal.achieved, e.target.value)} className="px-2 py-1 border border-gray-300 rounded">
+                            <option>In Progress</option>
+                            <option>Achieved</option>
+                            <option>Pending</option>
+                            <option>Overdue</option>
+                          </select>
+                          <button onClick={()=>deleteGoal(goal.id)} className="ml-auto px-3 py-1.5 text-red-600 border border-red-200 rounded hover:bg-red-50">
+                            Delete
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -910,10 +923,10 @@ const PerformanceManagementPage = () => {
               <div>
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-lg font-semibold text-gray-900">Performance Feedback</h3>
-                  {isAdmin && (
-                    <button className="px-4 py-2 bg-purple-600 rounded-lg text-sm font-medium text-white hover:bg-purple-700 flex items-center space-x-2">
+                  {(isAdmin || isManager || !isAdmin) && (
+                    <button onClick={()=>setShowAddReview(true)} className="px-4 py-2 bg-purple-600 rounded-lg text-sm font-medium text-white hover:bg-purple-700 flex items-center space-x-2">
                       <Plus className="w-4 h-4" />
-                      <span>Provide Feedback</span>
+                      <span>{(isAdmin || isManager) ? 'Provide Feedback' : 'Add Self Review'}</span>
                     </button>
                   )}
                 </div>
@@ -923,9 +936,9 @@ const PerformanceManagementPage = () => {
                     <div key={feedback.id} className="bg-gray-50 rounded-lg p-6">
                       <div className="flex justify-between items-start mb-4">
                         <div>
-                          <h5 className="font-semibold text-gray-900">{feedback.employee}</h5>
+                          <h5 className="font-semibold text-gray-900">{feedback.employeeName || feedback.employee}</h5>
                           <p className="text-sm text-gray-600 mt-1">
-                            From: {feedback.from} • {feedback.date}
+                            From: {feedback.reviewerRole || 'Reviewer'} • {feedback.date}
                           </p>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -947,10 +960,10 @@ const PerformanceManagementPage = () => {
 
                       <div className="mb-3">
                         <span className="inline-block px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">
-                          {feedback.type}
+                          {feedback.cycle || 'General'}
                         </span>
                         <span className="ml-2 text-xs text-gray-500">
-                          For: {feedback.feedback_for}
+                          Reviewer: {feedback.reviewerEmail}
                         </span>
                       </div>
 
@@ -968,7 +981,7 @@ const PerformanceManagementPage = () => {
               <div>
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-lg font-semibold text-gray-900">Self Evaluation</h3>
-                  <button className="px-4 py-2 bg-purple-600 rounded-lg text-sm font-medium text-white hover:bg-purple-700 flex items-center space-x-2">
+                  <button onClick={()=>setShowAddReview(true)} className="px-4 py-2 bg-purple-600 rounded-lg text-sm font-medium text-white hover:bg-purple-700 flex items-center space-x-2">
                     <Plus className="w-4 h-4" />
                     <span>New Evaluation</span>
                   </button>
@@ -980,48 +993,19 @@ const PerformanceManagementPage = () => {
                       <div>
                         <h4 className="text-lg font-semibold text-gray-900">{evaluation.cycle}</h4>
                         <p className="text-sm text-gray-600 mt-1">
-                          Submitted on {evaluation.submitted_date}
+                          Submitted on {evaluation.date}
                         </p>
                       </div>
                       <div className="flex items-center space-x-3">
                         <div className="text-right">
                           <p className="text-xs text-gray-500">Self Rating</p>
-                          <p className="text-2xl font-bold text-purple-600">{evaluation.self_rating}</p>
+                          <p className="text-2xl font-bold text-purple-600">{evaluation.rating}</p>
                         </div>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(evaluation.status)}`}>
-                          {evaluation.status}
-                        </span>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor('submitted')}`}>Submitted</span>
                       </div>
                     </div>
-
-                    <div className="bg-white rounded-lg p-4 mb-4">
-                      <h5 className="font-semibold text-gray-900 mb-3 flex items-center">
-                        <CheckCircle className="w-5 h-5 mr-2 text-green-600" />
-                        Key Achievements
-                      </h5>
-                      <ul className="space-y-2">
-                        {evaluation.achievements.map((achievement, idx) => (
-                          <li key={idx} className="text-sm text-gray-700 flex items-start">
-                            <span className="w-1.5 h-1.5 bg-green-500 rounded-full mt-1.5 mr-2 flex-shrink-0" />
-                            {achievement}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
                     <div className="bg-white rounded-lg p-4">
-                      <h5 className="font-semibold text-gray-900 mb-3 flex items-center">
-                        <TrendingUp className="w-5 h-5 mr-2 text-blue-600" />
-                        Areas of Improvement
-                      </h5>
-                      <ul className="space-y-2">
-                        {evaluation.areas_of_improvement.map((area, idx) => (
-                          <li key={idx} className="text-sm text-gray-700 flex items-start">
-                            <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 mr-2 flex-shrink-0" />
-                            {area}
-                          </li>
-                        ))}
-                      </ul>
+                      <p className="text-sm text-gray-700 whitespace-pre-line">{evaluation.comments}</p>
                     </div>
                   </div>
                 ))}
@@ -1178,9 +1162,110 @@ const PerformanceManagementPage = () => {
           </div>
         </div>
       </div>
+
+    {/* Add Goal Modal */}
+    {(showAddGoal && (isAdmin || isManager)) && (
+      <FormModal title="Add Goal" onClose={()=>setShowAddGoal(false)} onSubmit={addGoal}>
+        <FormField label="Employee" name="employeeEmail" type="select" options={everyone.map(u=>({label:`${u.name} (${u.email})`, value:u.email}))} required />
+        <FormField label="KRA" name="kra" placeholder="e.g., Product Development" required />
+        <FormField label="Goal" name="goal" placeholder="Define the goal" required />
+        <div className="grid grid-cols-2 gap-3">
+          <FormField label="Target" name="target" type="number" placeholder="100" />
+          <FormField label="Achieved" name="achieved" type="number" placeholder="0" />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <FormField label="Priority" name="priority" type="select" options={[{label:'Critical',value:'Critical'},{label:'High',value:'High'},{label:'Medium',value:'Medium'},{label:'Low',value:'Low'}]} />
+          <FormField label="Status" name="status" type="select" options={[{label:'In Progress',value:'In Progress'},{label:'Achieved',value:'Achieved'},{label:'Pending',value:'Pending'},{label:'Overdue',value:'Overdue'}]} />
+        </div>
+        <FormField label="Due Date" name="due_date" type="date" />
+      </FormModal>
+    )}
+
+    {/* Add Review Modal */}
+    {showAddReview && (
+      <FormModal title={(isAdmin||isManager)?'Provide Feedback':'Self Review'} onClose={()=>setShowAddReview(false)} onSubmit={addReview}>
+        {(isAdmin||isManager) ? (
+          <FormField label="Employee" name="employeeEmail" type="select" options={everyone.map(u=>({label:`${u.name} (${u.email})`, value:u.email}))} required />
+        ) : (
+          <input type="hidden" name="employeeEmail" value={user.email} />
+        )}
+        <FormField label="Cycle" name="cycle" type="select" options={cycles.map(c=>({label:c.name,value:c.name}))} />
+        <FormField label="Rating (0-5)" name="rating" type="number" min="0" max="5" step="0.1" required />
+        <FormField label="Comments" name="comments" type="textarea" placeholder="Write feedback..." />
+      </FormModal>
+    )}
+
+    {/* Add Cycle Modal */}
+    {(showAddCycle && isAdmin) && (
+      <FormModal title="Create Appraisal Cycle" onClose={()=>setShowAddCycle(false)} onSubmit={addCycle}>
+        <FormField label="Name" name="name" placeholder="e.g., Q1 2025 Performance Review" required />
+        <FormField label="Template" name="template" type="select" options={appraisalTemplates.map(t=>({label:t.name,value:t.name}))} />
+        <div className="grid grid-cols-2 gap-3">
+          <FormField label="Start Date" name="start_date" type="date" required />
+          <FormField label="End Date" name="end_date" type="date" required />
+        </div>
+      </FormModal>
+    )}
     </div>
   )
 }
 
 export default PerformanceManagementPage
+
+// Generic small form modal
+function FormModal({ title, onClose, onSubmit, children }){
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const payload = {}
+    for (const [k,v] of formData.entries()) payload[k] = v
+    onSubmit(payload)
+  }
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-lg">
+        <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-gray-900">{title}</h3>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-4 space-y-3">
+          {children}
+          <div className="pt-2 flex justify-end gap-2">
+            <button type="button" onClick={onClose} className="px-3 py-2 text-sm border border-gray-300 rounded-lg">Cancel</button>
+            <button type="submit" className="px-3 py-2 text-sm bg-purple-600 text-white rounded-lg">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+function FormField({ label, name, type='text', placeholder, options, required, min, max, step }){
+  if (type === 'select') {
+    return (
+      <label className="block text-sm">
+        <span className="text-gray-700">{label}</span>
+        <select name={name} required={required} className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2">
+          {(options || []).map(opt => (
+            <option key={opt.value || opt} value={opt.value || opt}>{opt.label || opt}</option>
+          ))}
+        </select>
+      </label>
+    )
+  }
+  if (type === 'textarea') {
+    return (
+      <label className="block text-sm">
+        <span className="text-gray-700">{label}</span>
+        <textarea name={name} placeholder={placeholder} required={required} className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 h-28" />
+      </label>
+    )
+  }
+  return (
+    <label className="block text-sm">
+      <span className="text-gray-700">{label}</span>
+      <input name={name} type={type} placeholder={placeholder} required={required} min={min} max={max} step={step} className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2" />
+    </label>
+  )
+}
 
