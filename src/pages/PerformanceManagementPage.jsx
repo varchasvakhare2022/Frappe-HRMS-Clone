@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { 
   ArrowLeft, 
@@ -85,24 +85,30 @@ const PerformanceManagementPage = () => {
     switch (label) {
       case 'Create Template':
         setActiveTab('templates');
+        setTimeout(() => templatesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
         break;
       case 'Manage Cycles':
         setActiveTab('cycles');
         setShowAddCycle(true);
+        setTimeout(() => cyclesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
         break;
       case 'Track All Goals':
       case 'My Goals':
         setActiveTab('goals');
+        setTimeout(() => goalsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
         break;
       case 'Provide Feedback':
         setActiveTab('feedback');
         setShowAddReview(true);
+        setTimeout(() => feedbackRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
         break;
       case 'Configure KRAs':
         setActiveTab('goals');
+        setTimeout(() => krasRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0)
         break;
       case 'Appraisal Reports':
         setActiveTab('reports');
+        setTimeout(() => reportsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
         break;
       case 'Self Evaluation':
         setActiveTab('self-eval');
@@ -118,6 +124,14 @@ const PerformanceManagementPage = () => {
         break;
     }
   }
+
+  // Section refs for smooth scroll after switching tabs
+  const templatesRef = useRef(null)
+  const cyclesRef = useRef(null)
+  const goalsRef = useRef(null)
+  const feedbackRef = useRef(null)
+  const reportsRef = useRef(null)
+  const krasRef = useRef(null)
 
   // Reports & Masters
   const reportsAndMasters = {
@@ -787,7 +801,7 @@ const PerformanceManagementPage = () => {
             {/* Appraisal Templates Tab */}
             {activeTab === 'templates' && (
               <div>
-                <div className="flex justify-between items-center mb-6">
+                <div ref={templatesRef} className="flex justify-between items-center mb-6">
                   <h3 className="text-lg font-semibold text-gray-900">Appraisal Templates</h3>
                   {isAdmin && (
                     <button className="px-4 py-2 bg-purple-600 rounded-lg text-sm font-medium text-white hover:bg-purple-700 flex items-center space-x-2">
@@ -860,7 +874,7 @@ const PerformanceManagementPage = () => {
             {/* Appraisal Cycles Tab */}
             {activeTab === 'cycles' && (
               <div>
-                <div className="flex justify-between items-center mb-6">
+                <div ref={cyclesRef} className="flex justify-between items-center mb-6">
                   <h3 className="text-lg font-semibold text-gray-900">Appraisal Cycles</h3>
                   {isAdmin && (
                     <button onClick={() => setShowAddCycle(true)} className="px-4 py-2 bg-purple-600 rounded-lg text-sm font-medium text-white hover:bg-purple-700 flex items-center space-x-2">
@@ -954,7 +968,7 @@ const PerformanceManagementPage = () => {
             {/* Goals & KRAs Tab */}
             {activeTab === 'goals' && (
               <div>
-                <div className="flex justify-between items-center mb-6">
+                <div ref={goalsRef} className="flex justify-between items-center mb-6">
                   <h3 className="text-lg font-semibold text-gray-900">Goals & Key Result Areas</h3>
                   <div className="flex space-x-3">
                     <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center space-x-2">
@@ -972,7 +986,7 @@ const PerformanceManagementPage = () => {
 
                 {/* KRAs Overview */}
                 {isAdmin && (
-                  <div className="mb-8">
+                  <div ref={krasRef} className="mb-8">
                     <h4 className="text-md font-semibold text-gray-900 mb-4">Key Result Areas by Department</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {krasList.map((kra) => (
@@ -1072,7 +1086,7 @@ const PerformanceManagementPage = () => {
             {/* Feedback Tab */}
             {activeTab === 'feedback' && (
               <div>
-                <div className="flex justify-between items-center mb-6">
+                <div ref={feedbackRef} className="flex justify-between items-center mb-6">
                   <h3 className="text-lg font-semibold text-gray-900">Performance Feedback</h3>
                   {(isAdmin || isManager || !isAdmin) && (
                     <button onClick={()=>setShowAddReview(true)} className="px-4 py-2 bg-purple-600 rounded-lg text-sm font-medium text-white hover:bg-purple-700 flex items-center space-x-2">
@@ -1212,7 +1226,7 @@ const PerformanceManagementPage = () => {
             {/* Overview Report Tab (Admin only) */}
             {activeTab === 'reports' && isAdmin && (
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Appraisal Overview Report</h3>
+                <h3 ref={reportsRef} className="text-lg font-semibold text-gray-900 mb-6">Appraisal Overview Report</h3>
 
                 {/* Performance Overview (Attendance + Goals + Projects) */}
                 <div className="bg-white rounded-lg p-6 shadow-sm mb-8">
