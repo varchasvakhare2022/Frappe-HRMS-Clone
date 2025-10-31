@@ -81,6 +81,44 @@ const PerformanceManagementPage = () => {
 
   const shortcuts = isAdmin ? adminShortcuts : employeeShortcuts
 
+  const handleShortcut = (label) => {
+    switch (label) {
+      case 'Create Template':
+        setActiveTab('templates');
+        break;
+      case 'Manage Cycles':
+        setActiveTab('cycles');
+        setShowAddCycle(true);
+        break;
+      case 'Track All Goals':
+      case 'My Goals':
+        setActiveTab('goals');
+        break;
+      case 'Provide Feedback':
+        setActiveTab('feedback');
+        setShowAddReview(true);
+        break;
+      case 'Configure KRAs':
+        setActiveTab('goals');
+        break;
+      case 'Appraisal Reports':
+        setActiveTab('reports');
+        break;
+      case 'Self Evaluation':
+        setActiveTab('self-eval');
+        setShowAddReview(true);
+        break;
+      case 'View Feedback':
+        setActiveTab('feedback');
+        break;
+      case 'My Appraisals':
+        setActiveTab('reports');
+        break;
+      default:
+        break;
+    }
+  }
+
   // Reports & Masters
   const reportsAndMasters = {
     reports: [
@@ -492,7 +530,7 @@ const PerformanceManagementPage = () => {
             {shortcuts.map((shortcut, index) => (
               <button
                 key={index}
-                onClick={() => shortcut.link && navigate(shortcut.link)}
+                onClick={() => handleShortcut(shortcut.label)}
                 className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-all flex items-center space-x-3 group"
               >
                 <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
