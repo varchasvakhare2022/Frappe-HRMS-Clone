@@ -1167,44 +1167,50 @@ const PerformanceManagementPage = () => {
     {/* Add Goal Modal */}
     {(showAddGoal && (isAdmin || isManager)) && (
       <FormModal title="Add Goal" onClose={()=>setShowAddGoal(false)} onSubmit={addGoal}>
-        <FormField label="Employee" name="employeeEmail" type="select" options={everyone.map(u=>({label:`${u.name} (${u.email})`, value:u.email}))} required />
-        <FormField label="KRA" name="kra" placeholder="e.g., Product Development" required />
-        <FormField label="Goal" name="goal" placeholder="Define the goal" required />
-        <div className="grid grid-cols-2 gap-3">
-          <FormField label="Target" name="target" type="number" placeholder="100" />
-          <FormField label="Achieved" name="achieved" type="number" placeholder="0" />
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <FormField label="Priority" name="priority" type="select" options={[{label:'Critical',value:'Critical'},{label:'High',value:'High'},{label:'Medium',value:'Medium'},{label:'Low',value:'Low'}]} />
-          <FormField label="Status" name="status" type="select" options={[{label:'In Progress',value:'In Progress'},{label:'Achieved',value:'Achieved'},{label:'Pending',value:'Pending'},{label:'Overdue',value:'Overdue'}]} />
-        </div>
-        <FormField label="Due Date" name="due_date" type="date" />
+        <>
+          <FormField label="Employee" name="employeeEmail" type="select" options={everyone.map(u=>({label:`${u.name} (${u.email})`, value:u.email}))} required />
+          <FormField label="KRA" name="kra" placeholder="e.g., Product Development" required />
+          <FormField label="Goal" name="goal" placeholder="Define the goal" required />
+          <div className="grid grid-cols-2 gap-3">
+            <FormField label="Target" name="target" type="number" placeholder="100" />
+            <FormField label="Achieved" name="achieved" type="number" placeholder="0" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <FormField label="Priority" name="priority" type="select" options={[{label:'Critical',value:'Critical'},{label:'High',value:'High'},{label:'Medium',value:'Medium'},{label:'Low',value:'Low'}]} />
+            <FormField label="Status" name="status" type="select" options={[{label:'In Progress',value:'In Progress'},{label:'Achieved',value:'Achieved'},{label:'Pending',value:'Pending'},{label:'Overdue',value:'Overdue'}]} />
+          </div>
+          <FormField label="Due Date" name="due_date" type="date" />
+        </>
       </FormModal>
     )}
 
     {/* Add Review Modal */}
     {showAddReview && (
       <FormModal title={(isAdmin||isManager)?'Provide Feedback':'Self Review'} onClose={()=>setShowAddReview(false)} onSubmit={addReview}>
-        {(isAdmin||isManager) ? (
-          <FormField label="Employee" name="employeeEmail" type="select" options={everyone.map(u=>({label:`${u.name} (${u.email})`, value:u.email}))} required />
-        ) : (
-          <input type="hidden" name="employeeEmail" value={user.email} />
-        )}
-        <FormField label="Cycle" name="cycle" type="select" options={cycles.map(c=>({label:c.name,value:c.name}))} />
-        <FormField label="Rating (0-5)" name="rating" type="number" min="0" max="5" step="0.1" required />
-        <FormField label="Comments" name="comments" type="textarea" placeholder="Write feedback..." />
+        <>
+          {(isAdmin||isManager) ? (
+            <FormField label="Employee" name="employeeEmail" type="select" options={everyone.map(u=>({label:`${u.name} (${u.email})`, value:u.email}))} required />
+          ) : (
+            <input type="hidden" name="employeeEmail" value={user.email} />
+          )}
+          <FormField label="Cycle" name="cycle" type="select" options={cycles.map(c=>({label:c.name,value:c.name}))} />
+          <FormField label="Rating (0-5)" name="rating" type="number" min="0" max="5" step="0.1" required />
+          <FormField label="Comments" name="comments" type="textarea" placeholder="Write feedback..." />
+        </>
       </FormModal>
     )}
 
     {/* Add Cycle Modal */}
     {(showAddCycle && isAdmin) && (
       <FormModal title="Create Appraisal Cycle" onClose={()=>setShowAddCycle(false)} onSubmit={addCycle}>
-        <FormField label="Name" name="name" placeholder="e.g., Q1 2025 Performance Review" required />
-        <FormField label="Template" name="template" type="select" options={appraisalTemplates.map(t=>({label:t.name,value:t.name}))} />
-        <div className="grid grid-cols-2 gap-3">
-          <FormField label="Start Date" name="start_date" type="date" required />
-          <FormField label="End Date" name="end_date" type="date" required />
-        </div>
+        <>
+          <FormField label="Name" name="name" placeholder="e.g., Q1 2025 Performance Review" required />
+          <FormField label="Template" name="template" type="select" options={appraisalTemplates.map(t=>({label:t.name,value:t.name}))} />
+          <div className="grid grid-cols-2 gap-3">
+            <FormField label="Start Date" name="start_date" type="date" required />
+            <FormField label="End Date" name="end_date" type="date" required />
+          </div>
+        </>
       </FormModal>
     )}
     </div>
