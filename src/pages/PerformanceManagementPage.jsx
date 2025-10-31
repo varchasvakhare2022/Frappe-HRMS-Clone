@@ -372,6 +372,118 @@ const PerformanceManagementPage = () => {
     return Math.min((achieved / target) * 100, 100)
   }
 
+  // --- Computed Performance (attendance + goals + projects) ---
+  const [perfRoleFilter, setPerfRoleFilter] = useState('All') // All | Employees | Managers
+  const [perfSearch, setPerfSearch] = useState('')
+
+  const getWorkingDaysThisMonth = () => {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = now.getMonth()
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
+    let days = 0
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(year, month, d)
+      if (date > now) break
+      const day = date.getDay()
+      if (day !== 0 && day !== 6) days++ // Mon-Fri
+    }
+    return days || 1
+  }
+
+  const computeAttendancePct = (email) => {
+    const dailyUpdates = JSON.parse(localStorage.getItem('dailyUpdates') || '{}')
+    const now = new Date()
+    const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-`
+    let presentDays = 0
+    const seenDates = new Set()
+    for (const key of Object.keys(dailyUpdates)) {
+      if (!key.startsWith(email + '_')) continue
+      const dateStr = key.slice(email.length + 1)
+      if (dateStr.startsWith(yearMonth)) {
+        const day = dateStr
+        if (!seenDates.has(day)) {
+          seenDates.add(day)
+          presentDays++
+        }
+      }
+    }
+    const working = getWorkingDaysThisMonth()
+    return Math.max(0, Math.min(100, Math.round((presentDays / working) * 100)))
+  }
+
+  const getProjectStatsForEmail = (email) => {
+    const projects = JSON.parse(localStorage.getItem('projects') || '[]')
+    let assigned = 0
+    let completed = 0
+    for (const p of projects) {
+      const members = p.teamMembers || p.members || []
+      const has = members.some(m => m.email === email || m === email)
+      if (!has) continue
+      assigned++
+      const status = (p.status || p.projectStatus || '').toLowerCase()
+      if (status.includes('complete') || status.includes('deploy') || status.includes('closed')) completed++
+    }
+    const pct = assigned ? Math.round((completed / assigned) * 100) : 0
+    return { assigned, completed, pct }
+  }
+
+  const computeGoalsPctForEmail = (email) => {
+    const mine = goals.filter(g => g.employeeEmail === email)
+    if (mine.length === 0) return 0
+    const achieved = mine.filter(g => (g.status || '').toLowerCase() === 'achieved').length
+    return Math.round((achieved / mine.length) * 100)
+  }
+
+  const performanceRows = useMemo(() => {
+    const rows = []
+    const all = everyone
+    for (const u of all) {
+      const email = u.email
+      const role = (u.role || '').toLowerCase().includes('manager') ? 'Manager' : 'Employee'
+      const attendance = computeAttendancePct(email)
+      const goalsPct = computeGoalsPctForEmail(email)
+      const projectStats = getProjectStatsForEmail(email)
+      // Weighting: Attendance 40%, Goals 40%, Projects 20%
+      const overall = Math.round(attendance * 0.4 + goalsPct * 0.4 + projectStats.pct * 0.2)
+      rows.push({
+        name: u.name,
+        email,
+        role,
+        attendance,
+        goalsPct,
+        projectsAssigned: projectStats.assigned,
+        projectsCompleted: projectStats.completed,
+        projectsPct: projectStats.pct,
+        overall
+      })
+    }
+    // Managers can see only employees; Admins see all
+    let filtered = rows
+    if (isManager) filtered = filtered.filter(r => r.role === 'Employee')
+    if (perfRoleFilter === 'Employees') filtered = filtered.filter(r => r.role === 'Employee')
+    if (perfRoleFilter === 'Managers') filtered = filtered.filter(r => r.role === 'Manager')
+    if (perfSearch) {
+      const q = perfSearch.toLowerCase()
+      filtered = filtered.filter(r => r.name.toLowerCase().includes(q) || r.email.toLowerCase().includes(q))
+    }
+    filtered.sort((a,b)=> b.overall - a.overall)
+    return filtered
+  }, [everyone, goals, isManager, perfRoleFilter, perfSearch])
+
+  const exportPerformanceCSV = () => {
+    const data = performanceRows
+    const header = ['Name','Email','Role','Attendance%','Goals%','ProjectsAssigned','ProjectsCompleted','Projects%','Overall%']
+    const rows = [header.join(','), ...data.map(r => [r.name,r.email,r.role,r.attendance,r.goalsPct,r.projectsAssigned,r.projectsCompleted,r.projectsPct,r.overall].join(','))]
+    const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'performance-overview.csv'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   // CRUD handlers
   const addGoal = (form) => {
     const emp = everyone.find(e => e.email === form.employeeEmail)
@@ -1101,6 +1213,66 @@ const PerformanceManagementPage = () => {
             {activeTab === 'reports' && isAdmin && (
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-6">Appraisal Overview Report</h3>
+
+                {/* Performance Overview (Attendance + Goals + Projects) */}
+                <div className="bg-white rounded-lg p-6 shadow-sm mb-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-md font-semibold text-gray-900">Performance Overview</h4>
+                    <div className="flex items-center gap-2">
+                      <select value={perfRoleFilter} onChange={(e)=>setPerfRoleFilter(e.target.value)} className="px-2 py-1 border border-gray-300 rounded text-sm">
+                        <option>All</option>
+                        <option>Employees</option>
+                        <option>Managers</option>
+                      </select>
+                      <input value={perfSearch} onChange={(e)=>setPerfSearch(e.target.value)} placeholder="Search name or email" className="px-3 py-1.5 border border-gray-300 rounded text-sm" />
+                      <button onClick={exportPerformanceCSV} className="px-3 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 flex items-center gap-2">
+                        <Download className="w-4 h-4" /> Export CSV
+                      </button>
+                    </div>
+                  </div>
+                  <div className="overflow-auto">
+                    <table className="min-w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-gray-600">
+                          <th className="py-2 pr-4">Name</th>
+                          <th className="py-2 pr-4">Email</th>
+                          <th className="py-2 pr-4">Role</th>
+                          <th className="py-2 pr-4">Attendance</th>
+                          <th className="py-2 pr-4">Goals</th>
+                          <th className="py-2 pr-4">Projects</th>
+                          <th className="py-2 pr-4">Overall</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {performanceRows.map((r, idx) => (
+                          <tr key={idx} className="border-t border-gray-100">
+                            <td className="py-2 pr-4 text-gray-900 font-medium">{r.name}</td>
+                            <td className="py-2 pr-4 text-gray-600">{r.email}</td>
+                            <td className="py-2 pr-4">{r.role}</td>
+                            <td className="py-2 pr-4">
+                              <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">{r.attendance}%</span>
+                            </td>
+                            <td className="py-2 pr-4">
+                              <span className="px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-medium">{r.goalsPct}%</span>
+                            </td>
+                            <td className="py-2 pr-4">
+                              <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-medium">{r.projectsPct}%</span>
+                              <span className="ml-2 text-xs text-gray-500">({r.projectsCompleted}/{r.projectsAssigned})</span>
+                            </td>
+                            <td className="py-2 pr-4">
+                              <span className="px-2 py-0.5 rounded bg-gray-900 text-white font-semibold">{r.overall}%</span>
+                            </td>
+                          </tr>
+                        ))}
+                        {performanceRows.length === 0 && (
+                          <tr>
+                            <td className="py-6 text-center text-gray-500" colSpan="7">No records</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
